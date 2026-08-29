@@ -1,6 +1,32 @@
 import { useEffect,useState } from 'react';
 import { getAlbums } from '../../services/catalog';
-import { updateAlbum, deleteAlbum, uploadAlbumArtwork } from '../../services/uploads';
+import { ensureAlbum, updateAlbum, deleteAlbum, uploadAlbumArtwork } from '../../services/uploads';
 import type { Album } from '../../types/models';
-export function Albums(){const [items,setItems]=useState<Album[]>([]);const [error,setError]=useState('');const load=()=>getAlbums().then(setItems).catch(e=>setError(e.message));useEffect(()=>{load()},[]);return <section className="admin-page"><header className="admin-header"><div><span className="eyebrow">RELEASES</span><h1>Albums</h1></div></header>{error&&<p className="form-error">{error}</p>}<div className="admin-card"><div className="admin-list">{items.map(a=><AlbumEditor key={a.id} album={a} refresh={load}/>)}</div></div></section>}
+
+export function Albums(){
+  const [items,setItems]=useState<Album[]>([]);
+  const [error,setError]=useState('');
+  const [creating,setCreating]=useState(false);
+
+  const load=()=>getAlbums().then(setItems).catch(e=>setError(e.message));
+
+  useEffect(()=>{load()},[]);
+
+  const addAlbum = async () => {
+    setCreating(true);
+    setError('');
+    try {
+      const date = new Date().toISOString().slice(0, 10);
+      const album = await ensureAlbum('New Album', 'ATTIKID', date);
+      setItems((current) => [album, ...current]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to create album.');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return <section className="admin-page"><header className="admin-header"><div><span className="eyebrow">RELEASES</span><h1>Albums</h1></div><button className="button" onClick={()=>void addAlbum()} disabled={creating}>{creating ? 'Adding…' : 'Add album'}</button></header>{error&&<p className="form-error">{error}</p>}<div className="admin-card"><div className="admin-list">{items.map(a=><AlbumEditor key={a.id} album={a} refresh={load}/>)}</div></div></section>
+}
+
 function AlbumEditor({album,refresh}:{album:Album;refresh:()=>void}){const [title,setTitle]=useState(album.title);const [date,setDate]=useState(album.release_date);const [featured,setFeatured]=useState(album.is_featured);const [artwork,setArtwork]=useState<File|null>(null);const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);const save=async()=>{setBusy(true);setMessage('');try{await updateAlbum(album.id,{title,release_date:date,is_featured:featured});setMessage('Album saved.');refresh()}catch(err){setMessage(err instanceof Error?err.message:'Unable to save album.')}finally{setBusy(false)}};const uploadArtwork=async()=>{if(!artwork)return;setBusy(true);setMessage('');try{await uploadAlbumArtwork(album.id,artwork);setArtwork(null);setMessage('Cover art uploaded.');refresh()}catch(err){setMessage(err instanceof Error?err.message:'Unable to upload cover art.')}finally{setBusy(false)}};const remove=async()=>{if(confirm(`Delete ${album.title}?`)){setBusy(true);try{await deleteAlbum(album.id);refresh()}finally{setBusy(false)}}};return <div className="admin-list-row"><div className="editor-fields"><input value={title} onChange={e=>setTitle(e.target.value)}/><input type="date" value={date} onChange={e=>setDate(e.target.value)}/><label className="checkbox"><input type="checkbox" checked={featured} onChange={e=>setFeatured(e.target.checked)}/> Featured</label><label>Cover art<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setArtwork(e.target.files?.[0]??null)}/></label>{message&&<span className="muted">{message}</span>}</div><div className="button-row"><button onClick={()=>void save()} disabled={busy}>Save</button><button onClick={()=>void uploadArtwork()} disabled={busy||!artwork}>Upload cover</button><button onClick={()=>void remove()} disabled={busy}>Delete</button></div></div>}
