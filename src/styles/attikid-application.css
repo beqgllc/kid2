@@ -18,11 +18,11 @@ body,
   font-family: var(--font-body);
 }
 
-.hero h1,
-.page-hero h1,
-.song-hero h1,
-.album-hero h1,
-.lyrics-hero h1 {
+body .hero h1,
+body .page-hero h1,
+body .song-hero h1,
+body .album-hero h1,
+body .lyrics-hero h1 {
   font-family: var(--font-display);
   font-weight: var(--weight-display);
   font-size: var(--text-hero);
@@ -30,17 +30,94 @@ body,
   letter-spacing: var(--tracking-display);
 }
 
-.eyebrow {
+body .eyebrow {
   font-family: var(--font-mono);
   font-size: var(--text-mono);
   font-weight: var(--weight-mono);
   letter-spacing: var(--tracking-mono-label);
 }
 
-.section-heading h2 {
+body .section-heading h2 {
   font-family: var(--font-display);
   font-weight: var(--weight-display-alt);
   font-size: var(--text-h2);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.brand img {
+  width: 1.55rem;
+  height: 1.55rem;
+  object-fit: contain;
+}
+
+body .hero-with-image,
+body .page-hero-with-image {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+body .hero-with-image {
+  min-height: min(78vh, 760px);
+  justify-content: flex-end;
+  padding: clamp(2rem, 6vw, 5rem);
+}
+
+body .hero-image,
+body .page-hero-with-image > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+body .hero-image { object-position: center; }
+body .page-hero-with-image > img { object-position: center 42%; }
+
+body .hero-with-image::after,
+body .page-hero-with-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--color-bg), transparent 72%);
+  opacity: .88;
+  z-index: -1;
+}
+
+body .hero-copy { max-width: 34rem; }
+
+body .page-hero-with-image {
+  min-height: min(62vh, 620px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(2rem, 6vw, 5rem);
+}
+
+body .page-hero-with-image > div { position: relative; z-index: 1; }
+
+body .artist-portrait {
+  display: block;
+  width: min(100%, 28rem);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  margin: 0 0 3rem;
+  border: 1px solid var(--color-border);
+}
+
+@media (max-width: 700px) {
+  .hero-with-image,
+  .page-hero-with-image { min-height: 70vh; }
+  .hero-with-image::after,
+  .page-hero-with-image::after { background: linear-gradient(180deg, transparent 15%, var(--color-bg) 92%); }
+  .page-hero-with-image > img { object-position: 62% center; }
 }
