@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, type ChangeEvent, type SyntheticEvent } from 'react';
 import { usePlayerStore } from '../../stores/playerStore';
 import { formatDuration } from '../../lib/utils';
 import { recordPlay } from '../../services/analytics';
@@ -44,8 +44,13 @@ export function GlobalPlayer() {
   const seek = (e: ChangeEvent<HTMLInputElement>) => { const audio = audioRef.current; if (!audio) return; const value = Number(e.target.value); audio.currentTime = value; set({ currentTime: value }); };
   const setVol = (e: ChangeEvent<HTMLInputElement>) => set({ volume: Number(e.target.value), muted: false });
   const repeat = () => set({ repeatMode: repeatMode === 'none' ? 'queue' : repeatMode === 'queue' ? 'track' : 'none' });
+  const mediaError = (e: SyntheticEvent<HTMLAudioElement>) => {
+    const code = e.currentTarget.error?.code;
+    const detail = code ? ` (media error ${code})` : '';
+    set({ isPlaying: false, status: 'error', error: `Unable to play this track${detail}. Check the audio file format and Storage URL.` });
+  };
   return <>
-    <audio ref={audioRef} data-attikid-player="true" preload="metadata" onLoadedMetadata={(e) => set({ duration: e.currentTarget.duration, status: 'ready' })} onTimeUpdate={onTime} onPlay={() => set({ isPlaying: true, status: 'playing' })} onPause={() => set({ isPlaying: false, status: 'paused' })} onEnded={onEnded} onError={() => set({ isPlaying: false, status: 'error', error: 'Unable to play this track.' })} />
+    <audio ref={audioRef} data-attikid-player="true" preload="metadata" onLoadedMetadata={(e) => set({ duration: e.currentTarget.duration, status: 'ready' })} onTimeUpdate={onTime} onPlay={() => set({ isPlaying: true, status: 'playing' })} onPause={() => set({ isPlaying: false, status: 'paused' })} onEnded={onEnded} onError={mediaError} />
     <section className="global-player" aria-label="Music player">
       <div className="player-track">
         <div className="player-art">{currentSong?.artwork_url ? <img src={currentSong.artwork_url} alt="" /> : <span>AK</span>}</div>
