@@ -1,0 +1,46 @@
+:root {
+  --font-display: 'Arial Narrow', Impact, sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-marker: 'Caveat', cursive;
+  --bg: var(--color-bg);
+  --surface: var(--color-bg-elevated);
+  --surface-2: var(--color-bg-elevated);
+  --text: var(--color-text);
+  --muted: var(--color-text-muted);
+  --border: var(--color-border);
+  --accent: var(--color-accent);
+}
+
+html,
+body,
+#root {
+  font-family: var(--font-body);
+}
+
+.hero h1,
+.page-hero h1,
+.song-hero h1,
+.album-hero h1,
+.lyrics-hero h1 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  font-size: var(--text-hero);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  font-weight: var(--weight-mono);
+  letter-spacing: var(--tracking-mono-label);
+}
+
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display-alt);
+  font-size: var(--text-h2);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}

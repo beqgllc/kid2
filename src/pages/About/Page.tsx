@@ -1,2 +1,16 @@
 import { Link } from 'react-router-dom';
-export function About(){return <div className="page"><header className="page-hero"><span className="eyebrow">ABOUT</span><h1>ATTIKID</h1><p>The person behind the music.</p></header><section className="prose"><p>ATTIKID is an independent artist project built around music that turns difficult experiences into something people can hear, recognize, and survive with.</p><p>This site is the archive: records, lyrics, releases, and a direct line to the people listening.</p><blockquote>“The point isn't to pretend the dark days didn't happen. It's to prove they weren't the end.”</blockquote><Link className="button" to="/music">Listen to the music</Link></section></div>}
+import { RichContent } from '../../components/content/RichContent';
+import { aboutContent } from '../../content/about';
+
+export function About() {
+  return <div className="page">
+    <header className="page-hero">
+      <span className="eyebrow">ABOUT</span>
+      <h1>ATTIKID</h1>
+    </header>
+    <article className="prose">
+      <RichContent blocks={aboutContent} />
+      <Link className="button" to="/music">Listen to the music</Link>
+    </article>
+  </div>;
+}
