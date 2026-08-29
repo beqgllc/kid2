@@ -1,0 +1,4 @@
+import { useEffect, useState } from 'react';
+import { getMyReaction,setReaction } from '../../services/reactions';
+import type { Reaction } from '../../types/models';
+export function ReactionBar({songId}:{songId:string}){const [mine,setMine]=useState<Reaction|null>(null);const [busy,setBusy]=useState(false);useEffect(()=>{getMyReaction(songId).then(setMine).catch(()=>null)},[songId]);const choose=async(r:Reaction)=>{const next=mine===r?null:r;const prev=mine;setMine(next);setBusy(true);try{await setReaction(songId,next)}catch{setMine(prev)}finally{setBusy(false)}};return <div className="reaction-bar"><button disabled={busy} className={mine==='like'?'selected':''} onClick={()=>void choose('like')}>♥ Like</button><button disabled={busy} className={mine==='dislike'?'selected':''} onClick={()=>void choose('dislike')}>↓ Dislike</button></div>}

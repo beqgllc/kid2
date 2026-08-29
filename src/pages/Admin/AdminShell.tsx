@@ -1,0 +1,3 @@
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { signOut } from '../../services/auth';
+export function AdminShell(){const navigate=useNavigate();const logout=async()=>{await signOut();navigate('/admin/login')};return <div className="admin-shell"><aside><div className="admin-brand">ATTIKID <span>ADMIN</span></div><nav><NavLink to="/admin">Dashboard</NavLink><NavLink to="/admin/music">Music</NavLink><NavLink to="/admin/albums">Albums</NavLink><NavLink to="/admin/lyrics">Lyrics</NavLink><NavLink to="/admin/fan-mail">Fan Mail</NavLink><NavLink to="/admin/analytics">Analytics</NavLink></nav><button className="logout-button" onClick={logout}>Log out</button></aside><main><Outlet/></main></div>}
