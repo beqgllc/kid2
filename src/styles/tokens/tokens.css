@@ -1,1 +1,52 @@
-:root{--bg:#080808;--surface:#111;--surface-2:#171717;--text:#f5f5f5;--muted:#8c8c8c;--border:#292929;--accent:#f5f5f5;--radius:14px}::selection{background:#f5f5f5;color:#080808}
+/**
+ * ATTIKID Portfolio — Design Tokens (v1.0, locked)
+ * Source: K!D Supply Co. official brand palette, unified with the
+ * original ATTIKID artist visual identity (see brand history notes below).
+ *
+ * Naming convention: semantic, not literal. Reference --color-accent in
+ * components, never --signal-orange — lets the underlying value evolve
+ * without a find/replace across the codebase.
+ *
+ * Contrast ratios computed against WCAG 2.1 relative luminance formula.
+ * AA thresholds: 4.5:1 normal text, 3:1 large text (18px+ or 14px+ bold).
+ */
+
+:root {
+	/* ---- Surfaces ---- */
+	--color-bg: #0A0A0A; /* Supply Black — page base */
+	--color-bg-elevated: #1C1C1C; /* Ripped Black — cards, nav, modals */
+	--color-border: #2A2A2A; /* subtle divider, derived (not brand-sourced) */
+
+	/* ---- Text ---- */
+	--color-text: #F5F5F5; /* Truth White — 18.16:1 on --color-bg. AAA. */
+	--color-text-muted: #B8B8B8; /* Static Gray — 9.98:1 on --color-bg. AAA.
+																			 Use for metadata, timestamps, captions. */
+
+	/* ---- Primary accent ---- */
+	--color-accent: #FF4E00; /* Signal Orange — 5.98:1 on --color-bg. AA (normal text ok).
+																					 5.15:1 on --color-bg-elevated. Still AA.
+																					 CTAs, active nav, links, waveform highlight. Use sparingly. */
+	--color-accent-hover: #E64500; /* pressed/hover state, no ratio check needed (non-text use) */
+
+	/* ---- Secondary accent (revived from original ATTIKID identity) ---- */
+	--color-accent-secondary: #4B3B6B; /* Bruised Violet — background/section use ONLY.
+																							 --color-text on this = 9.01:1 (AAA).
+																							 --color-accent on this = 2.97:1 — FAILS AA. Do not combine. */
+	--color-accent-secondary-hover: #3A2D54;
+
+	/* ---- Bridge color (visual handoff into K!D Supply Co. merch) ---- */
+	--color-bridge: #A0826D; /* Dust Brown — 5.57:1 on --color-bg. AA normal text ok.
+																			 Use where the site transitions into merch/shop content. */
+
+	/* ---- State colors ----
+		 Red and Olive fail AA as small text-on-black (2.96:1 / 3.33:1).
+		 Use as filled backgrounds/borders/icons with --color-text on top,
+		 not as standalone text color on --color-bg. */
+	--color-danger: #B22222; /* Red (Plaid) — background/border for error states */
+	--color-success: #556B2F; /* Olive Drab — background/border for success/confirmation states */
+
+	/* ---- Section mood mapping (optional semantic aliases) ---- */
+	--color-section-bio: var(--color-accent-secondary); /* reflective / artist story */
+	--color-section-discography: var(--color-bg-elevated); /* releases, track lists */
+	--color-section-merch-bridge: var(--color-bridge); /* crossover into K!D Supply Co. */
+}

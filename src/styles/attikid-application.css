@@ -121,3 +121,4 @@ body .artist-portrait {
   .page-hero-with-image::after { background: linear-gradient(180deg, transparent 15%, var(--color-bg) 92%); }
   .page-hero-with-image > img { object-position: 62% center; }
 }
+
