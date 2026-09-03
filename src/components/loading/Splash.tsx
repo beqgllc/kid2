@@ -1,41 +1,17 @@
 import { useEffect, useState } from 'react';
 
+// Adapted from the reference splash animation:
+// 0.0s  — Black overlay covers full screen
+// 1.0s  — Overlay clips to center box (0.2s)
+// 1.2s  — Center box fades transparent (1.3s)
+// 1.5s  — "K!D" logo appears, color white→black (0.3s)
+// 2.7s  — Orange SVG expands via clip-path polygon (0.7s) → full screen
+// 3.2s  — Logo fades out (0.6s)
+// 3.7s  — "ATTIKID MUSIC" / "YOU ARE NOT ALONE" fade in (0.6s)
+// 4.5s  — Entire splash container fades to opacity 0 (0.8s)
+// 5.4s  — onComplete() called → site appears
+
+
 export function Splash({ ready }: { ready: boolean }) {
 	const [phase, setPhase] = useState<'splash' | 'loader' | 'exit' | 'done'>('splash');
-
-	useEffect(() => {
-		const timer = window.setTimeout(() => setPhase('loader'), 5000);
-		return () => window.clearTimeout(timer);
-	}, []);
-
-	useEffect(() => {
-		if (phase !== 'loader' || !ready) return;
-		const timer = window.setTimeout(() => setPhase('exit'), 2000);
-		return () => window.clearTimeout(timer);
-	}, [phase, ready]);
-
-	useEffect(() => {
-		if (phase !== 'exit') return;
-		const timer = window.setTimeout(() => setPhase('done'), 600);
-		return () => window.clearTimeout(timer);
-	}, [phase]);
-
-	if (phase === 'done') return null;
-	return <div className={`kid-splash-container kid-splash-${phase}`} role="status" aria-label={phase === 'loader' ? 'Loading ATTIKID' : undefined}>
-		{phase === 'splash' || phase === 'exit' ? <>
-			<div className="kid-splash" aria-hidden="true">
-				<div className="kid-splash-logo">K!D</div>
-				<div className="kid-splash-svg"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" /></svg></div>
-				<div className="kid-splash-minimize"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" /></svg></div>
-			</div>
-			<div className="kid-splash-text" aria-hidden="true">
-				<div className="kid-splash-text-line1">ATTIKID MUSIC</div>
-				<div className="kid-splash-text-line2">YOU ARE NOT ALONE</div>
-			</div>
-		</> : <div className="music-loader" aria-hidden="true">
-			<div className="line line1" />
-			<div className="line line2" />
-			<div className="line line3" />
-		</div>}
-	</div>;
 }

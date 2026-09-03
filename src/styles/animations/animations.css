@@ -1,1 +1,186 @@
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}@keyframes splash-letter{0%{opacity:0;transform:translateY(.35em);clip-path:inset(100% 0 0)}55%{opacity:1;transform:none;clip-path:inset(0)}100%{opacity:1;transform:none;clip-path:inset(0)}}@keyframes splash-fill{from{color:transparent;-webkit-text-stroke:1px var(--color-text)}to{color:var(--color-text);-webkit-text-stroke:0}}.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.reveal.is-visible{opacity:1;transform:none}.splash{position:fixed;z-index:100;inset:0;background:var(--color-bg);display:grid;place-items:center;align-content:center;gap:1.2rem;transition:opacity .45s ease}.splash-logo{display:flex;font-family:var(--font-display);font-size:clamp(3rem,12vw,8rem);font-weight:var(--weight-display);line-height:.8;letter-spacing:.01em;color:transparent;-webkit-text-stroke:1px var(--color-text)}.splash-logo span{display:block;animation:splash-letter 1.8s cubic-bezier(.2,.7,.2,1) calc(var(--letter-index) * .18s) both,splash-fill .5s ease 1.9s both}.splash-line{width:100px;height:1px;background:var(--color-text-muted);opacity:.7}.splash-status{font-family:var(--font-mono);font-size:var(--text-mono);letter-spacing:var(--tracking-mono-label);text-transform:uppercase;color:var(--color-text-muted)}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}.reveal{opacity:1!important;transform:none!important}.splash-logo span{animation:none;color:var(--color-text);-webkit-text-stroke:0}}
+ @keyframes kid-scale {
+          100% {
+            clip-path: polygon(45vw 40vh, 55vw 40vh, 55vw 60vh, 45vw 60vh);
+          }
+        }
+
+        @keyframes kid-hide {
+          100% { fill: transparent; }
+        }
+
+        @keyframes kid-off {
+          100% { opacity: 0; }
+        }
+
+        @keyframes kid-on {
+          100% { opacity: 1; }
+        }
+
+        @keyframes kid-logo-color {
+          100% { color: #0A0A0A; }
+        }
+
+        @keyframes kid-type {
+          0% { width: 0; }
+        }
+
+        @keyframes kid-type2 {
+          0%   { width: 0; }
+          50%  { width: 0; }
+          100% { width: 100%; }
+        }
+
+        /* Polygon expansion: center box → sweeping diagonal → full screen
+           Colors alternate Signal Orange ↔ white for cinematic flash */
+        @keyframes kid-expand {
+          25% {
+            clip-path: polygon(0vw 0vh, 55vw 40vh, 55vw 58vh, 45vw 58vh);
+            fill: #ffffff;
+          }
+          50% {
+            clip-path: polygon(0vw 0vh, 100vw 0vh, 55vw 60vh, 45vw 60vh);
+            fill: #FF4E00;
+          }
+          75% {
+            clip-path: polygon(0vw 0vh, 100vw 0vh, 55vw 60vh, 0vw 100vh);
+            fill: #ffffff;
+          }
+          100% {
+            clip-path: polygon(0vw 0vh, 100vw 0vh, 100vw 100vh, 0vw 100vh);
+            fill: #FF4E00;
+          }
+        }
+
+        /* Final exit: entire splash fades out so the site appears underneath */
+        @keyframes kid-splash-exit {
+          0%   { opacity: 1; }
+          100% { opacity: 0; }
+        }
+
+        /* ── Component styles ───────────────────────────────────────── */
+
+        .kid-splash-container {
+          position: fixed;
+          inset: 0;
+          z-index: 100;
+          pointer-events: none;
+          animation: kid-splash-exit 0.8s ease-in-out 4.5s forwards;
+        }
+
+        /* Full-screen wrapper that holds the SVG layers */
+        .kid-splash {
+          width: 100vw;
+          height: 100vh;
+          position: absolute;
+          top: 0;
+          left: 0;
+          display: flex;
+          overflow: hidden;
+        }
+
+        /* ── Logo ─── */
+        .kid-splash-logo {
+          position: absolute;
+          /* center-positioned, slightly offset for font metrics */
+          top: 50vh;
+          left: 50vw;
+          margin: -18px 0 0 -28px;
+          width: 56px;
+          height: 34px;
+          z-index: 5;
+          text-align: center;
+          font-family: 'Anton', sans-serif;
+          font-size: 28px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          color: #ffffff;
+          opacity: 1;
+          will-change: opacity, color;
+          /* appears as white, shifts to near-black as orange expands, then fades out */
+          animation:
+            kid-logo-color 0.3s ease-in 1.5s forwards,
+            kid-off        0.6s ease-in-out 3.2s forwards;
+        }
+
+        .kid-splash-logo::before,
+        .kid-splash-logo::after {
+          display: block;
+          position: absolute;
+          left: 18px;
+          width: 20px;
+          height: 1px;
+          background-color: #757474;
+          content: "";
+        }
+        .kid-splash-logo::before { bottom: -5px; }
+        .kid-splash-logo::after  { top: -5px; will-change: width; }
+
+        /* ── Orange expansion SVG ─── */
+        .kid-splash-svg {
+          position: relative;
+          margin: auto;
+          width: 100%;
+          height: 100%;
+        }
+        .kid-splash-svg svg { width: 100%; height: 100%; backface-visibility: visible; }
+        .kid-splash-svg svg rect {
+          width: 100%;
+          height: 100%;
+          fill: #FF4E00;
+          stroke: none;
+          /* starts as a small center rectangle */
+          clip-path: polygon(45vw 40vh, 55vw 40vh, 55vw 60vh, 45vw 60vh);
+          animation: kid-expand 0.7s ease-in forwards 2.7s;
+        }
+
+        /* ── Black overlay that shrinks ─── */
+        .kid-splash-minimize {
+          position: absolute;
+          inset: 0;
+          z-index: 4;
+        }
+        .kid-splash-minimize svg { width: 100%; height: 100%; backface-visibility: visible; }
+        .kid-splash-minimize svg rect {
+          width: 100%;
+          height: 100%;
+          fill: #0A0A0A;
+          clip-path: polygon(0vw 0vh, 100vw 0vh, 100vw 100vh, 0vw 100vh);
+          animation:
+            kid-scale 0.2s ease-out   forwards 1.0s,
+            kid-hide  1.3s ease-out   forwards 1.2s;
+        }
+
+        /* ── Text reveal on orange background ─── */
+        .kid-splash-text {
+          position: absolute;
+          z-index: 7;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          white-space: nowrap;
+          opacity: 0;
+          animation: kid-on 0.6s ease-in-out 3.7s forwards;
+        }
+
+        .kid-splash-text-line1 {
+          overflow: hidden;
+          font-family: 'Anton', sans-serif;
+          font-size: clamp(2.5rem, 9vw, 8rem);
+          line-height: 0.9;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: #0A0A0A;
+          animation: kid-type 0.35s steps(60, end) 3.7s;
+        }
+
+        .kid-splash-text-line2 {
+          overflow: hidden;
+          margin-top: 0.6rem;
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: clamp(0.55rem, 1.4vw, 1rem);
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: #0A0A0A;
+          animation: kid-type2 0.5s steps(60, end) 3.7s;
+        }
