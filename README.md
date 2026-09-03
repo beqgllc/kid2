@@ -36,6 +36,25 @@ VITE_ADMIN_EMAIL=
 
 Run the SQL migrations in `supabase/migrations/` in order.
 
+## Add lyrics
+
+Lyrics are stored in Supabase and linked to a song by `song_id`. There are two supported workflows:
+
+### Admin console
+
+1. Sign in at `/admin/login` with the Supabase Auth user whose profile has `role = 'admin'`.
+2. Open **Lyrics**, select a song, paste the lyrics with their intended line breaks, and choose **Save lyrics**.
+
+The admin console creates the lyrics row when none exists and updates it when one already exists. The public lyrics pages read the saved content immediately.
+
+### VS Code or GitHub
+
+Use [`supabase/seed/lyrics.sql`](supabase/seed/lyrics.sql) as the repo-managed source. Copy its insert block for each song, replace `replace-with-song-slug` with the exact `songs.slug`, and replace the sample text. Keep the dollar-quoted block (`$$ ... $$`) so apostrophes in lyrics do not need SQL escaping.
+
+Run the file in the Supabase SQL Editor, or with the Supabase CLI against the target project. Run it after the songs have been created. The `on conflict` clause makes rerunning it update existing lyrics rather than create duplicates.
+
+GitHub edits do not automatically change the live database. They become live only when the SQL file is executed against the project. Do not put a Supabase service-role key in the frontend, GitHub, or `.env` variables beginning with `VITE_`.
+
 Create these Storage buckets:
 
 - `attikid-audio`
