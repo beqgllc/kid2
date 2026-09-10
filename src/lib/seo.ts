@@ -12,7 +12,7 @@ export interface SeoMeta {
   jsonLd?: SeoJsonLd;
 }
 
-export const siteUrl = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '') ?? 'https://attikid.vercel.app';
+export const siteUrl = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '') ?? 'https://attikid.com';
 
 const normalizePath = (path: string) => path.startsWith('/') ? path : `/${path}`;
 
@@ -72,9 +72,9 @@ export function buildWebSiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'ATTIKID | Official Music, Songs & Lyrics',
+    name: 'ATTIKID',
     url: siteUrl,
-    description: 'Listen to ATTIKID music, explore songs and lyrics, and discover the latest tracks from ATTIKID.', 
+    description: 'ATTIKID music, lyrics, story, and artist catalog.',
     potentialAction: {
       '@type': 'SearchAction',
       target: `${siteUrl}/music?q={search_term_string}`,
@@ -100,8 +100,6 @@ export function buildAlbumJsonLd(album: { title: string; description?: string | 
 }
 
 export function buildSongJsonLd(song: { title: string; artist_name: string; album?: { title?: string | null } | null; release_date?: string | null; slug: string; artwork_url?: string | null; audio_url?: string | null }) {
-  const audio = song.audio_url ? { '@type': 'AudioObject', contentUrl: song.audio_url } : undefined;
-
   return {
     '@context': 'https://schema.org',
     '@type': 'MusicRecording',
@@ -114,6 +112,6 @@ export function buildSongJsonLd(song: { title: string; artist_name: string; albu
     datePublished: song.release_date ?? undefined,
     image: song.artwork_url ?? '/images/hero/hero-home.webp',
     url: `${siteUrl}/song/${song.slug}`,
-    audio
+    audio: song.audio_url ? { '@type': 'AudioObject', contentUrl: song.audio_url } : undefined
   };
 }

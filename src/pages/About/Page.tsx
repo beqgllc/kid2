@@ -7,7 +7,7 @@ export function About() {
   usePageMeta({
     title: 'About ATTIKID — Artist Story',
     description: 'Meet ATTIKID, the artist behind the music, lyrics, and story of the catalog.',
-    canonical: 'attikid.vercel.app/about',
+    canonical: '/about',
     type: 'profile',
     keywords: ['ATTIKID', 'artist story', 'bio', 'about'],
     image: '/images/hero/hero-about.webp',
@@ -19,18 +19,10 @@ export function About() {
       <span className="eyebrow">ABOUT</span>
       <h1>ATTIKID</h1>
       <p>The person behind the music.</p>
-      <img src="/images/hero/hero-about.webp" 
-      alt="Artist portrait in a wood-paneled room"
-      width={800}
-      height={800}
-       />
+      <img src="/images/hero/hero-about.webp" alt="Artist portrait in a wood-paneled room" />
     </header>
     <article className="prose">
-      <img className="artist-portrait" 
-      src="/images/artist/kid-portrait-primary.webp" 
-      alt="Portrait of ATTIKID"
-      width={800}
-      height={800} />
+      <img className="artist-portrait" src="/images/artist/kid-portrait-primary.webp" alt="Portrait of ATTIKID" />
       <RichContent blocks={aboutContent} />
       <Link className="button" to="/music">Listen to the music</Link>
     </article>

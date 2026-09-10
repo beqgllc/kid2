@@ -64,7 +64,7 @@
           inset: 0;
           z-index: 100;
           pointer-events: none;
-          animation: kid-splash-exit 0.8s ease-in-out 2.5s forwards;
+          animation: kid-splash-exit 0.8s ease-in-out 4.5s forwards;
         }
 
         /* Full-screen wrapper that holds the SVG layers */
@@ -99,7 +99,7 @@
           /* appears as white, shifts to near-black as orange expands, then fades out */
           animation:
             kid-logo-color 0.3s ease-in 1.5s forwards,
-            kid-off        0.6s ease-in-out 2.5s forwards;
+            kid-off        0.6s ease-in-out 3.2s forwards;
         }
 
         .kid-splash-logo::before,
