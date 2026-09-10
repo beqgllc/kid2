@@ -9,15 +9,14 @@ export function Home(){
   const latest=useLatestSongs(5);
   const albums=useAlbums();
   const ref=useScrollReveal<HTMLElement>();
-  usePageMeta({
-    title: 'ATTIKID — Music, Lyrics & Story',
-    description: 'ATTIKID music, lyrics, story, and releases from the artist behind the catalog.',
-    canonical: 'https://attikid.vercel.app',
-    type: 'website',
-    keywords: ['ATTIKID', 'music', 'lyrics', 'artist story', 'albums'],
-    image: '/images/hero/hero-home.webp',
-    jsonLd: buildWebSiteJsonLd()
-  });
-
+ usePageMeta({
+  title: 'ATTIKID | Official Music, Songs & Lyrics',
+  description: 'Listen to ATTIKID music, explore songs and lyrics, and discover the latest tracks from ATTIKID.',
+  canonical: 'https://attikid.vercel.app/',
+  type: 'website',
+  keywords: ['ATTIKID', 'music', 'lyrics', 'artist story', 'albums'],
+  image: '/images/hero/hero-home.webp',
+  jsonLd: buildWebSiteJsonLd()
+});
   return <div className="page home-page"><section className="hero hero-with-image reveal is-visible"><div className="hero-copy"><span className="eyebrow">ARTIST / MUSIC / STORY</span><h1>ATTIKID</h1><p>Music for the people carrying more than they say.</p><div className="button-row"><Link className="button" to="/music">Listen now</Link><Link className="button secondary" to="/about">Enter the story</Link></div></div><img className="hero-image" src="/images/hero/hero-home.webp" alt="ATTIKID artist portrait and mark" /></section><section ref={ref} className="content-section reveal"><div className="section-heading"><span>All releases</span><h2>Music</h2></div>{albums.loading?<div className="skeleton-grid"><div/><div/><div/></div>:<div className="album-grid">{albums.data.map(a=><AlbumCard key={a.id} album={a}/>)}</div>}</section><section className="content-section"><div className="section-heading"><span>Fresh from the catalog</span><h2>Latest tracks</h2></div>{latest.loading?<div className="loading-state">Loading tracks…</div>:latest.data.length?<div className="song-list">{latest.data.map((s,i)=><SongRow key={s.id} song={s} index={i} songs={latest.data}/>)}</div>:<div className="empty-state">No music has been added yet.</div>}</section><section className="story-band"><span className="eyebrow">THE ARTIST</span><h2>Built from survival, written for whoever is still here.</h2><p>Explore the music, read the words, and leave a message.</p><Link to="/about" className="text-link">Read about ATTIKID →</Link></section></div>}
 
