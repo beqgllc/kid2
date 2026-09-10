@@ -625,7 +625,7 @@ main {
 .kid-splash-minimize rect {
   fill: var(--color-bg);
   clip-path: polygon(0 0, 100vw 0, 100vw 100vh, 0 100vh);
-  animation: kid-scale .2s ease-out 1s forwards, kid-hide 1.3s ease-out 1.2s forwards;
+  animation: kid-scale .5s ease-out 1s forwards, kid-hide 1.3s ease-out 1.2s forwards;
 }
 
 .kid-splash-text {
@@ -653,7 +653,7 @@ main {
   line-height: .9;
   letter-spacing: var(--tracking-display);
   text-transform: uppercase;
-  animation: kid-type .35s steps(60, end) 3.7s;
+  animation: kid-type .5s steps(60, end) 1.0s;
 }
 
 .kid-splash-text-line2 {
