@@ -10,8 +10,8 @@ export function Home(){
   const albums=useAlbums();
   const ref=useScrollReveal<HTMLElement>();
  usePageMeta({
-  title: 'ATTIKID — Music, Lyrics & Story',
-  description: 'ATTIKID music, lyrics, story, and releases from the artist behind the catalog.',
+  title: 'ATTIKID | Official Music, Songs & Lyrics',
+  description: 'Listen to ATTIKID music, explore songs and lyrics, and discover the latest tracks from ATTIKID.',
   canonical: 'https://attikid.vercel.app/',
   type: 'website',
   keywords: ['ATTIKID', 'music', 'lyrics', 'artist story', 'albums'],

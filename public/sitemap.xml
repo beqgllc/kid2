@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://attikid.com/</loc></url>
-  <url><loc>https://attikid.com/music</loc></url>
-  <url><loc>https://attikid.com/about</loc></url>
-  <url><loc>https://attikid.com/lyrics</loc></url>
-  <url><loc>https://attikid.com/fan-mail</loc></url>
+  <url><loc>https://attikid.vercel.app/</loc></url>
+  <url><loc>https://attikid.vercel.app/music</loc></url>
+  <url><loc>https://attikid.vercel.app/about</loc></url>
+  <url><loc>https://attikid.vercel.app/lyrics</loc></url>
+  <url><loc>https://attikid.vercel.app/fan-mail</loc></url>
 </urlset>

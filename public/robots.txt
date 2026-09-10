@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://attikid.com/sitemap.xml
+Sitemap: https://attikid.vercel.app/sitemap.xml

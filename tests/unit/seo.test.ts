@@ -15,7 +15,7 @@ describe('seo json-ld builders', () => {
       artist_name: 'ATTIKID',
       release_date: '2026-09-09',
       slug: 'signals-in-the-walls',
-      cover_url: 'https://attikid.com/images/album.jpg'
+      cover_url: 'https://attikid.vercel.app/images/album.jpg'
     });
 
     expect(jsonLd['@type']).toBe('MusicAlbum');
@@ -30,8 +30,8 @@ describe('seo json-ld builders', () => {
       album: { title: 'Signals in the Walls' },
       release_date: '2026-09-09',
       slug: 'static-heart',
-      artwork_url: 'https://attikid.com/images/album.jpg',
-      audio_url: 'https://attikid.com/audio/static-heart.mp3'
+      artwork_url: 'https://attikid.vercel.app/images/album.jpg',
+      audio_url: 'https://attikid.vercel.app/audio/static-heart.mp3'
     });
 
     expect(jsonLd['@type']).toBe('MusicRecording');

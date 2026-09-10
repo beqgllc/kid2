@@ -19,10 +19,18 @@ export function About() {
       <span className="eyebrow">ABOUT</span>
       <h1>ATTIKID</h1>
       <p>The person behind the music.</p>
-      <img src="/images/hero/hero-about.webp" alt="Artist portrait in a wood-paneled room" />
+      <img src="/images/hero/hero-about.webp" 
+      alt="Artist portrait in a wood-paneled room"
+      width={800}
+      height={800}
+       />
     </header>
     <article className="prose">
-      <img className="artist-portrait" src="/images/artist/kid-portrait-primary.webp" alt="Portrait of ATTIKID" />
+      <img className="artist-portrait" 
+      src="/images/artist/kid-portrait-primary.webp" 
+      alt="Portrait of ATTIKID"
+      width={800}
+      height={800} />
       <RichContent blocks={aboutContent} />
       <Link className="button" to="/music">Listen to the music</Link>
     </article>

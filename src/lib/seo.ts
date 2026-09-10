@@ -12,7 +12,7 @@ export interface SeoMeta {
   jsonLd?: SeoJsonLd;
 }
 
-export const siteUrl = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '') ?? 'https://attikid.com';
+export const siteUrl = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '') ?? 'https://attikid.vercel.app';
 
 const normalizePath = (path: string) => path.startsWith('/') ? path : `/${path}`;
 
@@ -72,9 +72,9 @@ export function buildWebSiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'ATTIKID',
+    name: 'ATTIKID | Official Music, Songs & Lyrics',
     url: siteUrl,
-    description: 'ATTIKID music, lyrics, story, and artist catalog.',
+    description: 'Listen to ATTIKID music, explore songs and lyrics, and discover the latest tracks from ATTIKID.', 
     potentialAction: {
       '@type': 'SearchAction',
       target: `${siteUrl}/music?q={search_term_string}`,
