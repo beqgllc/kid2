@@ -11,7 +11,7 @@ export function Music(){
   usePageMeta({
     title: 'ATTIKID Music Catalog',
     description: 'Browse ATTIKID albums, songs, and the full catalog of releases and lyrics.',
-    canonical: '/music',
+    canonical: 'https://attikid.vercel.app/music',
     type: 'music',
     keywords: ['ATTIKID music', 'albums', 'songs', 'catalog'],
     image: '/images/hero/hero-music.webp',

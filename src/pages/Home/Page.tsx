@@ -12,7 +12,7 @@ export function Home(){
   usePageMeta({
     title: 'ATTIKID — Music, Lyrics & Story',
     description: 'ATTIKID music, lyrics, story, and releases from the artist behind the catalog.',
-    canonical: '/',
+    canonical: 'https://attikid.vercel.app',
     type: 'website',
     keywords: ['ATTIKID', 'music', 'lyrics', 'artist story', 'albums'],
     image: '/images/hero/hero-home.webp',

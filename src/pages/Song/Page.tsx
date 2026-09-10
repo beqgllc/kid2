@@ -18,7 +18,7 @@ export function Song(){
   usePageMeta({
     title: song ? `${song.title} — ATTIKID` : 'ATTIKID Song',
     description: song ? `Listen to “${song.title}” by ATTIKID${song.album?.title ? ` from ${song.album.title}` : ''}.` : 'Listen to ATTIKID music and lyrics.',
-    canonical: song ? `/song/${song.slug}` : '/music',
+    canonical: song ? `attikid.vercel.app/song/${song.slug}` : 'https://attikid.vercel.app/music',
     type: 'music.song',
     keywords: song ? ['ATTIKID', song.title, song.album?.title ?? 'album', 'lyrics', 'music'] : ['ATTIKID', 'music', 'lyrics'],
     image: song?.artwork_url ?? '/images/hero/hero-home.webp',

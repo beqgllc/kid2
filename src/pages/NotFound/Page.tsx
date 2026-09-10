@@ -4,7 +4,7 @@ export function NotFound(){
   usePageMeta({
     title: '404 — ATTIKID',
     description: 'The requested ATTIKID page could not be found.',
-    canonical: '/404',
+    canonical: 'attikid.vercel.app/404',
     type: 'website',
     keywords: ['ATTIKID', '404', 'page not found'],
     image: '/images/hero/hero-home.webp',
