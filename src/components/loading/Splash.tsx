@@ -225,8 +225,8 @@ export function Splash({ ready }: SplashProps) {
 
         .kid-splash-logo {
           position: absolute;
-          top: 50%;
-          left: 50%;
+          margin: -15px 0 0 -25px;
+          top: 50vh;
           z-index: 5;
           width: 56px;
           height: 34px;
