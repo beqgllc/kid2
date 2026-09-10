@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://attikid.com/sitemap.xml
+Disallow: /admin/
+Disallow: /admin/login
+
+Sitemap: https://attikid.vercel.app/sitemap.xml
