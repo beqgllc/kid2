@@ -30,9 +30,10 @@ export function Splash({ ready }: SplashProps) {
       loaderStartedAt.current = performance.now();
       setPhase('loader');
     }, 5300);
-
+  
     return () => window.clearTimeout(timer);
   }, []);
+
 
   useEffect(() => {
     if (phase !== 'loader') return;
@@ -66,11 +67,6 @@ export function Splash({ ready }: SplashProps) {
 
   if (phase === 'done') return null;
 
-  return (
-    <div
-      className={`attikid-loading-stage attikid-loading-stage--${phase}`}
-      aria-hidden="true"
-    >
       {phase === 'splash' || phase === 'exit' ? (
         <div className="kid-splash-container">
           <div className="kid-splash">
@@ -88,38 +84,7 @@ export function Splash({ ready }: SplashProps) {
               </svg>
             </div>
           </div>
-
-          <div className="kid-splash-text">
-            <div className="kid-splash-text-line1">ATTIKID MUSIC</div>
-            <div className="kid-splash-text-line2">YOU ARE NOT ALONE</div>
-          </div>
-        </div>
-      ) : null}
-
-      {phase === 'loader' ? (
-        <div className="attikid-loader" role="status" aria-label="Loading ATTIKID">
-          <div className="attikid-loader__topline">
-            <span>K!D</span>
-            <span>ATTIKID / 001</span>
-          </div>
-
-          <div className="attikid-loader__center">
-            <div className="attikid-loader__mark" aria-hidden="true">
-              <span className="attikid-loader__line attikid-loader__line--one" />
-              <span className="attikid-loader__line attikid-loader__line--two" />
-              <span className="attikid-loader__line attikid-loader__line--three" />
-            </div>
-
-            <div className="attikid-loader__wordmark">ATTIKID</div>
-            <div className="attikid-loader__label">LOADING MUSIC</div>
-          </div>
-
-          <div className="attikid-loader__bottomline">
-            <span>YOU ARE NOT ALONE</span>
-            <span className="attikid-loader__pulse" />
-          </div>
-        </div>
-      ) : null}
+      )
 
       <style>{`
         @keyframes kid-scale {
@@ -495,5 +460,6 @@ export function Splash({ ready }: SplashProps) {
         }
       `}</style>
     </div>
-  );
+  ): null;
+}
 }
