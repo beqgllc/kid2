@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://attikid.com/sitemap.xml

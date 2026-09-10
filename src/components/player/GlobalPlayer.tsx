@@ -53,7 +53,7 @@ export function GlobalPlayer() {
     <audio ref={audioRef} data-attikid-player="true" preload="metadata" onLoadedMetadata={(e) => set({ duration: e.currentTarget.duration, status: 'ready' })} onTimeUpdate={onTime} onPlay={() => set({ isPlaying: true, status: 'playing' })} onPause={() => set({ isPlaying: false, status: 'paused' })} onEnded={onEnded} onError={mediaError} />
     <section className="global-player" aria-label="Music player">
       <div className="player-track">
-        <div className="player-art">{currentSong?.artwork_url ? <img src={currentSong.artwork_url} alt="" /> : <span>AK</span>}</div>
+        <div className="player-art">{currentSong?.artwork_url ? <img src={currentSong.artwork_url} alt={`${currentSong.title ?? 'ATTIKID'} artwork`} /> : <span>AK</span>}</div>
         <div className="player-meta"><strong>{currentSong?.title ?? 'Select a track'}</strong><span>{currentSong?.artist_name ?? 'ATTIKID'}</span></div>
       </div>
       <div className="player-main">

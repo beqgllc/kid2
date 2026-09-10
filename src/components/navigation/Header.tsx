@@ -11,7 +11,7 @@ export function Header(){
 
   return <>
     <header className="site-header">
-      <Link className="brand" to="/"><img src="/images/brand/kid-monogram-white.svg" alt=""/><span>ATTIKID</span></Link>
+      <Link className="brand" to="/"><img src="/images/brand/kid-monogram-white.svg" alt="ATTIKID home"/><span>ATTIKID</span></Link>
       <button className="menu-button" onClick={()=>setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">☰</button>
       <nav className={mobileMenuOpen?'nav-open':''}>
         <NavLink to="/music" onClick={()=>setMobileMenuOpen(false)}>Music</NavLink>

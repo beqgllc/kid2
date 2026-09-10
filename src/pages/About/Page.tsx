@@ -1,8 +1,19 @@
 import { Link } from 'react-router-dom';
 import { RichContent } from '../../components/content/RichContent';
 import { aboutContent } from '../../content/about';
+import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
 
 export function About() {
+  usePageMeta({
+    title: 'About ATTIKID — Artist Story',
+    description: 'Meet ATTIKID, the artist behind the music, lyrics, and story of the catalog.',
+    canonical: '/about',
+    type: 'profile',
+    keywords: ['ATTIKID', 'artist story', 'bio', 'about'],
+    image: '/images/hero/hero-about.webp',
+    jsonLd: buildWebSiteJsonLd()
+  });
+
   return <div className="page">
     <header className="page-hero page-hero-with-image">
       <span className="eyebrow">ABOUT</span>
