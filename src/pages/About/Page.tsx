@@ -7,7 +7,7 @@ export function About() {
   usePageMeta({
     title: 'About ATTIKID — Artist Story',
     description: 'Meet ATTIKID, the artist behind the music, lyrics, and story of the catalog.',
-    canonical: '/about',
+    canonical: 'attikid.vercel.app/about',
     type: 'profile',
     keywords: ['ATTIKID', 'artist story', 'bio', 'about'],
     image: '/images/hero/hero-about.webp',

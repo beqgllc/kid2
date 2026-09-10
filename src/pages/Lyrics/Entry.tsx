@@ -14,7 +14,7 @@ export function LyricsEntry(){
   usePageMeta({
     title: song ? `${song.title} Lyrics — ATTIKID` : 'ATTIKID Lyrics',
     description: song ? `Read the lyrics for “${song.title}” by ATTIKID.` : 'Read ATTIKID lyrics from the catalog.',
-    canonical: song ? `/lyrics/${song.slug}` : '/lyrics',
+    canonical: song ? `attikid.vercel.app/lyrics/${song.slug}` : 'attikid.vercel.app/lyrics',
     type: 'music.song',
     keywords: song ? ['ATTIKID lyrics', song.title, song.album?.title ?? 'album'] : ['ATTIKID lyrics', 'song lyrics'],
     image: song?.artwork_url ?? '/images/hero/hero-home.webp',

@@ -13,7 +13,7 @@ export function Album(){
   usePageMeta({
     title: album.data ? `${album.data.title} — ATTIKID Album` : 'ATTIKID Album',
     description: album.data?.description ?? 'Listen to an ATTIKID album from the catalog.',
-    canonical: album.data ? `/music/${album.data.slug}` : '/music',
+    canonical: album.data ? `attikid.vercel.app/music/${album.data.slug}` : 'attikid.vercel.app/music',
     type: 'music.album',
     keywords: album.data ? ['ATTIKID', album.data.title, 'album', 'music'] : ['ATTIKID', 'album', 'music'],
     image: album.data?.cover_url ?? '/images/hero/hero-home.webp',

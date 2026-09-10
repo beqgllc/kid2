@@ -11,7 +11,7 @@ export function FanMail(){
   usePageMeta({
     title: 'Fan Mail — ATTIKID',
     description: 'Send a message to ATTIKID and join the conversation around the music.',
-    canonical: '/fan-mail',
+    canonical: 'attikid.vercel.app/fan-mail',
     type: 'website',
     keywords: ['ATTIKID fan mail', 'contact', 'message'],
     image: '/images/hero/hero-home.webp',

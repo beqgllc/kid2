@@ -12,7 +12,7 @@ export function Lyrics(){
   usePageMeta({
     title: 'ATTIKID Lyrics Archive',
     description: 'Read ATTIKID lyrics and explore the written archive of songs and records.',
-    canonical: '/lyrics',
+    canonical: 'attikid.vercel.app/lyrics',
     type: 'website',
     keywords: ['ATTIKID lyrics', 'lyrics archive', 'song words'],
     image: '/images/hero/hero-home.webp',
