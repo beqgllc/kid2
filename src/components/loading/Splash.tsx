@@ -29,7 +29,7 @@ export function Splash({ ready }: SplashProps) {
     const timer = window.setTimeout(() => {
       loaderStartedAt.current = performance.now();
       setPhase('loader');
-    }, 5300);
+    }, 5800);
 
     return () => window.clearTimeout(timer);
   }, []);
@@ -40,7 +40,7 @@ export function Splash({ ready }: SplashProps) {
     setLoaderMinimumComplete(false);
     const timer = window.setTimeout(() => {
       setLoaderMinimumComplete(true);
-    }, 850);
+    }, 900);
 
     return () => window.clearTimeout(timer);
   }, [phase]);
@@ -60,7 +60,7 @@ export function Splash({ ready }: SplashProps) {
   useEffect(() => {
     if (phase !== 'exit') return;
 
-    const timer = window.setTimeout(() => setPhase('done'), 320);
+    const timer = window.setTimeout(() => setPhase('done'), 500);
     return () => window.clearTimeout(timer);
   }, [phase]);
 
@@ -99,8 +99,8 @@ export function Splash({ ready }: SplashProps) {
       {phase === 'loader' ? (
         <div className="attikid-loader" role="status" aria-label="Loading ATTIKID">
           <div className="attikid-loader__topline">
-            <span>K!D</span>
-            <span>ATTIKID / 001</span>
+            <span>ATTIKID</span>
+            <span>OFFICIAL</span>
           </div>
 
           <div className="attikid-loader__center">
