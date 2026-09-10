@@ -100,6 +100,8 @@ export function buildAlbumJsonLd(album: { title: string; description?: string | 
 }
 
 export function buildSongJsonLd(song: { title: string; artist_name: string; album?: { title?: string | null } | null; release_date?: string | null; slug: string; artwork_url?: string | null; audio_url?: string | null }) {
+  const audio = song.audio_url ? { '@type': 'AudioObject', contentUrl: song.audio_url } : undefined;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'MusicRecording',
@@ -112,6 +114,6 @@ export function buildSongJsonLd(song: { title: string; artist_name: string; albu
     datePublished: song.release_date ?? undefined,
     image: song.artwork_url ?? '/images/hero/hero-home.webp',
     url: `${siteUrl}/song/${song.slug}`,
-    audio: song.audio_url ? { '@type': 'AudioObject', contentUrl: song.audio_url } : undefined
+    audio
   };
 }
