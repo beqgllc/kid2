@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAlbums, getAlbumBySlug, getLatestSongs, getSongBySlug, getSongs } from '../services/catalog';
+import { getAlbums, getAlbumBySlug, getFeaturedAlbum, getLatestAlbum, getLatestSongs, getSongBySlug, getSongs } from '../services/catalog';
 import type { Album, Song } from '../types/models';
 
 export function useAlbums(limit?: number) {
@@ -10,6 +10,13 @@ export function useAlbums(limit?: number) {
 export function useAlbum(slug: string) {
   const [data, setData] = useState<Album | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
   useEffect(() => { getAlbumBySlug(slug).then(setData).catch((e) => setError(e.message)).finally(() => setLoading(false)); }, [slug]);
+  return { data, loading, error };
+}
+export function useFeaturedAlbum() {
+  const [data, setData] = useState<Album | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    getFeaturedAlbum().then((featured) => featured ?? getLatestAlbum()).then(setData).catch((e) => setError(e.message)).finally(() => setLoading(false));
+  }, []);
   return { data, loading, error };
 }
 export function useSongs(albumId?: string, limit?: number) {

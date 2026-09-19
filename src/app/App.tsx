@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AppShell } from '../components/layout/AppShell';
-import { Splash } from '../components/loading/Splash';
 import { useSessionBootstrap } from '../hooks/useAuth';
 import { supabaseConfigured } from '../lib/supabase/client';
 import { Home } from '../pages/Home/Page';
@@ -11,6 +10,7 @@ import { Song } from '../pages/Song/Page';
 import { Lyrics } from '../pages/Lyrics/Page';
 import { LyricsEntry } from '../pages/Lyrics/Entry';
 import { About } from '../pages/About/Page';
+import { Visuals } from '../pages/Visuals/Page';
 import { FanMail } from '../pages/FanMail/Page';
 import { NotFound } from '../pages/NotFound/Page';
 import { AdminShell } from '../pages/Admin/AdminShell';
@@ -23,14 +23,16 @@ import { AdminLyrics } from '../pages/Admin/Lyrics';
 import { FanMailAdmin } from '../pages/Admin/FanMail';
 import { Analytics } from '../pages/Admin/Analytics';
 import { Settings } from '../pages/Admin/Settings';
+import { SplashScreen } from '../components/splash/SplashScreen';
 
 function ConfigNotice(){return <div className="config-notice"><div><span className="eyebrow">SETUP REQUIRED</span><h1>Connect ATTIKID to Supabase.</h1><p>Copy <code>.env.example</code> to <code>.env.local</code>, add your Supabase project URL and publishable key, run the migrations, then restart Vite.</p></div></div>}
 
 export function App(){
+  const [showSplash, setShowSplash] = useState(true);
   const {ready}=useSessionBootstrap();
   useEffect(()=>{document.documentElement.dataset.ready=String(ready)},[ready]);
   return <>
-    <Splash ready={ready && supabaseConfigured}/>
+    {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
     {!supabaseConfigured ? <ConfigNotice/> : <BrowserRouter>
       <Routes>
         <Route element={<AppShell/>}>
@@ -41,6 +43,7 @@ export function App(){
           <Route path="/lyrics" element={<Lyrics/>}/>
           <Route path="/lyrics/:songSlug" element={<LyricsEntry/>}/>
           <Route path="/about" element={<About/>}/>
+          <Route path="/visuals" element={<Visuals/>}/>
           <Route path="/fan-mail" element={<FanMail/>}/>
         </Route>
         <Route path="/admin/login" element={<AdminLogin/>}/>

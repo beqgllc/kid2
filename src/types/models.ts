@@ -7,6 +7,7 @@ export interface Album {
   id: string;
   title: string;
   artist_name: string;
+  featured_artists: string | null;
   release_date: string;
   slug: string;
   description: string | null;

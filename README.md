@@ -15,7 +15,7 @@ A responsive music portfolio + lightweight artist CMS powered by React, Vite, Ty
 - Admin catalog editing
 - Individual + bulk audio uploads (up to 50 files)
 - Song / album analytics
-- Animated splash, loading states, transitions, hover and scroll effects
+- Loading states, transitions, hover and scroll effects
 - Custom 404
 
 ## 1. Install

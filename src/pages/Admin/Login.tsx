@@ -15,7 +15,7 @@ function AdminAuthForm({
   onClosed?: () => void;
   onHandled?: () => void;
 }) {
-  const [username, setUsername] = useState('admin');
+  const [username, setUsername] = useState('thekid');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,6 +31,10 @@ function AdminAuthForm({
     try {
       await signInAdmin(username, password);
       onHandled?.();
+      if (from === location.pathname) {
+        window.location.reload();
+        return;
+      }
       navigate(from, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed.');
@@ -49,7 +53,7 @@ function AdminAuthForm({
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           autoComplete="username"
-          placeholder="admin or admin@attikid.local"
+          placeholder="thekid"
         />
       </label>
       <label>
@@ -112,4 +116,3 @@ export function AdminLogin() {
     </div>
   );
 }
-

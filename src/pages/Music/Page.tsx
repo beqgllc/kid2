@@ -7,7 +7,9 @@ export function Music(){
   const albums=useAlbums();
   const [q,setQ]=useState('');
   const songs=useSongs();
-  const filtered=useMemo(()=>songs.data.filter(s=>`${s.title} ${s.artist_name} ${s.album?.title??''}`.toLowerCase().includes(q.toLowerCase())),[songs.data,q]);
+  const allSongs=songs.data;
+  const tracksByAlbum=useMemo(()=>allSongs.reduce<Record<string, typeof allSongs>>((groups, song)=>{(groups[song.album_id]??=[]).push(song);return groups},{}),[allSongs]);
+  const filtered=useMemo(()=>allSongs.filter(s=>`${s.title} ${s.artist_name} ${s.album?.title??''}`.toLowerCase().includes(q.toLowerCase())),[allSongs,q]);
   usePageMeta({
     title: 'ATTIKID Music Catalog',
     description: 'Browse ATTIKID albums, songs, and the full catalog of releases and lyrics.',
@@ -18,4 +20,4 @@ export function Music(){
     jsonLd: buildWebSiteJsonLd()
   });
 
-  return <div className="page"><header className="page-hero page-hero-with-image"><div><span className="eyebrow">CATALOG</span><h1>Music</h1><p>Albums first. Songs forever.</p></div><img src="/images/hero/hero-music.webp" alt="ATTIKID music artwork" /></header><section className="content-section"><div className="section-heading"><span>Release order</span><h2>Albums</h2></div>{albums.loading?<div className="loading-state">Loading albums…</div>:<div className="album-grid">{albums.data.map(a=><AlbumCard key={a.id} album={a}/>)}</div>}</section><section className="content-section"><div className="section-heading"><span>Full catalog</span><h2>All songs</h2></div><input className="search-input" value={q} onChange={e=>setQ(e.target.value)} placeholder="Search songs, artists, albums…"/>{songs.loading?<div className="loading-state">Loading songs…</div>:<div className="song-list">{filtered.map((s,i)=><SongRow key={s.id} song={s} index={i} songs={filtered}/>)}</div>}</section></div>}
+  return <div className="page"><header className="page-hero page-hero-with-image"><div><span className="eyebrow">CATALOG</span><h1>Music</h1><p>Albums first. Songs forever.</p></div><img src="/images/hero/hero-music.webp" alt="ATTIKID music artwork" /></header><section className="content-section"><div className="section-heading"><span>Release order</span><h2>Albums</h2></div>{albums.loading?<div className="loading-state">Loading albums…</div>:<div className="album-grid">{albums.data.map(a=><AlbumCard key={a.id} album={a} tracks={tracksByAlbum[a.id]}/>)}</div>}</section><section className="content-section"><div className="section-heading"><span>Full catalog</span><h2>All songs</h2></div><input className="search-input" value={q} onChange={e=>setQ(e.target.value)} placeholder="Search songs, artists, albums…"/>{songs.loading?<div className="loading-state">Loading songs…</div>:<div className="song-list">{filtered.map((s,i)=><SongRow key={s.id} song={s} index={i} songs={filtered}/>)}</div>}</section></div>}

@@ -36,6 +36,6 @@ describe('seo json-ld builders', () => {
 
     expect(jsonLd['@type']).toBe('MusicRecording');
     expect(jsonLd.name).toBe('Static Heart');
-    expect(jsonLd.audio['@type']).toBe('AudioObject');
+    expect(jsonLd.audio?.['@type']).toBe('AudioObject');
   });
 });

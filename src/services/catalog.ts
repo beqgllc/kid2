@@ -24,6 +24,13 @@ export async function getFeaturedAlbum() {
   return data ? { ...data, cover_url: storageUrl('attikid-artwork', data.cover_art_path) } : null;
 }
 
+export async function getLatestAlbum() {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase.from('albums').select('*').order('release_date', { ascending: false }).limit(1).maybeSingle();
+  if (error) throw error;
+  return data ? { ...data, cover_url: storageUrl('attikid-artwork', data.cover_art_path) } : null;
+}
+
 export async function getAlbumBySlug(slug: string): Promise<Album | null> {
   const supabase = requireSupabase();
   const { data, error } = await supabase.from('albums').select('*').eq('slug', slug).maybeSingle();

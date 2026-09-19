@@ -1,35 +1,23 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { useUIStore } from '../../stores/uiStore';
-import { AdminAuthModal } from '../../pages/Admin/Login';
 import './nav.css';
 
 export function Header(){
   const {mobileMenuOpen,setMobileMenuOpen}=useUIStore();
-  const [adminModalOpen,setAdminModalOpen]=useState(false);
-  const navigate = useNavigate();
 
-  return <>
-    <header className="site-header">
-      <Link className="brand" to="/"><img src="/images/brand/kid-monogram-white.svg" alt="ATTIKID home"/><span>ATTIKID</span></Link>
-      <button className="menu-button" onClick={()=>setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">☰</button>
-      <nav className={mobileMenuOpen?'nav-open':''}>
-        <NavLink to="/music" onClick={()=>setMobileMenuOpen(false)}>Music</NavLink>
-        <NavLink to="/lyrics" onClick={()=>setMobileMenuOpen(false)}>Lyrics</NavLink>
-        <NavLink to="/about" onClick={()=>setMobileMenuOpen(false)}>About</NavLink>
-        <NavLink to="/fan-mail" onClick={()=>setMobileMenuOpen(false)}>Fan Mail</NavLink>
-        <button type="button" className="admin-link" onClick={() => { setMobileMenuOpen(false); setAdminModalOpen(true); }}>
-          Admin
-        </button>
-      </nav>
-    </header>
-    <AdminAuthModal
-      open={adminModalOpen}
-      onClose={() => setAdminModalOpen(false)}
-      onSuccess={() => {
-        setMobileMenuOpen(false);
-        navigate('/admin');
-      }}
-    />
-  </>;
+  return <header className={`site-header${mobileMenuOpen ? ' nav-open' : ''}`}>
+    <Link className="brand" to="/" onClick={()=>setMobileMenuOpen(false)}><img src="/images/brand/kid-monogram-white.svg" alt="ATTIKID home"/><span>ATTIKID</span></Link>
+    <button className="menu-button" onClick={()=>setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">☰</button>
+    <nav>
+      <NavLink end to="/" onClick={()=>setMobileMenuOpen(false)}>Home</NavLink>
+      <NavLink to="/music" onClick={()=>setMobileMenuOpen(false)}>Music</NavLink>
+      <NavLink to="/visuals" onClick={()=>setMobileMenuOpen(false)}>Visuals</NavLink>
+      <NavLink to="/about" onClick={()=>setMobileMenuOpen(false)}>About</NavLink>
+    </nav>
+    <div className="site-header__tools">
+      <button type="button" aria-label="Audio visualizer" className="signal-bars"><i/><i/><i/><i/></button>
+      <button type="button" aria-label="Search" className="header-icon">⌕</button>
+      <button type="button" aria-label="Fan account" className="header-icon">◯</button>
+    </div>
+  </header>;
 }

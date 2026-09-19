@@ -41,12 +41,12 @@ function getAudioDuration(file: File) {
   });
 }
 
-export async function ensureAlbum(title: string, artistName: string, releaseDate: string) {
+export async function ensureAlbum(title: string, artistName: string, releaseDate: string, featuredArtists = '') {
   const supabase = requireSupabase();
   const baseSlug = slugify(title);
-  const { data: existing } = await supabase.from('albums').select('*').eq('slug', baseSlug).maybeSingle();
-  if (existing) return existing as Album;
-  const { data, error } = await supabase.from('albums').insert({ title: assertText(title, 'Album', 1, 200), artist_name: assertText(artistName, 'Artist', 1, 120), release_date: releaseDate, slug: baseSlug }).select().single();
+  const { data: existing } = await supabase.from('albums').select('id').eq('slug', baseSlug).maybeSingle();
+  const slug = existing ? `${baseSlug}-${crypto.randomUUID().slice(0, 8)}` : baseSlug;
+  const { data, error } = await supabase.from('albums').insert({ title: assertText(title, 'Album', 1, 200), artist_name: assertText(artistName, 'Artist', 1, 120), featured_artists: featuredArtists.trim() || null, release_date: releaseDate, slug }).select().single();
   if (error) throw error;
   return data as Album;
 }
@@ -90,8 +90,20 @@ export async function updateSong(songId: string, patch: Record<string, unknown>)
   return data;
 }
 
+export async function connectSongsToAlbum(albumId: string, songIds: string[]) {
+  const supabase = requireSupabase();
+  for (const [index, songId] of songIds.entries()) {
+    const { error } = await supabase.from('songs').update({ album_id: albumId, track_number: index + 1 }).eq('id', songId);
+    if (error) throw error;
+  }
+}
+
 export async function updateAlbum(albumId: string, patch: Record<string, unknown>) {
   const supabase = requireSupabase();
+  if (patch.is_featured === true) {
+    const { error: clearFeaturedError } = await supabase.from('albums').update({ is_featured: false }).eq('is_featured', true).neq('id', albumId);
+    if (clearFeaturedError) throw clearFeaturedError;
+  }
   const { data, error } = await supabase.from('albums').update(patch).eq('id', albumId).select().single();
   if (error) throw error;
   return data;
