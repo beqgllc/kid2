@@ -22,6 +22,7 @@ import { AdminLyrics } from '../pages/Admin/Lyrics';
 import { FanMailAdmin } from '../pages/Admin/FanMail';
 import { Analytics } from '../pages/Admin/Analytics';
 import { Settings } from '../pages/Admin/Settings';
+import { AdminLoginEntry } from '../pages/Admin/Login';
 import { SplashScreen } from '../components/splash/SplashScreen';
 
 function ConfigNotice(){return <div className="config-notice"><div><span className="eyebrow">SETUP REQUIRED</span><h1>Connect ATTIKID to Supabase.</h1><p>Copy <code>.env.example</code> to <code>.env.local</code>, add your Supabase project URL and publishable key, run the migrations, then restart Vite.</p></div></div>}
@@ -45,6 +46,7 @@ export function App(){
           <Route path="/visuals" element={<Visuals/>}/>
           <Route path="/fan-mail" element={<FanMail/>}/>
         </Route>
+        <Route path="/admin/login" element={<AdminLoginEntry/>}/>
         <Route element={<RequireAdmin/>}>
           <Route element={<AdminShell/>}>
             <Route path="/admin" element={<Dashboard/>}/>

@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { signInAdmin } from '../../services/auth';
 
 type AdminAuthModalProps = {
@@ -103,4 +103,8 @@ export function AdminLogin() {
       <AdminAuthForm onClosed={() => navigate('/')} />
     </div>
   </div>;
+}
+
+export function AdminLoginEntry() {
+  return <Navigate to="/admin" replace />;
 }
