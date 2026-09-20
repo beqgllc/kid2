@@ -43,42 +43,25 @@ function AdminAuthForm({
     }
   };
 
-  return (
-    <form className="auth-card" onSubmit={submit}>
-      <span className="eyebrow">PRIVATE ACCESS</span>
-      <h1>ATTIKID Admin</h1>
-      <label>
-        Username or email
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          autoComplete="username"
-          placeholder="thekid"
-        />
-      </label>
-      <label>
-        Password
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          placeholder="Enter your admin password"
-        />
-      </label>
-      <div className="button-row">
-        <button className="button" type="submit" disabled={loading}>
-          {loading ? 'Signing in…' : 'Sign in'}
-        </button>
-        {onClosed && (
-          <button type="button" className="button secondary" onClick={onClosed}>
-            Cancel
-          </button>
-        )}
-      </div>
-      {error && <p className="form-error">{error}</p>}
-    </form>
-  );
+  return <form className="auth-card" onSubmit={submit}>
+    <div className="auth-card-mark" aria-hidden="true">A/</div>
+    <span className="eyebrow">PRIVATE ACCESS / 00</span>
+    <h1 id="admin-auth-title">Admin console</h1>
+    <p className="auth-card-intro">Sign in to manage the ATTIKID archive.</p>
+    <label>
+      Username or email
+      <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" placeholder="thekid" />
+    </label>
+    <label>
+      Password
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" placeholder="Enter your admin password" />
+    </label>
+    <div className="button-row">
+      <button className="button" type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Enter console'}</button>
+      {onClosed && <button type="button" className="button secondary" onClick={onClosed}>Cancel</button>}
+    </div>
+    {error && <p className="form-error" role="alert">{error}</p>}
+  </form>;
 }
 
 export function AdminAuthModal({ open, onClose, onSuccess }: AdminAuthModalProps) {
@@ -110,9 +93,14 @@ export function AdminAuthModal({ open, onClose, onSuccess }: AdminAuthModalProps
 }
 
 export function AdminLogin() {
-  return (
-    <div className="auth-page">
-      <AdminAuthForm />
+  const navigate = useNavigate();
+  return <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title">
+    <div className="admin-modal admin-login-modal">
+      <div className="admin-modal-header">
+        <span className="eyebrow">ATTIKID / ADMIN</span>
+        <button type="button" className="modal-close" aria-label="Return to site" onClick={() => navigate('/')}>×</button>
+      </div>
+      <AdminAuthForm onClosed={() => navigate('/')} />
     </div>
-  );
+  </div>;
 }

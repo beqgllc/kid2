@@ -15,7 +15,6 @@ import { FanMail } from '../pages/FanMail/Page';
 import { NotFound } from '../pages/NotFound/Page';
 import { AdminShell } from '../pages/Admin/AdminShell';
 import { RequireAdmin } from '../pages/Admin/RequireAdmin';
-import { AdminLogin } from '../pages/Admin/Login';
 import { Dashboard } from '../pages/Admin/Dashboard';
 import { Music as AdminMusic } from '../pages/Admin/Music';
 import { Albums } from '../pages/Admin/Albums';
@@ -46,7 +45,6 @@ export function App(){
           <Route path="/visuals" element={<Visuals/>}/>
           <Route path="/fan-mail" element={<FanMail/>}/>
         </Route>
-        <Route path="/admin/login" element={<AdminLogin/>}/>
         <Route element={<RequireAdmin/>}>
           <Route element={<AdminShell/>}>
             <Route path="/admin" element={<Dashboard/>}/>
