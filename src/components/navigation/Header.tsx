@@ -13,6 +13,7 @@ export function Header(){
       <NavLink to="/music" onClick={()=>setMobileMenuOpen(false)}>Music</NavLink>
       <NavLink to="/visuals" onClick={()=>setMobileMenuOpen(false)}>Visuals</NavLink>
       <NavLink to="/about" onClick={()=>setMobileMenuOpen(false)}>About</NavLink>
+      <NavLink to="/admin/login" onClick={()=>setMobileMenuOpen(false)}>Login</NavLink>
     </nav>
     <div className="site-header__tools">
       <button type="button" aria-label="Audio visualizer" className="signal-bars"><i/><i/><i/><i/></button>
