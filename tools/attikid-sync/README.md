@@ -1,68 +1,118 @@
 # ATTIKID Media Sync
 
-A local Windows-friendly media drop-zone for the ATTIKID site.
+A local Windows media drop-zone for the ATTIKID site.
 
-## What it does
+## Folders
 
-- Watches `music/`, `artwork/`, and `videos/`.
-- Reads MP3/MP4 metadata.
-- Matches music to existing releases and songs.
-- Uploads new media to Cloudflare R2.
-- Writes the corresponding Supabase metadata.
-- Never overwrites an existing song when a duplicate title is detected.
-- Moves ambiguous files into `_review/` instead of guessing.
-- Archives successfully processed files under `_processed/`.
-- Records every successful/duplicate/review/failure event in `media_ingest`.
+The default root is `%USERPROFILE%\\ATTIKID-MEDIA`:
 
-## Setup
+```
+ATTIKID-MEDIA/
+  music/
+  artwork/
+  videos/
+  _review/
+    music/
+    artwork/
+    videos/
+  _processed/
+    music/
+    artwork/
+    videos/
+    duplicates/
+```
 
-1. Create the media folders by running the sync once.
-2. Copy `.env.example` to `.env`.
-3. Fill in the Supabase secret key and R2 credentials.
-4. Create an R2 bucket named `attikid-videos` in addition to the existing `attikid-audio`. Create `attikid-artwork` if you are moving new artwork there.
-5. Run:
-   `npm install`
-6. Run:
-   `npm run watch`
+Run `npm install`, then `npm run setup` once.
 
-The default local folder is:
+## Credentials
 
-`C:\Users\<YOU>\ATTIKID-MEDIA`
+Copy `.env.example` to `.env` and fill in:
 
-You can override it with `ATTIKID_MEDIA_ROOT`.
+- Supabase project URL
+- Supabase secret/service-role key
+- Cloudflare R2 account ID
+- R2 access key
+- R2 secret key
+- R2 bucket names
 
-## Drop-zone behavior
+The secret keys are used only by this local Node process. Never put them in Vite `VITE_*` variables or commit `.env`.
+
+## Storage
+
+Create these R2 buckets:
+
+- `attikid-audio`
+- `attikid-artwork`
+- `attikid-videos`
+
+The audio bucket you already created can be reused. Configure public read access and CORS for each bucket. The browser-side base URLs go in Vercel as:
+
+```
+VITE_R2_AUDIO_PUBLIC_BASE_URL=
+VITE_R2_ARTWORK_PUBLIC_BASE_URL=
+VITE_R2_VIDEO_PUBLIC_BASE_URL=
+```
+
+## Database
+
+Run the new Supabase migrations in the main repo:
+
+- `018_media_ingest.sql`
+- `019_lyric_videos.sql`
+- `020_media_triggers.sql`
+
+## How importing works
 
 ### Music
 
-The MP3 album tag is matched to an existing release. The title, artist, track number, duration, and file size are imported automatically.
+Drop an MP3 into `music/`.
+
+The sync reads ID3 metadata:
+
+- title
+- artist
+- album
+- track number
+- release/year
+- duration
+
+It matches the album to an existing release. If exactly one release matches, the MP3 is uploaded to R2 and a new `songs` row is created. If the release cannot be matched uniquely, the file is copied to `_review/music/` and nothing is published.
+
+Existing songs are not overwritten. An exact file hash or an existing same-title song in the same album is treated as a duplicate.
 
 ### Artwork
 
-The filename is matched to the release, for example:
+Name the artwork after the release, for example:
 
 - `Dead Flowers Still Bloom.jpg`
 - `dead-flowers-still-bloom.png`
 - `dead_flowers_still_bloom-cover.jpg`
 
-A successful artwork import updates that release's `cover_art_path`.
+The release is matched by normalized title/slug. The image is uploaded to R2 and `albums.cover_art_path` is updated to an `r2:` path. Existing Supabase artwork remains valid.
 
 ### Videos
 
-The embedded title or filename is matched to a song. A successful MP4 import creates a `lyric_videos` record.
+Drop an MP4 into `videos/`. The embedded title is preferred; otherwise the filename is used. The sync matches it to an existing song, uploads it to R2, and creates a published `lyric_videos` row. Ambiguous videos go to `_review/videos/`.
 
-### Review queue
+## Run
 
-Anything ambiguous goes to:
+From this directory:
 
-`_review/music`
+```
+npm install
+npm run setup
+npm run watch
+```
 
-`_review/artwork`
+Leave the watcher running while you work. It processes files after Windows finishes copying them.
 
-`_review/videos`
+Use `npm run scan` for a one-time scan instead.
 
-Nothing is published automatically when the match is ambiguous.
+## Safe behavior
 
-## Security
-
-The sync tool is local-only and uses a Supabase secret key and R2 secret access key. Never put those keys in Vite `VITE_*` variables and never commit `.env`.
+- Existing Supabase-backed media is not modified by the sync.
+- New R2 media is referenced with an `r2:` prefix.
+- Duplicate files are archived instead of re-imported.
+- Ambiguous files are placed in `_review/`.
+- R2 uploads are removed if the corresponding database insert fails.
+- A `media_ingest` record is created for processed, duplicate, review, and failed imports.
