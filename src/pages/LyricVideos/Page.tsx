@@ -42,12 +42,15 @@ export function LyricVideos() {
           <article className="lyric-video-card" key={item.id}>
             <div className="lyric-video-frame">
               <video
-                controls
-                preload="metadata"
-                poster={item.thumbnail_url ?? undefined}
-                playsInline
-              >
-                <source src={item.video_url} type={item.video_mime_type} />
+              controls
+              preload="metadata"
+              poster={item.thumbnail_url ?? undefined}
+              playsInline
+            >
+              <source
+              src={item.video_url ?? undefined}
+              type={item.video_mime_type}
+              />
               </video>
             </div>
             <div className="lyric-video-card__meta">
