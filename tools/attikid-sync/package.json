@@ -7,6 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "setup": "node setup.mjs",
     "start": "node src/index.mjs",
     "watch": "node src/index.mjs",
     "scan": "node src/index.mjs --once"
