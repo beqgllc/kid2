@@ -1,10 +1,10 @@
+import { Link } from 'react-router-dom';
 import { usePageMeta } from '../../lib/seo';
 
 const visuals = [
   { category: 'FEATURED FILM', title: 'The room remembers', image: '/images/hero/hero-about.webp', className: 'visuals-feature' },
   { category: 'PHOTOGRAPHY', title: 'Artist press portrait', image: '/images/artist/artist-press-photo-1.webp', className: '' },
   { category: 'ARTWORK', title: 'The ATTIKID archive', image: '/images/hero/hero-music.webp', className: '' },
-  { category: 'LYRIC VIDEOS', title: 'For the people who survived quietly', image: '/images/hero-image.png', className: '' },
 ];
 
 export function Visuals() {
@@ -28,6 +28,9 @@ export function Visuals() {
         <img src={visual.image} alt={visual.title} />
         <div className="visual-tile__caption"><span>{visual.category}</span><h2>{visual.title}</h2><button type="button" aria-label={`Open ${visual.title}`}>View →</button></div>
       </article>)}
+      <article className="visual-tile">
+        <div className="visual-tile__caption"><span>LYRIC VIDEOS</span><h2>Words in motion.</h2><Link className="button" to="/visuals/lyric-videos">View →</Link></div>
+      </article>
     </div>
   </div>;
 }
