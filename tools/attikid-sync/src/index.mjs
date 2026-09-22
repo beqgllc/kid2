@@ -1,11 +1,10 @@
 import 'dotenv/config';
-import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { S3Client, HeadObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import chokidar from 'chokidar';
 import { parseFile } from 'music-metadata';
 import { createClient } from '@supabase/supabase-js';
@@ -17,6 +16,7 @@ const ROOT = path.resolve(
 
 const FOLDERS = {
   audio: path.join(ROOT, 'music'),
+  release: path.join(ROOT, 'albums'),
   artwork: path.join(ROOT, 'artwork'),
   video: path.join(ROOT, 'videos'),
   review: {
@@ -86,6 +86,156 @@ const stripMediaSuffixes = (value) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+function parseYearDate(value) {
+  if (!value) return null;
+  const match = String(value).match(/(\d{4})/);
+  return match ? match[1] + '-01-01' : null;
+}
+
+function sanitizeMetadata(value = {}) {
+  const copy = { ...value };
+  delete copy.picture;
+  return JSON.parse(JSON.stringify(copy, (_, item) => typeof item === 'bigint' ? Number(item) : item));
+}
+
+function parseReleaseConfig(text) {
+  const config = { title: '', artist: '', released: '', trackCount: null, purpose: '', details: {} };
+  let section = 'root';
+
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim().replace(/^[-•]\s*/, '');
+    if (!line) continue;
+    if (/^details\s*:/i.test(line)) {
+      section = 'details';
+      continue;
+    }
+
+    const purposeMatch = line.match(/^purpose\s*-\s*(.+)$/i);
+    if (purposeMatch) {
+      config.purpose = purposeMatch[1].trim();
+      continue;
+    }
+
+    const separator = line.indexOf(':');
+    if (separator === -1) continue;
+
+    const key = normalize(line.slice(0, separator));
+    const value = line.slice(separator + 1).trim();
+    const target = section === 'details' ? config.details : config;
+
+    if (key === 'title') target.title = value;
+    else if (key === 'artist') target.artist = value;
+    else if (key === 'released' || key === 'release date') target.released = value;
+    else if (key === 'no of tracks' || key === 'number of tracks') config.trackCount = Number(value) || null;
+    else if (key === 'genre') target.genre = value;
+    else if (key === 'ai platform') target.ai_platform = value;
+  }
+
+  return config.title ? config : null;
+}
+
+async function configFromFile(configPath) {
+  try {
+    return parseReleaseConfig(await fsp.readFile(configPath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+async function findReleaseContext(filePath, titleHint = '') {
+  let directory = path.dirname(filePath);
+  const root = path.resolve(ROOT);
+
+  while (directory.startsWith(root)) {
+    const candidate = path.join(directory, 'config.txt');
+    try {
+      await fsp.access(candidate);
+      const config = await configFromFile(candidate);
+      if (config) return { config, directory };
+    } catch {
+      // Keep walking toward the root.
+    }
+    if (directory === root) break;
+    directory = path.dirname(directory);
+  }
+
+  const roots = [FOLDERS.release, path.join(ROOT, 'releases'), FOLDERS.audio];
+  const wanted = normalize(titleHint);
+  if (wanted) {
+    for (const releaseRoot of roots) {
+      try {
+        const entries = await fsp.readdir(releaseRoot, { withFileTypes: true });
+        for (const entry of entries.filter((item) => item.isDirectory())) {
+          if (normalize(entry.name) !== wanted) continue;
+          const configPath = path.join(releaseRoot, entry.name, 'config.txt');
+          const config = await configFromFile(configPath);
+          if (config) return { config, directory: path.join(releaseRoot, entry.name) };
+        }
+      } catch {
+        // Optional release roots may not exist yet.
+      }
+    }
+  }
+
+  return null;
+}
+
+async function ensureAlbumFromRelease(config, fallbackArtist = 'ATTIKID', fallbackReleaseDate = null) {
+  const title = config?.title?.trim();
+  if (!title) return null;
+
+  const albums = await loadAlbums();
+  const target = normalize(title);
+  const existing = albums.find((album) => normalize(album.title) === target || album.slug === slugify(title));
+  const releaseDate = parseYearDate(config.released) || fallbackReleaseDate || existing?.release_date || new Date().toISOString().slice(0, 10);
+  const artistName = config.artist?.trim() || fallbackArtist || existing?.artist_name || 'ATTIKID';
+  const metadata = {
+    ...(existing?.metadata || {}),
+    genre: config.details?.genre || existing?.metadata?.genre || null,
+    ai_platform: config.details?.ai_platform || existing?.metadata?.ai_platform || null,
+    config_track_count: config.trackCount ?? existing?.metadata?.config_track_count ?? null,
+  };
+
+  if (existing) {
+    const { error } = await supabase
+      .from('albums')
+      .update({
+        artist_name: artistName,
+        release_date: releaseDate,
+        description: config.purpose || existing.description || null,
+        metadata,
+      })
+      .eq('id', existing.id);
+    if (error) throw error;
+    return { ...existing, artist_name: artistName, release_date: releaseDate, description: config.purpose || existing.description || null, metadata };
+  }
+
+  const album = {
+    id: crypto.randomUUID(),
+    title,
+    artist_name: artistName,
+    featured_artists: null,
+    release_date: releaseDate,
+    slug: slugify(title),
+    description: config.purpose || null,
+    cover_art_path: null,
+    is_featured: false,
+    metadata,
+  };
+
+  const { error } = await supabase.from('albums').insert(album);
+  if (error) throw error;
+  return album;
+}
+
+async function processReleaseConfig(filePath) {
+  const config = await configFromFile(filePath);
+  if (!config) return;
+  const releaseDate = parseYearDate(config.released);
+  await ensureAlbumFromRelease(config, config.artist || 'ATTIKID', releaseDate);
+  log('CONFIG: "' + config.title + '" loaded from ' + filePath);
+}
+
 function kindFor(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (AUDIO_EXTENSIONS.has(ext)) return 'audio';
@@ -130,6 +280,7 @@ function dateFromMetadata(metadata, fallback) {
 async function ensureDirectories() {
   const paths = [
     FOLDERS.audio,
+    FOLDERS.release,
     FOLDERS.artwork,
     FOLDERS.video,
     FOLDERS.review.audio,
@@ -218,7 +369,7 @@ function log(message) {
 async function loadAlbums() {
   const { data, error } = await supabase
     .from('albums')
-    .select('id,title,slug,release_date,artist_name,cover_art_path');
+    .select('id,title,slug,release_date,artist_name,cover_art_path,description,metadata');
   if (error) throw error;
   return data || [];
 }
@@ -248,6 +399,17 @@ async function findSongInAlbum(albumId, title) {
     .from('songs')
     .select('id,title,album_id,artist_name,slug')
     .eq('album_id', albumId);
+  if (error) throw error;
+  const target = normalize(title);
+  const matches = (data || []).filter((song) => normalize(song.title) === target);
+  return matches.length === 1 ? matches[0] : null;
+}
+
+async function findStandaloneSong(title) {
+  const { data, error } = await supabase
+    .from('songs')
+    .select('id,title,album_id,artist_name,slug,audio_path,artwork_path')
+    .is('album_id', null);
   if (error) throw error;
   const target = normalize(title);
   const matches = (data || []).filter((song) => normalize(song.title) === target);
@@ -287,42 +449,41 @@ async function processAudio(filePath) {
   }
 
   const metadata = await parseFile(filePath, { duration: true });
+  const releaseContext = await findReleaseContext(filePath, metadata.common?.album?.trim() || '');
   const title = metadata.common?.title?.trim() || path.basename(filePath, path.extname(filePath));
-  const artist = metadata.common?.artist?.trim() || 'ATTIKID';
-  const albumTitle = metadata.common?.album?.trim();
+  const configTitle = releaseContext?.config?.title?.trim() || '';
+  const albumTitle = metadata.common?.album?.trim() || configTitle;
+  const artist = metadata.common?.artist?.trim() || releaseContext?.config?.artist?.trim() || 'ATTIKID';
+  const releaseDate = dateFromMetadata(metadata, parseYearDate(releaseContext?.config?.released));
 
-  if (!albumTitle) {
-    await moveToReview(filePath, 'audio', 'No album tag found', {
-      title,
-      artist,
-      metadata: metadata.common,
-    });
-    await logIngest({ file_hash: hash, source_name: path.basename(filePath), media_type: 'audio', status: 'review_required', metadata: metadata.common });
-    return;
-  }
+  const album = albumTitle
+    ? await ensureAlbumFromRelease(
+        releaseContext?.config || {
+          title: albumTitle,
+          artist,
+          released: releaseDate || '',
+          trackCount: null,
+          purpose: '',
+          details: {},
+        },
+        artist,
+        releaseDate,
+      )
+    : null;
 
-  const album = await findAlbum(albumTitle);
-  if (!album) {
-    await moveToReview(filePath, 'audio', `No unique release match for "${albumTitle}"`, {
-      title,
-      artist,
-      album: albumTitle,
-      metadata: metadata.common,
-    });
-    await logIngest({ file_hash: hash, source_name: path.basename(filePath), media_type: 'audio', status: 'review_required', metadata: metadata.common });
-    return;
-  }
+  const duplicate = album
+    ? await findSongInAlbum(album.id, title)
+    : await findStandaloneSong(title);
 
-  const duplicate = await findSongInAlbum(album.id, title);
   if (duplicate) {
     await logIngest({
       file_hash: hash,
       source_name: path.basename(filePath),
       media_type: 'audio',
       status: 'duplicate',
-      album_id: album.id,
+      album_id: album?.id ?? null,
       song_id: duplicate.id,
-      metadata: metadata.common,
+      metadata: sanitizeMetadata(metadata.common),
     });
     await archiveFile(filePath, FOLDERS.processed.duplicate, 'DUPLICATE');
     return;
@@ -330,26 +491,39 @@ async function processAudio(filePath) {
 
   const songId = crypto.randomUUID();
   const ext = path.extname(filePath).toLowerCase() || '.mp3';
-  const key = `audio/${album.id}/${songId}/${songId}${ext}`;
-  const dbPath = `r2:${key}`;
+  const keyPrefix = album ? 'albums/' + album.slug : 'singles/' + slugify(title);
+  const key = 'audio/' + keyPrefix + '/' + songId + ext;
+  const dbPath = 'r2:' + key;
 
   await uploadToR2('audio', key, filePath);
 
   const duration = Number.isFinite(metadata.format?.duration) ? metadata.format.duration : null;
   const trackNumber = Number.isFinite(metadata.common?.track?.no) ? metadata.common.track.no : null;
+  const trackMetadata = {
+    ...sanitizeMetadata(metadata.common),
+    title,
+    artist,
+    album: album?.title || null,
+    release_date: releaseDate,
+    genre: metadata.common?.genre?.[0] || releaseContext?.config?.details?.genre || null,
+    ai_platform: releaseContext?.config?.details?.ai_platform || null,
+    track_number: trackNumber,
+    track_total: Number.isFinite(metadata.common?.track?.of) ? metadata.common.track.of : null,
+  };
 
   const { error } = await supabase.from('songs').insert({
     id: songId,
-    album_id: album.id,
+    album_id: album?.id ?? null,
     title,
     artist_name: artist,
     track_number: trackNumber,
-    slug: `${slugify(title)}-${songId.slice(0, 8)}`,
+    slug: slugify(title) + '-' + songId.slice(0, 8),
     audio_path: dbPath,
     audio_mime_type: contentType(filePath),
     file_size: (await fsp.stat(filePath)).size,
     duration_seconds: duration,
-    release_date: dateFromMetadata(metadata, album.release_date),
+    release_date: releaseDate,
+    metadata: trackMetadata,
   });
 
   if (error) {
@@ -362,15 +536,15 @@ async function processAudio(filePath) {
     source_name: path.basename(filePath),
     media_type: 'audio',
     status: 'processed',
-    album_id: album.id,
+    album_id: album?.id ?? null,
     song_id: songId,
     storage_bucket: BUCKETS.audio,
     storage_path: dbPath,
-    metadata: metadata.common,
+    metadata: trackMetadata,
   });
 
   await archiveFile(filePath, FOLDERS.processed.audio, 'IMPORTED');
-  log(`MUSIC: "${title}" → ${album.title}`);
+  log('MUSIC: "' + title + '" → ' + (album?.title || 'standalone single'));
 }
 
 function artworkLabel(filePath) {
@@ -389,25 +563,36 @@ async function processArtwork(filePath) {
   }
 
   const label = artworkLabel(filePath);
-  const album = await findAlbum(label);
+  const releaseContext = await findReleaseContext(filePath, label);
+  const album = releaseContext?.config
+    ? await ensureAlbumFromRelease(releaseContext.config, releaseContext.config.artist || 'ATTIKID', parseYearDate(releaseContext.config.released))
+    : await findAlbum(label);
+  const song = album ? null : await findStandaloneSong(stripMediaSuffixes(label));
 
-  if (!album) {
-    await moveToReview(filePath, 'artwork', `No unique release match for "${label}"`);
-    await logIngest({ file_hash: hash, source_name: path.basename(filePath), media_type: 'artwork', status: 'review_required', metadata: { label } });
+  if (!album && !song) {
+    await moveToReview(filePath, 'artwork', 'No unique release or single match for "' + label + '"');
+    await logIngest({
+      file_hash: hash,
+      source_name: path.basename(filePath),
+      media_type: 'artwork',
+      status: 'review_required',
+      metadata: { label },
+    });
     return;
   }
 
   const ext = path.extname(filePath).toLowerCase();
-  const key = `artwork/${album.id}/${hash.slice(0, 16)}${ext}`;
-  const dbPath = `r2:${key}`;
+  const keyPrefix = album ? 'albums/' + album.slug : 'singles/' + song.slug;
+  const key = 'artwork/' + keyPrefix + '/' + hash.slice(0, 16) + ext;
+  const dbPath = 'r2:' + key;
 
   await uploadToR2('artwork', key, filePath);
 
-  const { error } = await supabase
-    .from('albums')
-    .update({ cover_art_path: dbPath })
-    .eq('id', album.id);
+  const update = album
+    ? supabase.from('albums').update({ cover_art_path: dbPath }).eq('id', album.id)
+    : supabase.from('songs').update({ artwork_path: dbPath }).eq('id', song.id);
 
+  const { error } = await update;
   if (error) {
     await removeFromR2('artwork', key);
     throw error;
@@ -418,14 +603,15 @@ async function processArtwork(filePath) {
     source_name: path.basename(filePath),
     media_type: 'artwork',
     status: 'processed',
-    album_id: album.id,
+    album_id: album?.id ?? null,
+    song_id: song?.id ?? null,
     storage_bucket: BUCKETS.artwork,
     storage_path: dbPath,
     metadata: { label },
   });
 
   await archiveFile(filePath, FOLDERS.processed.artwork, 'IMPORTED');
-  log(`ARTWORK: "${path.basename(filePath)}" → ${album.title}`);
+  log('ARTWORK: "' + path.basename(filePath) + '" → ' + (album?.title || song?.title));
 }
 
 async function processVideo(filePath) {
@@ -523,26 +709,34 @@ async function processFile(filePath) {
   }
 }
 
-async function initialScan() {
-  const roots = [FOLDERS.audio, FOLDERS.artwork, FOLDERS.video];
+async function collectFiles(root) {
   const files = [];
-
-  for (const root of roots) {
-    const entries = await fsp.readdir(root, { withFileTypes: true });
+  async function walk(directory) {
+    const entries = await fsp.readdir(directory, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isFile()) files.push(path.join(root, entry.name));
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) await walk(fullPath);
+      else if (entry.isFile()) files.push(fullPath);
     }
   }
+  await walk(root);
+  return files;
+}
 
-  for (const file of files) {
-    await processFile(file);
+async function initialScan() {
+  const roots = [FOLDERS.audio, FOLDERS.release, FOLDERS.artwork, FOLDERS.video];
+  for (const root of roots) {
+    for (const file of await collectFiles(root)) {
+      if (path.basename(file).toLowerCase() === 'config.txt') await processReleaseConfig(file);
+      else await processFile(file);
+    }
   }
 }
 
 await ensureDirectories();
 
 log(`ATTIKID MEDIA SYNC → ${ROOT}`);
-log('Folders ready: music / artwork / videos');
+log('Folders ready: music / albums / artwork / videos');
 log('Review queue: _review/');
 log('Archive: _processed/');
 
@@ -552,7 +746,7 @@ if (process.argv.includes('--once')) {
 }
 
 const watcher = chokidar.watch(
-  [FOLDERS.audio, FOLDERS.artwork, FOLDERS.video],
+  [FOLDERS.audio, FOLDERS.release, FOLDERS.artwork, FOLDERS.video],
   {
     ignoreInitial: false,
     awaitWriteFinish: {
@@ -567,7 +761,12 @@ const watcher = chokidar.watch(
 );
 
 watcher.on('add', (filePath) => {
-  void processFile(filePath);
+  if (path.basename(filePath).toLowerCase() === 'config.txt') void processReleaseConfig(filePath);
+  else void processFile(filePath);
+});
+
+watcher.on('change', (filePath) => {
+  if (path.basename(filePath).toLowerCase() === 'config.txt') void processReleaseConfig(filePath);
 });
 
 watcher.on('error', (error) => {

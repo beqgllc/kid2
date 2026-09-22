@@ -10,6 +10,7 @@ const root = path.resolve(
 
 const folders = [
   'music',
+  'albums',
   'artwork',
   'videos',
   '_review/music',
@@ -27,4 +28,4 @@ for (const folder of folders) {
 
 console.log('ATTIKID media folders are ready:');
 console.log(root);
-for (const folder of folders) console.log(`  ${folder}`);
+for (const folder of folders) console.log('  ' + folder);

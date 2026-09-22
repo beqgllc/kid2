@@ -9,7 +9,7 @@ export function GlobalPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const counted = useRef(false);
   const sessionId = useRef(crypto.randomUUID());
-  const { currentSong, queue, currentIndex, isPlaying, status, currentTime, duration, volume, muted, repeatMode, shuffle, error, set } = usePlayerStore();
+  const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, set } = usePlayerStore();
 
   useEffect(() => { if (audioRef.current) { audioRef.current.volume = volume; audioRef.current.muted = muted; } }, [volume, muted]);
   useEffect(() => {
@@ -18,7 +18,8 @@ export function GlobalPlayer() {
     audio.src = currentSong.audio_url;
     audio.load(); counted.current = false;
     set({ status: 'loading', currentTime: 0 });
-  }, [currentSong?.id, set]);
+  }, [currentSong, set]);
+
   useEffect(() => { if (!currentSong) return; if (isPlaying && audioRef.current?.paused) audioRef.current.play().catch(() => set({ isPlaying: false, error: 'Playback was blocked. Press play to start.' })); }, [isPlaying, currentSong, set]);
   const onTime = () => {
     const audio = audioRef.current; if (!audio || !currentSong) return;

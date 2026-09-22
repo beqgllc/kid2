@@ -34,5 +34,15 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   shuffle: false,
   error: null,
   set: (patch) => set(patch),
-  reset: () => set({ currentSong: null, queue: [], currentIndex: -1, isPlaying: false, status: 'idle', currentTime: 0, duration: 0, buffered: 0, error: null }),
+  reset: () => set({
+    currentSong: null,
+    queue: [],
+    currentIndex: -1,
+    isPlaying: false,
+    status: 'idle',
+    currentTime: 0,
+    duration: 0,
+    buffered: 0,
+    error: null,
+  }),
 }));
