@@ -64,6 +64,20 @@ function mapSong(row: any): Song {
   };
 }
 
+export async function getFeaturedSong(): Promise<Song | null> {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('songs')
+    .select('*, albums(*)')
+    .eq('is_featured', true)
+    .order('release_date', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapSong(data) : null;
+}
+
 export async function getSongs(options?: { albumId?: string; limit?: number }): Promise<Song[]> {
   const supabase = requireSupabase();
   let query = supabase
