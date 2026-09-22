@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useFeaturedAlbum, useAlbums, useSongs } from '../../hooks/useCatalog';
+import { useFeaturedAlbum, useFeaturedSong, useAlbums, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
@@ -13,20 +13,26 @@ const FEATURED_RELEASE_TITLES = [
 
 export function Home(){
   const featured = useFeaturedAlbum();
+  const featuredSongQuery = useFeaturedSong();
   const albums = useAlbums();
   const tracks = useSongs(featured.data?.id, 5);
   const setPlayer = usePlayerStore((state) => state.set);
   const ref = useScrollReveal<HTMLElement>();
 
-  const playableFeaturedTracks = tracks.data.filter((song) => Boolean(song.audio_url)) as Array<typeof tracks.data[number] & { audio_url: string }>;
-  const featuredSong = playableFeaturedTracks[0] ?? null;
+  const playableAlbumTracks = tracks.data.filter((song) => Boolean(song.audio_url)) as Array<typeof tracks.data[number] & { audio_url: string }>;
+  const fallbackFeaturedSong = playableAlbumTracks[0] ?? null;
+  const featuredSong = featuredSongQuery.data?.audio_url ? featuredSongQuery.data : fallbackFeaturedSong;
 
   const playFeatured = () => {
-    if (!featuredSong) return;
+    if (!featuredSong?.audio_url) return;
+    const albumQueue = featuredSong.album_id
+      ? playableAlbumTracks
+      : [featuredSong];
+    const currentIndex = Math.max(0, albumQueue.findIndex((song) => song.id === featuredSong.id));
     setPlayer({
       currentSong: featuredSong,
-      queue: playableFeaturedTracks,
-      currentIndex: 0,
+      queue: albumQueue,
+      currentIndex,
       isPlaying: true,
       status: 'loading',
       currentTime: 0,
@@ -55,10 +61,10 @@ export function Home(){
       <div className="immersive-hero__veil"/>
       <div className="immersive-hero__copy">
         <span className="eyebrow">ATTIKID</span>
-        <h1>{featured.data?.title ?? 'MY HAPPY ENDING'}</h1>
+        <h1>{featuredSong?.title ?? featured.data?.title ?? 'MY HAPPY ENDING'}</h1>
         <p className="hero-kicker">THE NEW SINGLE <span>•</span> OUT NOW</p>
         <div className="button-row">
-          <button className="button" type="button" onClick={playFeatured} disabled={!featuredSong}>
+          <button className="button" type="button" onClick={playFeatured} disabled={!featuredSong?.audio_url}>
             ▶&nbsp; Listen now
           </button>
           <Link className="button secondary" to="/lyrics">View lyrics</Link>
