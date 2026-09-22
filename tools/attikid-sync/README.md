@@ -12,12 +12,12 @@ ATTIKID-MEDIA/
   albums/
     Dead Flowers Still Bloom/
       config.json
-      cover.jpg
+      cover.webp
       01-song.mp3
       02-song.mp3
     Trauma & Shit/
       config.json
-      cover.jpg
+      cover.webp
       01-song.mp3
   artwork/
   videos/
