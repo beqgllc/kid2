@@ -98,7 +98,22 @@ function sanitizeMetadata(value = {}) {
   return JSON.parse(JSON.stringify(copy, (_, item) => typeof item === 'bigint' ? Number(item) : item));
 }
 
-function parseReleaseConfig(text) {
+function parseReleaseConfig(text, format = 'json') {
+  if (format === 'json') {
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed !== 'object') return null;
+    const title = typeof parsed.title === 'string' ? parsed.title.trim() : '';
+    if (!title) return null;
+    return {
+      title,
+      artist: typeof parsed.artist === 'string' ? parsed.artist.trim() : '',
+      released: parsed.released == null ? '' : String(parsed.released).trim(),
+      trackCount: Number.isFinite(Number(parsed.no_of_tracks)) ? Number(parsed.no_of_tracks) : null,
+      purpose: typeof parsed.purpose === 'string' ? parsed.purpose.trim() : '',
+      details: {},
+    };
+  }
+
   const config = { title: '', artist: '', released: '', trackCount: null, purpose: '', details: {} };
   let section = 'root';
 
@@ -136,7 +151,9 @@ function parseReleaseConfig(text) {
 
 async function configFromFile(configPath) {
   try {
-    return parseReleaseConfig(await fsp.readFile(configPath, 'utf8'));
+    const raw = await fsp.readFile(configPath, 'utf8');
+    const format = path.extname(configPath).toLowerCase() === '.json' ? 'json' : 'txt';
+    return parseReleaseConfig(raw, format);
   } catch {
     return null;
   }
@@ -147,7 +164,7 @@ async function findReleaseContext(filePath, titleHint = '') {
   const root = path.resolve(ROOT);
 
   while (directory.startsWith(root)) {
-    const candidate = path.join(directory, 'config.txt');
+    const candidate = path.join(directory, 'config.json');
     try {
       await fsp.access(candidate);
       const config = await configFromFile(candidate);
@@ -167,7 +184,7 @@ async function findReleaseContext(filePath, titleHint = '') {
         const entries = await fsp.readdir(releaseRoot, { withFileTypes: true });
         for (const entry of entries.filter((item) => item.isDirectory())) {
           if (normalize(entry.name) !== wanted) continue;
-          const configPath = path.join(releaseRoot, entry.name, 'config.txt');
+          const configPath = path.join(releaseRoot, entry.name, 'config.json');
           const config = await configFromFile(configPath);
           if (config) return { config, directory: path.join(releaseRoot, entry.name) };
         }
@@ -727,7 +744,7 @@ async function initialScan() {
   const roots = [FOLDERS.audio, FOLDERS.release, FOLDERS.artwork, FOLDERS.video];
   for (const root of roots) {
     for (const file of await collectFiles(root)) {
-      if (path.basename(file).toLowerCase() === 'config.txt') await processReleaseConfig(file);
+      if (path.basename(file).toLowerCase() === 'config.json') await processReleaseConfig(file);
       else await processFile(file);
     }
   }
@@ -755,18 +772,18 @@ const watcher = chokidar.watch(
     },
     ignored: (candidatePath) => {
       const name = path.basename(candidatePath);
-      return name.startsWith('.') || name.endsWith('.json');
+      return name.startsWith('.') || (name.endsWith('.json') && name.toLowerCase() !== 'config.json');
     },
   },
 );
 
 watcher.on('add', (filePath) => {
-  if (path.basename(filePath).toLowerCase() === 'config.txt') void processReleaseConfig(filePath);
+  if (path.basename(filePath).toLowerCase() === 'config.json') void processReleaseConfig(filePath);
   else void processFile(filePath);
 });
 
 watcher.on('change', (filePath) => {
-  if (path.basename(filePath).toLowerCase() === 'config.txt') void processReleaseConfig(filePath);
+  if (path.basename(filePath).toLowerCase() === 'config.json') void processReleaseConfig(filePath);
 });
 
 watcher.on('error', (error) => {
