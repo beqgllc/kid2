@@ -11,7 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const ROOT = path.resolve(
   process.env.ATTIKID_MEDIA_ROOT ||
-    path.join(os.homedir(), 'ATTIKID-MEDIA'),
+    path.join(os.homedir(), 'attikid-media'),
 );
 
 const FOLDERS = {
@@ -85,6 +85,10 @@ const stripMediaSuffixes = (value) =>
     .replace(/\b(official|music|lyric|lyrics|video|visualizer|visual)\b/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+
+function isSinglesReleaseDirectory(directory) {
+  return normalize(path.basename(directory)) === 'singles';
+}
 
 function parseYearDate(value) {
   if (!value) return null;
@@ -249,6 +253,10 @@ async function processReleaseConfig(filePath) {
   const config = await configFromFile(filePath);
   if (!config) return;
   const releaseDate = parseYearDate(config.released);
+  if (isSinglesReleaseDirectory(path.dirname(filePath))) {
+    log('CONFIG: Singles catalog loaded from ' + filePath);
+    return;
+  }
   await ensureAlbumFromRelease(config, config.artist || 'ATTIKID', releaseDate);
   log('CONFIG: "' + config.title + '" loaded from ' + filePath);
 }
@@ -468,8 +476,9 @@ async function processAudio(filePath) {
   const metadata = await parseFile(filePath, { duration: true });
   const releaseContext = await findReleaseContext(filePath, metadata.common?.album?.trim() || '');
   const title = metadata.common?.title?.trim() || path.basename(filePath, path.extname(filePath));
-  const configTitle = releaseContext?.config?.title?.trim() || '';
-  const albumTitle = metadata.common?.album?.trim() || configTitle;
+  const singlesRelease = releaseContext?.directory ? isSinglesReleaseDirectory(releaseContext.directory) : false;
+  const configTitle = singlesRelease ? '' : releaseContext?.config?.title?.trim() || '';
+  const albumTitle = singlesRelease ? '' : metadata.common?.album?.trim() || configTitle;
   const artist = metadata.common?.artist?.trim() || releaseContext?.config?.artist?.trim() || 'ATTIKID';
   const releaseDate = dateFromMetadata(metadata, parseYearDate(releaseContext?.config?.released));
 
