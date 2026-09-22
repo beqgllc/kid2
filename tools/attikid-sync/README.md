@@ -8,28 +8,31 @@ The default root is `%USERPROFILE%\\attikid-media`:
 
 ```
 attikid-media/
-  music/
-  albums/
-    Dead Flowers Still Bloom/
-      config.json
-      cover.webp
-      01-song.mp3
-      02-song.mp3
-    Trauma & Shit/
-      config.json
-      cover.webp
-      01-song.mp3
-  artwork/
-  videos/
-  _review/
-    music/
-    artwork/
-    videos/
-  _processed/
-    music/
-    artwork/
-    videos/
-    duplicates/
+└── albums/
+    ├── Dead Flowers Still Bloom/
+    │   ├── config.json
+    │   ├── cover.webp
+    │   ├── 01-song.mp3
+    │   └── ...
+    ├── Trauma & Shit/
+    │   ├── config.json
+    │   ├── cover.webp
+    │   └── ...
+    ├── Misery Motel/
+    │   ├── config.json
+    │   ├── cover.webp
+    │   └── ...
+    ├── More Trauma & Shit/
+    │   ├── config.json
+    │   ├── cover.webp
+    │   └── ...
+    ├── Cloudy With A Chance/
+    │   ├── config.json
+    │   ├── cover.webp
+    │   └── ...
+    └── Singles/
+        ├── config.json
+        └── ...
 ```
 
 The `albums/<Release Name>/` directory is the release source directory. `albums/Singles/` is reserved for standalone tracks and does not create a database album; its `config.json` supplies optional defaults for those singles. Put the release's `config.json`, tracks, and release artwork there. The watcher reads that directory and publishes the actual media objects to the matching R2 bucket while keeping the catalog metadata in Supabase.
