@@ -7,13 +7,15 @@ import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
 export function Music(){
   const albums = useAlbums();
   const songs = useSongs();
+  const allSongs = songs.data;
+
   const tracksByAlbum = useMemo(
-    () => songs.data.reduce<Record<string, typeof songs.data>>((groups, song) => {
+    () => allSongs.reduce<Record<string, typeof allSongs>>((groups, song) => {
       if (!song.album_id) return groups;
       (groups[song.album_id] ??= []).push(song);
       return groups;
     }, {}),
-    [songs.data],
+    [allSongs],
   );
 
   usePageMeta({
