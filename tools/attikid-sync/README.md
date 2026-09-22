@@ -9,6 +9,16 @@ The default root is `%USERPROFILE%\\ATTIKID-MEDIA`:
 ```
 ATTIKID-MEDIA/
   music/
+  albums/
+    Dead Flowers Still Bloom/
+      config.txt
+      cover.jpg
+      01-song.mp3
+      02-song.mp3
+    Trauma & Shit/
+      config.txt
+      cover.jpg
+      01-song.mp3
   artwork/
   videos/
   _review/
@@ -22,7 +32,38 @@ ATTIKID-MEDIA/
     duplicates/
 ```
 
-Run `npm install`, then `npm run setup` once.
+The `albums/<Release Name>/` directory is the release source directory. Put the release's `config.txt`, tracks, and release artwork there. The watcher reads that directory and publishes the actual media objects to the matching R2 bucket while keeping the catalog metadata in Supabase.
+
+The older top-level `music/` and `artwork/` drop-zones remain supported for simple imports.
+
+## Release config
+
+Each release directory can contain a `config.txt` using this format:
+
+```
+- Title: Dead Flowers Still Bloom
+- Artist: ATTIKID
+- Released: 2026
+- No. of tracks: 10
+- PURPOSE - A record about ...
+
+- Details:
+    Title: Dead Flowers Still Bloom
+    Artist: ATTIKID
+    Release Date: 2026
+    Genre: Alternative Rap
+    AI platform: Suno
+```
+
+The sync uses:
+
+- `Title` to identify the release.
+- `Artist` and `Released` as catalog fallbacks.
+- `No. of tracks` as release metadata.
+- `PURPOSE` as the album purpose displayed in the album carousel.
+- `Genre` and `AI platform` as release-level credit metadata.
+
+For tracks inside a release directory, MP3/other supported audio metadata remains the source of truth for title, artist, track number, embedded album, release/year, duration, and other ID3 fields. The config fills gaps and supplies release-level purpose/credits.
 
 ## Credentials
 
@@ -35,7 +76,7 @@ Copy `.env.example` to `.env` and fill in:
 - R2 secret key
 - R2 bucket names
 
-The secret keys are used only by this local Node process. Never put them in Vite `VITE_*` variables or commit `.env`.
+The secret keys are used only by this local Node process. Never put `.env` in Git.
 
 ## Storage
 
@@ -45,7 +86,7 @@ Create these R2 buckets:
 - `attikid-artwork`
 - `attikid-videos`
 
-The audio bucket you already created can be reused. Configure public read access and CORS for each bucket. The browser-side base URLs go in Vercel as:
+The browser-side base URLs go in Vercel as:
 
 ```
 VITE_R2_AUDIO_PUBLIC_BASE_URL=
@@ -55,17 +96,22 @@ VITE_R2_VIDEO_PUBLIC_BASE_URL=
 
 ## Database
 
-Run the new Supabase migrations in the main repo:
+Run the Supabase migrations in the main repo:
 
 - `018_media_ingest.sql`
 - `019_lyric_videos.sql`
 - `020_media_triggers.sql`
+- `021_catalog_metadata.sql`
 
-## How importing works
+## What importing does
+
+### Release directories
+
+When a `config.txt` appears or changes, the sync creates/updates the matching album row and stores its purpose and release-level metadata.
 
 ### Music
 
-Drop an MP3 into `music/`.
+Drop an MP3 into a release directory or `music/`.
 
 The sync reads ID3 metadata:
 
@@ -76,19 +122,11 @@ The sync reads ID3 metadata:
 - release/year
 - duration
 
-It matches the album to an existing release. If exactly one release matches, the MP3 is uploaded to R2 and a new `songs` row is created. If the release cannot be matched uniquely, the file is copied to `_review/music/` and nothing is published.
-
-Existing songs are not overwritten. An exact file hash or an existing same-title song in the same album is treated as a duplicate.
+A release-directory `config.txt` is used when a matching config exists. Tracks without an album/config are treated as standalone singles with a nullable `album_id`.
 
 ### Artwork
 
-Name the artwork after the release, for example:
-
-- `Dead Flowers Still Bloom.jpg`
-- `dead-flowers-still-bloom.png`
-- `dead_flowers_still_bloom-cover.jpg`
-
-The release is matched by normalized title/slug. The image is uploaded to R2 and `albums.cover_art_path` is updated to an `r2:` path. Existing Supabase artwork remains valid.
+Release artwork can live inside its release directory or in the top-level `artwork/` folder. Release artwork updates `albums.cover_art_path`. Artwork matched to a standalone single updates `songs.artwork_path`.
 
 ### Videos
 
@@ -96,9 +134,10 @@ Drop an MP4 into `videos/`. The embedded title is preferred; otherwise the filen
 
 ## Run
 
-From this directory:
+From the repo:
 
 ```
+cd tools/attikid-sync
 npm install
 npm run setup
 npm run watch
@@ -110,7 +149,7 @@ Use `npm run scan` for a one-time scan instead.
 
 ## Safe behavior
 
-- Existing Supabase-backed media is not modified by the sync.
+- Existing Supabase-backed media is not modified unless the new import explicitly updates its catalog record.
 - New R2 media is referenced with an `r2:` prefix.
 - Duplicate files are archived instead of re-imported.
 - Ambiguous files are placed in `_review/`.
