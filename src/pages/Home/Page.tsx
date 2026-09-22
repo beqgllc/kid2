@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useFeaturedAlbum, useFeaturedSong, useAlbums, useSongs } from '../../hooks/useCatalog';
+import { useEffect } from 'react';
+import { useFeaturedAlbum, useFeaturedSong, useAlbums, useSongByTitle, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
@@ -15,9 +16,18 @@ export function Home() {
   const featured = useFeaturedAlbum();
   const featuredSongQuery = useFeaturedSong();
   const albums = useAlbums();
+  const letMeFly = useSongByTitle('Let me fly');
   const tracks = useSongs(featured.data?.id, 5);
   const setPlayer = usePlayerStore((state) => state.set);
   const ref = useScrollReveal<HTMLElement>();
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://www.tiktok.com/embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => script.remove();
+  }, []);
 
   const playableAlbumTracks = tracks.data.flatMap((song) =>
     song.audio_url ? [{ ...song, audio_url: song.audio_url }] : [],
@@ -81,34 +91,47 @@ export function Home() {
 
       <section ref={ref} className="immersive-section immersive-featured reveal">
         <div className="immersive-section__heading">
-          <span className="eyebrow">01 / FEATURED MUSIC</span>
-          <h2>Essential listening</h2>
+          <span className="eyebrow">01 / FEATURED LYRIC VIDEO</span>
+          <h2>Official lyric video</h2>
           <span className="section-rule" />
         </div>
 
-        <div className="featured-release-grid">
-          {featuredReleases.map(({ title, album }) => (
-            <article className="featured-release-card" key={title}>
-              <div className="featured-release-card__art">
-                {album?.cover_url ? <img src={album.cover_url} alt={`${title} cover`} /> : <span>ATTIKID</span>}
-              </div>
-              <div className="featured-release-card__meta">
-                <span className="mono-label">
-                  {album ? new Date(album.release_date).toLocaleDateString() : 'RELEASE METADATA PENDING'}
-                </span>
-                <h3>{title}</h3>
-                {album?.artist_name && <p>{album.artist_name}</p>}
-                {album ? (
-                  <Link className="text-link orange-link" to={`/music/${album.slug}`}>
-                    View release <span>→</span>
-                  </Link>
-                ) : (
-                  <span className="mono-label">DROP THE RELEASE FOLDER TO SYNC</span>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
+        <article className="featured-lyric-video-card">
+          <div className="featured-lyric-video-card__title">
+            <span className="mono-label">ATTIKID / CLOUDY WITH A CHANCE</span>
+            <h3>Let me fly</h3>
+          </div>
+
+          <div className="featured-lyric-video-card__embed" aria-label="Let me fly official lyric video">
+            <blockquote
+              className="tiktok-embed"
+              cite="https://www.tiktok.com/@iamattikid/video/7686115895256665357"
+              data-video-id="7686115895256665357"
+              style={{ maxWidth: '605px', minWidth: '325px' }}
+            >
+              <section>
+                <a target="_blank" title="@iamattikid" href="https://www.tiktok.com/@iamattikid?refer=embed" rel="noreferrer">
+                  @iamattikid
+                </a>
+                <p>
+                  They called it giving up. I called it finally letting go. 🖤 “LET ME FLY&quot; For the ones who got tired of pretending they were okay. #LetMeFly #EmoRap #SadRap #EmoRapMusic #RapTok #DarkMusic #UndergroundMusic #NewMusic #LyricVideo #Attikid #FYP #ForYou
+                </p>
+                <a target="_blank" title="♬ original sound - Attikid" href="https://www.tiktok.com/music/original-sound-Attikid-7686115966803774221?refer=embed" rel="noreferrer">
+                  ♬ original sound - Attikid
+                </a>
+              </section>
+            </blockquote>
+          </div>
+
+          <div className="featured-lyric-video-card__actions">
+            <Link className="button" to={letMeFly.data ? "/lyrics/" + letMeFly.data.slug : "/lyrics"}>
+              Read Let me fly lyrics
+            </Link>
+            <Link className="button secondary" to="/music/cloudy-with-a-chance">
+              Cloudy With A Chance
+            </Link>
+          </div>
+        </article>
       </section>
 
       <section className="immersive-story">

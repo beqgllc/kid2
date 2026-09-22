@@ -78,6 +78,18 @@ export async function getFeaturedSong(): Promise<Song | null> {
   return data ? mapSong(data) : null;
 }
 
+export async function getSongByTitle(title: string): Promise<Song | null> {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('songs')
+    .select('*, albums(*)')
+    .ilike('title', title)
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapSong(data) : null;
+}
+
 export async function getSongs(options?: { albumId?: string; limit?: number }): Promise<Song[]> {
   const supabase = requireSupabase();
   let query = supabase

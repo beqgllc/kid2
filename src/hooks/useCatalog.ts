@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAlbums, getAlbumBySlug, getFeaturedAlbum, getFeaturedSong, getLatestAlbum, getLatestSongs, getSongBySlug, getSongs } from '../services/catalog';
+import { getAlbums, getAlbumBySlug, getFeaturedAlbum, getFeaturedSong, getLatestAlbum, getLatestSongs, getSongBySlug, getSongByTitle, getSongs } from '../services/catalog';
 import type { Album, Song } from '../types/models';
 
 export function useAlbums(limit?: number) {
@@ -24,6 +24,11 @@ export function useFeaturedSong() {
   useEffect(() => {
     getFeaturedSong().then(setData).catch((e) => setError(e.message)).finally(() => setLoading(false));
   }, []);
+  return { data, loading, error };
+}
+export function useSongByTitle(title: string) {
+  const [data, setData] = useState<Song | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
+  useEffect(() => { getSongByTitle(title).then(setData).catch((e) => setError(e.message)).finally(() => setLoading(false)); }, [title]);
   return { data, loading, error };
 }
 export function useSongs(albumId?: string, limit?: number) {
