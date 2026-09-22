@@ -406,6 +406,17 @@ async function findSongInAlbum(albumId, title) {
   return matches.length === 1 ? matches[0] : null;
 }
 
+async function findStandaloneSong(title) {
+  const { data, error } = await supabase
+    .from('songs')
+    .select('id,title,album_id,artist_name,slug,audio_path,artwork_path')
+    .is('album_id', null);
+  if (error) throw error;
+  const target = normalize(title);
+  const matches = (data || []).filter((song) => normalize(song.title) === target);
+  return matches.length === 1 ? matches[0] : null;
+}
+
 async function uploadToR2(kind, key, filePath) {
   const bucket = BUCKETS[kind];
   const body = createReadStream(filePath);
@@ -524,15 +535,15 @@ async function processAudio(filePath) {
     source_name: path.basename(filePath),
     media_type: 'audio',
     status: 'processed',
-    album_id: album.id,
+    album_id: album?.id ?? null,
     song_id: songId,
     storage_bucket: BUCKETS.audio,
     storage_path: dbPath,
-    metadata: metadata.common,
+    metadata: trackMetadata,
   });
 
   await archiveFile(filePath, FOLDERS.processed.audio, 'IMPORTED');
-  log(`MUSIC: "${title}" → ${album.title}`);
+  log('MUSIC: "' + title + '" → ' + (album?.title || 'standalone single'));
 }
 
 function artworkLabel(filePath) {
