@@ -507,6 +507,8 @@ async function processAudio(filePath) {
     release_date: releaseDate,
     genre: metadata.common?.genre?.[0] || releaseContext?.config?.details?.genre || null,
     ai_platform: releaseContext?.config?.details?.ai_platform || null,
+    track_number: trackNumber,
+    track_total: Number.isFinite(metadata.common?.track?.of) ? metadata.common.track.of : null,
   };
 
   const { error } = await supabase.from('songs').insert({
