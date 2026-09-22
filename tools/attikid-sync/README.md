@@ -4,10 +4,10 @@ A local Windows media drop-zone for the ATTIKID site.
 
 ## Folders
 
-The default root is `%USERPROFILE%\\ATTIKID-MEDIA`:
+The default root is `%USERPROFILE%\\attikid-media`:
 
 ```
-ATTIKID-MEDIA/
+attikid-media/
   music/
   albums/
     Dead Flowers Still Bloom/
@@ -32,7 +32,7 @@ ATTIKID-MEDIA/
     duplicates/
 ```
 
-The `albums/<Release Name>/` directory is the release source directory. Put the release's `config.json`, tracks, and release artwork there. The watcher reads that directory and publishes the actual media objects to the matching R2 bucket while keeping the catalog metadata in Supabase.
+The `albums/<Release Name>/` directory is the release source directory. `albums/Singles/` is reserved for standalone tracks and does not create a database album; its `config.json` supplies optional defaults for those singles. Put the release's `config.json`, tracks, and release artwork there. The watcher reads that directory and publishes the actual media objects to the matching R2 bucket while keeping the catalog metadata in Supabase.
 
 The older top-level `music/` and `artwork/` drop-zones remain supported for simple imports.
 
@@ -104,11 +104,11 @@ Run the Supabase migrations in the main repo:
 
 ### Release directories
 
-When a `config.json` appears or changes, the sync creates/updates the matching album row and stores its title, artist, release year, expected track count, and purpose.
+When an album `config.json` appears or changes, the sync creates/updates the matching album row and stores its title, artist, release year, expected track count, and purpose. `albums/Singles/config.json` is treated as the standalone-singles catalog config and does not create a `Singles` album.
 
 ### Music
 
-Drop an MP3 into a release directory or `music/`.
+Drop an MP3 into an album release directory, `albums/Singles/`, or the top-level `music/` drop-zone.
 
 The sync reads ID3 metadata:
 
@@ -119,11 +119,11 @@ The sync reads ID3 metadata:
 - release/year
 - duration
 
-A release-directory `config.json` is used when a matching config exists. Tracks without an album/config are treated as standalone singles with a nullable `album_id`.
+An album release-directory `config.json` is used when a matching config exists. Tracks inside `albums/Singles/` are always treated as standalone singles with a nullable `album_id`, even when `config.json` is present.
 
 ### Artwork
 
-Release artwork can live inside its release directory or in the top-level `artwork/` folder. Release artwork updates `albums.cover_art_path`. Artwork matched to a standalone single updates `songs.artwork_path`.
+Release artwork can live inside its release directory or in the top-level `artwork/` folder. The standard release artwork filename is `cover.webp`. Release artwork updates `albums.cover_art_path`. Artwork matched to a standalone single updates `songs.artwork_path`.
 
 ### Videos
 
