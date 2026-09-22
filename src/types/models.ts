@@ -17,6 +17,8 @@ export interface TrackMetadata {
   release_date?: string | null;
   genre?: string | null;
   ai_platform?: string | null;
+  track_number?: number | null;
+  track_total?: number | null;
   [key: string]: unknown;
 }
 
