@@ -590,9 +590,12 @@ async function processArtwork(filePath) {
 
   const label = artworkLabel(filePath);
   const releaseContext = await findReleaseContext(filePath, label);
-  const album = releaseContext?.config
+  const singlesRelease = releaseContext?.directory ? isSinglesReleaseDirectory(releaseContext.directory) : false;
+  const album = !singlesRelease && releaseContext?.config
     ? await ensureAlbumFromRelease(releaseContext.config, releaseContext.config.artist || 'ATTIKID', parseYearDate(releaseContext.config.released))
-    : await findAlbum(label);
+    : !singlesRelease
+      ? await findAlbum(label)
+      : null;
   const song = album ? null : await findStandaloneSong(stripMediaSuffixes(label));
 
   if (!album && !song) {
