@@ -5,7 +5,7 @@ import { formatDuration } from '../../lib/utils';
 
 const VIEWS = ['Overview', 'Purpose', 'Track list', 'Credits'] as const;
 
-function metadataString(song: Song, key: 'album' | 'artist' | 'release_date') {
+function metadataString(song: Song, key: 'title' | 'album' | 'artist' | 'release_date') {
   const value = song.metadata?.[key];
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
