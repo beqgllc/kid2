@@ -11,12 +11,12 @@ ATTIKID-MEDIA/
   music/
   albums/
     Dead Flowers Still Bloom/
-      config.txt
+      config.json
       cover.jpg
       01-song.mp3
       02-song.mp3
     Trauma & Shit/
-      config.txt
+      config.json
       cover.jpg
       01-song.mp3
   artwork/
@@ -32,36 +32,33 @@ ATTIKID-MEDIA/
     duplicates/
 ```
 
-The `albums/<Release Name>/` directory is the release source directory. Put the release's `config.txt`, tracks, and release artwork there. The watcher reads that directory and publishes the actual media objects to the matching R2 bucket while keeping the catalog metadata in Supabase.
+The `albums/<Release Name>/` directory is the release source directory. Put the release's `config.json`, tracks, and release artwork there. The watcher reads that directory and publishes the actual media objects to the matching R2 bucket while keeping the catalog metadata in Supabase.
 
 The older top-level `music/` and `artwork/` drop-zones remain supported for simple imports.
 
 ## Release config
 
-Each release directory can contain a `config.txt` using this format:
+Each release directory must contain a `config.json` using this format:
 
-```
-- Title: Dead Flowers Still Bloom
-- Artist: ATTIKID
-- Released: 2026
-- No. of tracks: 10
-- PURPOSE - A record about ...
-
-- Details:
-    Title: Dead Flowers Still Bloom
-    Artist: ATTIKID
-    Release Date: 2026
-    Genre: Alternative Rap
-    AI platform: Suno
+```json
+{
+  "title": "Dead Flowers Still Bloom",
+  "artist": "Attikid",
+  "released": 2026,
+  "no_of_tracks": 10,
+  "purpose": "A description of why the album was made and the songs within."
+}
 ```
 
 The sync uses:
 
-- `Title` to identify the release.
-- `Artist` and `Released` as catalog fallbacks.
-- `No. of tracks` as release metadata.
-- `PURPOSE` as the album purpose displayed in the album carousel.
-- `Genre` and `AI platform` as release-level credit metadata.
+- `title` to identify the release.
+- `artist` as the release artist.
+- `released` as the release year.
+- `no_of_tracks` as the expected release track count.
+- `purpose` as the album purpose displayed in the album carousel.
+
+The config is release-level metadata only. Individual audio files remain the source of truth for song title, artist, track number, embedded album, release/year, duration, genre, and other ID3 metadata.
 
 For tracks inside a release directory, MP3/other supported audio metadata remains the source of truth for title, artist, track number, embedded album, release/year, duration, and other ID3 fields. The config fills gaps and supplies release-level purpose/credits.
 
@@ -107,7 +104,7 @@ Run the Supabase migrations in the main repo:
 
 ### Release directories
 
-When a `config.txt` appears or changes, the sync creates/updates the matching album row and stores its purpose and release-level metadata.
+When a `config.json` appears or changes, the sync creates/updates the matching album row and stores its title, artist, release year, expected track count, and purpose.
 
 ### Music
 
@@ -122,7 +119,7 @@ The sync reads ID3 metadata:
 - release/year
 - duration
 
-A release-directory `config.txt` is used when a matching config exists. Tracks without an album/config are treated as standalone singles with a nullable `album_id`.
+A release-directory `config.json` is used when a matching config exists. Tracks without an album/config are treated as standalone singles with a nullable `album_id`.
 
 ### Artwork
 
