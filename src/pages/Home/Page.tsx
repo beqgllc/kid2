@@ -19,9 +19,13 @@ export function Home(){
   const setPlayer = usePlayerStore((state) => state.set);
   const ref = useScrollReveal<HTMLElement>();
 
-  const playableAlbumTracks = tracks.data.filter((song) => Boolean(song.audio_url)) as Array<typeof tracks.data[number] & { audio_url: string }>;
+  const playableAlbumTracks = tracks.data.flatMap((song) =>
+    song.audio_url ? [{ ...song, audio_url: song.audio_url }] : [],
+  );
   const fallbackFeaturedSong = playableAlbumTracks[0] ?? null;
-  const featuredSong = featuredSongQuery.data?.audio_url ? featuredSongQuery.data : fallbackFeaturedSong;
+  const featuredSong = featuredSongQuery.data?.audio_url
+    ? { ...featuredSongQuery.data, audio_url: featuredSongQuery.data.audio_url }
+    : fallbackFeaturedSong;
 
   const playFeatured = () => {
     if (!featuredSong?.audio_url) return;
