@@ -24,7 +24,7 @@ export function Home(){
       <div className="immersive-hero__copy">
         <span className="eyebrow">ATTIKID</span>
         <h1>{featured.data?.title ?? 'MY HAPPY ENDING'}</h1>
-        <p className="hero-kicker">THE NEW SINGLE <span>•</span> OUT NOW</p>
+        <p className="hero-kicker">Attikid - My Happy Ending <span>•</span> OUT NOW</p>
         <div className="button-row"><Link className="button" to={featured.data ? `/music/${featured.data.slug}` : '/music'}>▶&nbsp; Listen now</Link><Link className="button secondary" to="/lyrics">View lyrics</Link></div>
         <p className="hero-microcopy">FOR THE PEOPLE WHO SURVIVED QUIETLY.</p>
       </div>
@@ -39,5 +39,4 @@ export function Home(){
       </div> : <div className="empty-state">No albums have been released yet.</div>}
     </section>
     <section className="immersive-story"><div><span className="eyebrow">02 / THE ARTIST</span><h2>Music for the things we don't say.</h2></div><p>ATTIKID turns restless nights, hard-won perspective, and the quiet pressure of ordinary life into songs that feel immediate and honest. Each release follows a thread through memory, survival, isolation, hope, and the people who keep showing up. Enter the full story to discover the places and experiences behind the voice.</p><Link to="/about" className="text-link orange-link">Enter the story <span>→</span></Link></section>
-    <section className="immersive-visual"><img src="/images/hero/hero-about.webp" alt="A quiet room in the ATTIKID world" /><div><span className="eyebrow">03 / THE ATTIC</span><h2>Stay close to the signal.</h2><Link className="text-link" to="/about">Explore the archive →</Link></div></section>
   </div>}
