@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useFeaturedAlbum, useAlbums, useSongs } from '../../hooks/useCatalog';
-import { SongRow } from '../../components/music/SongRow';
 import { usePlayerStore } from '../../stores/playerStore';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
