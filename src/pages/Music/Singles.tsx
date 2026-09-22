@@ -1,0 +1,68 @@
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { SongRow } from '../../components/music/SongRow';
+import { useSongs } from '../../hooks/useCatalog';
+import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
+
+function formatReleaseDate(value: string | null | undefined) {
+  if (!value) return 'Release date unavailable';
+  return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+export function MusicSingles(){
+  const songs = useSongs();
+  const singles = useMemo(
+    () => songs.data
+      .filter((song) => song.album_id === null)
+      .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })),
+    [songs.data],
+  );
+
+  usePageMeta({
+    title: 'ATTIKID Singles',
+    description: 'Browse ATTIKID tracks released outside of albums and larger releases.',
+    canonical: 'https://attikid.vercel.app/music/singles',
+    type: 'music',
+    keywords: ['ATTIKID singles', 'single releases', 'songs'],
+    image: '/images/hero/hero-music.webp',
+    jsonLd: buildWebSiteJsonLd()
+  });
+
+  return (
+    <div className="page music-catalog-page">
+      <header className="page-hero">
+        <span className="eyebrow">CATALOG / SINGLES</span>
+        <h1>Singles.</h1>
+        <p>Individual tracks that are not part of an album or release.</p>
+        <div className="music-page-links">
+          <Link to="/music/a-z">A-Z</Link>
+          <Link to="/music/albums">Albums</Link>
+          <Link className="active" to="/music/singles">Singles</Link>
+        </div>
+      </header>
+
+      <section className="content-section">
+        {songs.loading ? <div className="loading-state">Loading singles…</div> : singles.length ? (
+          <div className="single-list">
+            {singles.map((song, index) => (
+              <article className="single-list__item" key={song.id}>
+                <div className="single-list__number">{String(index + 1).padStart(2, '0')}</div>
+                <div className="single-list__main">
+                  <SongRow song={song} index={index} songs={singles}/>
+                  <div className="single-list__details">
+                    <span>{song.artist_name}</span>
+                    <span>{formatReleaseDate(song.release_date)}</span>
+                    <span>{song.metadata?.genre ?? 'Genre not supplied'}</span>
+                    <span>{song.metadata?.ai_platform ?? 'AI platform not supplied'}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">No standalone singles have been ingested yet.</div>
+        )}
+      </section>
+    </div>
+  );
+}
