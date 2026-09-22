@@ -11,7 +11,7 @@ const FEATURED_RELEASE_TITLES = [
   'More Trauma & Shit',
 ];
 
-export function Home(){
+export function Home() {
   const featured = useFeaturedAlbum();
   const featuredSongQuery = useFeaturedSong();
   const albums = useAlbums();
@@ -29,10 +29,9 @@ export function Home(){
 
   const playFeatured = () => {
     if (!featuredSong?.audio_url) return;
-    const albumQueue = featuredSong.album_id
-      ? playableAlbumTracks
-      : [featuredSong];
+    const albumQueue = featuredSong.album_id ? playableAlbumTracks : [featuredSong];
     const currentIndex = Math.max(0, albumQueue.findIndex((song) => song.id === featuredSong.id));
+
     setPlayer({
       currentSong: featuredSong,
       queue: albumQueue,
@@ -56,139 +55,87 @@ export function Home(){
     type: 'website',
     keywords: ['ATTIKID', 'music', 'lyrics', 'artist story', 'albums'],
     image: '/images/hero/hero-home.webp',
-    jsonLd: buildWebSiteJsonLd()
+    jsonLd: buildWebSiteJsonLd(),
   });
 
-  return <div className="immersive-home">
-    <section className="immersive-hero">
-      <img className="immersive-hero__image" src="/images/hero-image.png" alt="ATTIKID in a dim recording room" />
-      <div className="immersive-hero__veil"/>
-      <div className="immersive-hero__copy">
-        <span className="eyebrow">ATTIKID</span>
-        <h1>{featuredSong?.title ?? featured.data?.title ?? 'MY HAPPY ENDING'}</h1>
-        <p className="hero-kicker">THE NEW SINGLE <span>•</span> OUT NOW</p>
-        <div className="button-row">
-          <button className="button" type="button" onClick={playFeatured} disabled={!featuredSong?.audio_url}>
-            ▶&nbsp; Listen now
-          </button>
-          <Link className="button secondary" to="/lyrics">View lyrics</Link>
+  return (
+    <div className="immersive-home">
+      <section className="immersive-hero">
+        <img className="immersive-hero__image" src="/images/hero-image.png" alt="ATTIKID in a dim recording room" />
+        <div className="immersive-hero__veil" />
+        <div className="immersive-hero__copy">
+          <span className="eyebrow">ATTIKID</span>
+          <h1>{featuredSong?.title ?? featured.data?.title ?? 'MY HAPPY ENDING'}</h1>
+          <p className="hero-kicker">THE NEW SINGLE <span>•</span> OUT NOW</p>
+          <div className="button-row">
+            <button className="button" type="button" onClick={playFeatured} disabled={!featuredSong?.audio_url}>
+              ▶&nbsp; Listen now
+            </button>
+            <Link className="button secondary" to="/lyrics">View lyrics</Link>
+          </div>
+          <p className="hero-microcopy">FOR THE PEOPLE WHO SURVIVED QUIETLY.</p>
         </div>
-        <p className="hero-microcopy">FOR THE PEOPLE WHO SURVIVED QUIETLY.</p>
-      </div>
-      <div className="hero-side-note">REAL<br/>MUSIC<br/>FOR<br/>REAL<br/>PEOPLE</div>
-      <div className="hero-scroll">SCROLL TO ENTER <span>↓</span></div>
-    </section>
+        <div className="hero-side-note">REAL<br />MUSIC<br />FOR<br />REAL<br />PEOPLE</div>
+        <div className="hero-scroll">SCROLL TO ENTER <span>↓</span></div>
+      </section>
 
-    <section ref={ref} className="immersive-section immersive-featured reveal">
-      <div className="immersive-section__heading">
-        <span className="eyebrow">01 / FEATURED MUSIC</span>
-        <h2>Essential listening</h2>
-        <span className="section-rule"/>
-      </div>
+      <section ref={ref} className="immersive-section immersive-featured reveal">
+        <div className="immersive-section__heading">
+          <span className="eyebrow">01 / FEATURED MUSIC</span>
+          <h2>Essential listening</h2>
+          <span className="section-rule" />
+        </div>
 
-      <div className="featured-release-grid">
-        {featuredReleases.map(({ title, album }) => (
-          <article className="featured-release-card" key={title}>
-            <div className="featured-release-card__art">
-              {album?.cover_url ? <img src={album.cover_url} alt={`${title} cover`} /> : <span>ATTIKID</span>}
-            </div>
-            <div className="featured-release-card__meta">
-              <span className="mono-label">{album ? new Date(album.release_date).toLocaleDateString() : 'RELEASE METADATA PENDING'}</span>
-              <h3>{title}</h3>
-              {album?.artist_name && <p>{album.artist_name}</p>}
-              {album ? (
-                <Link className="text-link orange-link" to={`/music/${album.slug}`}>View release <span>→</span></Link>
-              ) : (
-                <span className="mono-label">DROP THE RELEASE FOLDER TO SYNC</span>
-              )}
-            </div>
-          </article>
-        ))}
-      </div>
+        <div className="featured-release-grid">
+          {featuredReleases.map(({ title, album }) => (
+            <article className="featured-release-card" key={title}>
+              <div className="featured-release-card__art">
+                {album?.cover_url ? <img src={album.cover_url} alt={`${title} cover`} /> : <span>ATTIKID</span>}
+              </div>
+              <div className="featured-release-card__meta">
+                <span className="mono-label">
+                  {album ? new Date(album.release_date).toLocaleDateString() : 'RELEASE METADATA PENDING'}
+                </span>
+                <h3>{title}</h3>
+                {album?.artist_name && <p>{album.artist_name}</p>}
+                {album ? (
+                  <Link className="text-link orange-link" to={`/music/${album.slug}`}>
+                    View release <span>→</span>
+                  </Link>
+                ) : (
+                  <span className="mono-label">DROP THE RELEASE FOLDER TO SYNC</span>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
-    </section>
-
-    <section className="immersive-story">
-      <div><span className="eyebrow">02 / THE ARTIST</span><h2>Music for the things we don't say.</h2></div>
-      <p>ATTIKID turns restless nights, hard-won perspective, and the quiet pressure of ordinary life into songs that feel immediate and honest. Each release follows a thread through memory, survival, isolation, hope, and the people who keep showing up. Enter the full story to discover the places and experiences behind the voice.</p>
-      <Link to="/about" className="text-link orange-link">Enter the story <span>→</span></Link>
-    </section>
-
-    <section className="immersive-upcoming">
-      <div className="immersive-section__heading">
-        <span className="eyebrow">03 / UPCOMING RELEASES</span>
-        <h2>Next signal.</h2>
-        <span className="section-rule"/>
-      </div>
-      <article className="upcoming-release-card">
+      <section className="immersive-story">
         <div>
-          <span className="mono-label">EXPECTED RELEASE / DECEMBER 2026</span>
-          <h3>Cloudy With A Chance</h3>
+          <span className="eyebrow">02 / THE ARTIST</span>
+          <h2>Music for the things we don't say.</h2>
         </div>
-        <span className="upcoming-release-card__date">12 / 2026</span>
-      </article>
-    </section>
-  </div>
-}
-        <p className="hero-microcopy">FOR THE PEOPLE WHO SURVIVED QUIETLY.</p>
-      </div>
-      <div className="hero-side-note">REAL<br/>MUSIC<br/>FOR<br/>REAL<br/>PEOPLE</div>
-      <div className="hero-scroll">SCROLL TO ENTER <span>↓</span></div>
-    </section>
+        <p>
+          ATTIKID turns restless nights, hard-won perspective, and the quiet pressure of ordinary life into songs that feel immediate and honest. Each release follows a thread through memory, survival, isolation, hope, and the people who keep showing up. Enter the full story to discover the places and experiences behind the voice.
+        </p>
+        <Link to="/about" className="text-link orange-link">Enter the story <span>→</span></Link>
+      </section>
 
-    <section ref={ref} className="immersive-section immersive-featured reveal">
-      <div className="immersive-section__heading">
-        <span className="eyebrow">01 / FEATURED MUSIC</span>
-        <h2>Essential listening</h2>
-        <span className="section-rule"/>
-      </div>
-
-      <div className="featured-release-grid">
-        {featuredReleases.map(({ title, album }) => (
-          <article className="featured-release-card" key={title}>
-            <div className="featured-release-card__art">
-              {album?.cover_url ? <img src={album.cover_url} alt={`${title} cover`} /> : <span>ATTIKID</span>}
-            </div>
-            <div className="featured-release-card__meta">
-              <span className="mono-label">{album ? new Date(album.release_date).toLocaleDateString() : 'RELEASE METADATA PENDING'}</span>
-              <h3>{title}</h3>
-              {album?.artist_name && <p>{album.artist_name}</p>}
-              {album ? (
-                <Link className="text-link orange-link" to={`/music/${album.slug}`}>View release <span>→</span></Link>
-              ) : (
-                <span className="mono-label">DROP THE RELEASE FOLDER TO SYNC</span>
-              )}
-            </div>
-          </article>
-        ))}
-      </div>
-
-    </section>
-<<<<<<< HEAD
-    <section className="immersive-story"><div><span className="eyebrow">02 / THE ARTIST</span><h2>Music for the things we don't say.</h2></div><p>ATTIKID turns restless nights, hard-won perspective, and the quiet pressure of ordinary life into songs that feel immediate and honest. Each release follows a thread through memory, survival, isolation, hope, and the people who keep showing up. Enter the full story to discover the places and experiences behind the voice.</p><Link to="/about" className="text-link orange-link">Enter the story <span>→</span></Link></section>
-  </div>}
-=======
-
-    <section className="immersive-story">
-      <div><span className="eyebrow">02 / THE ARTIST</span><h2>Music for the things we don't say.</h2></div>
-      <p>ATTIKID turns restless nights, hard-won perspective, and the quiet pressure of ordinary life into songs that feel immediate and honest. Each release follows a thread through memory, survival, isolation, hope, and the people who keep showing up. Enter the full story to discover the places and experiences behind the voice.</p>
-      <Link to="/about" className="text-link orange-link">Enter the story <span>→</span></Link>
-    </section>
-
-    <section className="immersive-upcoming">
-      <div className="immersive-section__heading">
-        <span className="eyebrow">03 / UPCOMING RELEASES</span>
-        <h2>Next signal.</h2>
-        <span className="section-rule"/>
-      </div>
-      <article className="upcoming-release-card">
-        <div>
-          <span className="mono-label">EXPECTED RELEASE / DECEMBER 2026</span>
-          <h3>Cloudy with a chance</h3>
+      <section className="immersive-upcoming">
+        <div className="immersive-section__heading">
+          <span className="eyebrow">03 / UPCOMING RELEASES</span>
+          <h2>Next signal.</h2>
+          <span className="section-rule" />
         </div>
-        <span className="upcoming-release-card__date">12 / 2026</span>
-      </article>
-    </section>
-  </div>
+        <article className="upcoming-release-card">
+          <div>
+            <span className="mono-label">EXPECTED RELEASE / DECEMBER 2026</span>
+            <h3>Cloudy With A Chance</h3>
+          </div>
+          <span className="upcoming-release-card__date">12 / 2026</span>
+        </article>
+      </section>
+    </div>
+  );
 }
->>>>>>> 37bcc2decb710315fc326a50d3b2281d9cade863
