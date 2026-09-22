@@ -5,6 +5,8 @@ import { useSessionBootstrap } from '../hooks/useAuth';
 import { supabaseConfigured } from '../lib/supabase/client';
 import { Home } from '../pages/Home/Page';
 import { Music } from '../pages/Music/Page';
+import { MusicAZ } from '../pages/Music/AZ';
+import { MusicSingles } from '../pages/Music/Singles';
 import { Album } from '../pages/Album/Page';
 import { Song } from '../pages/Song/Page';
 import { Lyrics } from '../pages/Lyrics/Page';
@@ -32,6 +34,7 @@ export function App(){
   const [showSplash, setShowSplash] = useState(true);
   const {ready}=useSessionBootstrap();
   useEffect(()=>{document.documentElement.dataset.ready=String(ready)},[ready]);
+
   return <>
     {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
     {!supabaseConfigured ? <ConfigNotice/> : <BrowserRouter>
@@ -39,6 +42,9 @@ export function App(){
         <Route element={<AppShell/>}>
           <Route path="/" element={<Home/>}/>
           <Route path="/music" element={<Music/>}/>
+          <Route path="/music/a-z" element={<MusicAZ/>}/>
+          <Route path="/music/albums" element={<Music/>}/>
+          <Route path="/music/singles" element={<MusicSingles/>}/>
           <Route path="/music/:albumSlug" element={<Album/>}/>
           <Route path="/song/:songSlug" element={<Song/>}/>
           <Route path="/lyrics" element={<Lyrics/>}/>
