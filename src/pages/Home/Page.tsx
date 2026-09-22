@@ -97,24 +97,6 @@ export function Home(){
         ))}
       </div>
 
-      {featured.loading ? <div className="loading-state">Loading release…</div> : featured.data ? (
-        <div className="release-feature release-feature--primary">
-          <div className="release-feature__art">
-            {featured.data.cover_url ? <img src={featured.data.cover_url} alt={`${featured.data.title} cover`} /> : <span>ATTIKID</span>}
-          </div>
-          <div className="release-feature__info">
-            <span className="mono-label">{new Date(featured.data.release_date).toLocaleDateString()} / ATTIKID MUSIC</span>
-            <h3>{featured.data.title}</h3>
-            <p>This is where the story continues. Press play and stay awhile.</p>
-            <div className="song-list">
-              {tracks.loading ? <div className="loading-state">Loading tracks…</div> : tracks.data.map((song, index) => (
-                <SongRow key={song.id} song={song} index={index} songs={tracks.data}/>
-              ))}
-            </div>
-            <Link className="text-link orange-link" to={`/music/${featured.data.slug}`}>View full release <span>→</span></Link>
-          </div>
-        </div>
-      ) : <div className="empty-state">No featured release has been published yet.</div>}
     </section>
 
     <section className="immersive-story">
