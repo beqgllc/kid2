@@ -1,11 +1,10 @@
 import 'dotenv/config';
-import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { S3Client, HeadObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import chokidar from 'chokidar';
 import { parseFile } from 'music-metadata';
 import { createClient } from '@supabase/supabase-js';
