@@ -9,7 +9,7 @@ export function GlobalPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const counted = useRef(false);
   const sessionId = useRef(crypto.randomUUID());
-  const { currentSong, queue, currentIndex, isPlaying, status, currentTime, duration, volume, muted, repeatMode, shuffle, error, set } = usePlayerStore();
+  const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, set } = usePlayerStore();
 
   useEffect(() => { if (audioRef.current) { audioRef.current.volume = volume; audioRef.current.muted = muted; } }, [volume, muted]);
   useEffect(() => {
