@@ -5,11 +5,21 @@ import { formatDuration } from '../../lib/utils';
 
 const VIEWS = ['Overview', 'Purpose', 'Track list', 'Credits'] as const;
 
+function metadataString(song: Song, key: 'album' | 'artist' | 'release_date') {
+  const value = song.metadata?.[key];
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function metadataNumber(song: Song, key: 'track_total') {
+  const value = song.metadata?.[key];
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
 export function AlbumCard({ album, tracks = [] }: { album: Album; tracks?: Song[] }) {
   const [view, setView] = useState(0);
 
   const artists = useMemo(
-    () => [...new Set(tracks.map((track) => track.artist_name).filter(Boolean))],
+    () => [...new Set(tracks.map((track) => metadataString(track, 'artist') ?? track.artist_name).filter(Boolean))],
     [tracks],
   );
   const genres = useMemo(
@@ -29,9 +39,17 @@ export function AlbumCard({ album, tracks = [] }: { album: Album; tracks?: Song[
     [tracks],
   );
 
-  const releaseTitle = tracks.find((track) => track.album?.title)?.album?.title ?? album.title;
-  const releaseArtist = artists.join(' / ') || tracks.find((track) => track.album?.artist_name)?.album?.artist_name || album.artist_name;
-  const releaseDate = tracks.find((track) => track.release_date)?.release_date ?? album.release_date;
+  const releaseTitle =
+    tracks.map((track) => metadataString(track, 'album')).find(Boolean) ??
+    tracks.find((track) => track.album?.title)?.album?.title ??
+    album.title;
+  const releaseArtist = artists.join(' / ') || album.artist_name;
+  const releaseDate =
+    tracks.map((track) => metadataString(track, 'release_date')).find(Boolean) ??
+    tracks.find((track) => track.release_date)?.release_date ??
+    album.release_date;
+  const metadataTrackCount = tracks.map((track) => metadataNumber(track, 'track_total')).find((value): value is number => value !== null);
+  const trackCount = metadataTrackCount ?? tracks.length;
   const purpose = album.description?.trim() || 'No album purpose has been added to this release config yet.';
   const genreList = genres.length ? genres : album.metadata?.genre ? [String(album.metadata.genre)] : [];
   const platformList = aiPlatforms.length ? aiPlatforms : album.metadata?.ai_platform ? [String(album.metadata.ai_platform)] : [];
@@ -64,7 +82,7 @@ export function AlbumCard({ album, tracks = [] }: { album: Album; tracks?: Song[
             <dl className="album-facts">
               <div><dt>Artist</dt><dd>{releaseArtist}</dd></div>
               <div><dt>Release date</dt><dd>{releaseDate ? new Date(releaseDate).getFullYear() : '—'}</dd></div>
-              <div><dt>Tracks</dt><dd>{tracks.length}</dd></div>
+              <div><dt>Tracks</dt><dd>{trackCount}</dd></div>
             </dl>
           </div>
         </div>
@@ -80,7 +98,7 @@ export function AlbumCard({ album, tracks = [] }: { album: Album; tracks?: Song[
 
       {view === 2 && (
         <div className="album-carousel-card__body album-carousel-card__body--wide">
-          <span className="mono-label">TRACK LIST / {tracks.length} TRACKS</span>
+          <span className="mono-label">TRACK LIST / {trackCount} TRACKS</span>
           <div className="album-carousel-track-list">
             {tracks.length ? tracks
               .slice()
@@ -88,8 +106,8 @@ export function AlbumCard({ album, tracks = [] }: { album: Album; tracks?: Song[
               .map((track, index) => (
                 <div className="album-carousel-track" key={track.id}>
                   <span>{String(track.track_number ?? index + 1).padStart(2, '0')}</span>
-                  <strong>{track.title}</strong>
-                  <span>{track.artist_name}</span>
+                  <strong>{metadataString(track, 'title') ?? track.title}</strong>
+                  <span>{metadataString(track, 'artist') ?? track.artist_name}</span>
                   <span>{formatDuration(track.duration_seconds)}</span>
                 </div>
               )) : <div className="empty-state">No tracks have been ingested for this release yet.</div>}
