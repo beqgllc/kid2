@@ -18,7 +18,8 @@ export function GlobalPlayer() {
     audio.src = currentSong.audio_url;
     audio.load(); counted.current = false;
     set({ status: 'loading', currentTime: 0 });
-  }, [currentSong?.id, set]);
+  }, [currentSong, set]);
+
   useEffect(() => { if (!currentSong) return; if (isPlaying && audioRef.current?.paused) audioRef.current.play().catch(() => set({ isPlaying: false, error: 'Playback was blocked. Press play to start.' })); }, [isPlaying, currentSong, set]);
   const onTime = () => {
     const audio = audioRef.current; if (!audio || !currentSong) return;
