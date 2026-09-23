@@ -30,9 +30,14 @@ export function Home() {
 
   const letMeFlyVideo = lyricVideos.find((video) => video.song?.title?.toLowerCase() === 'let me fly') ?? null;
 
+  const featuredTracks = useMemo(
+    () => featured.data ? tracks.data.filter((song) => song.album_id === featured.data?.id) : [],
+    [featured.data, tracks.data],
+  );
+
   const playableTracks = useMemo(
-    () => tracks.data.filter((song): song is PlayerSong => Boolean(song.audio_url)),
-    [tracks.data],
+    () => featuredTracks.filter((song): song is PlayerSong => Boolean(song.audio_url)),
+    [featuredTracks],
   );
 
   const playQueue = (queue = playableTracks, index = 0) => {
@@ -95,7 +100,7 @@ export function Home() {
         <section className="portfolio-featured">
           <div className="featured-release-art">
             {featured.data?.cover_url
-              ? <img src={featured.data.cover_url} alt={featured.data.title} />
+              ? <img src="/images/albums/cloudy-with-a-chance.svg" alt="Cloudy With A Chance" />
               : <span>ATTIKID</span>}
           </div>
 
@@ -103,7 +108,7 @@ export function Home() {
             <span className="portfolio-label">FEATURED ALBUM</span>
             <h2>{featured.data?.title ?? 'Cloudy With A Chance'}</h2>
             <div className="featured-release-meta">
-              {releaseYear(featured.data?.release_date)} <span>•</span> {featured.data?.song_count ?? tracks.data.length} TRACKS
+              {releaseYear(featured.data?.release_date)} <span>•</span> {featured.data?.song_count ?? featuredTracks.length} TRACKS
             </div>
             <p>{featured.data?.description ?? 'The latest chapter in the ATTIKID catalog.'}</p>
             <div className="button-row">
@@ -116,8 +121,8 @@ export function Home() {
 
           <div className="featured-tracklist">
             {tracks.loading && <div className="portfolio-muted">Loading tracks…</div>}
-            {!tracks.loading && tracks.data.length === 0 && <div className="portfolio-muted">Tracks will appear here after ingest.</div>}
-            {tracks.data.map((song, index) => (
+            {!tracks.loading && featuredTracks.length === 0 && <div className="portfolio-muted">Tracks will appear here after ingest.</div>}
+            {featuredTracks.map((song, index) => (
               <button
                 type="button"
                 className={`featured-track${currentSong?.id === song.id ? ' is-current' : ''}`}
