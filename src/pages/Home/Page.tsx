@@ -1,43 +1,49 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useFeaturedAlbum, useFeaturedSong, useSongByTitle, useSongs } from '../../hooks/useCatalog';
+import { useMemo } from 'react';
+import { useAlbums, useFeaturedAlbum, useFeaturedSong, useLatestSongs, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
-import { useScrollReveal } from '../../hooks/useScrollReveal';
-import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
+import { formatDuration } from '../../lib/utils';
+import { usePageMeta } from '../../lib/seo';
+
+const videoItems = [
+  { title: 'Funeral (Official Visualizer)', date: 'Mar 28, 2025', image: '/images/hero/hero-about.webp', duration: '3:12' },
+  { title: 'Lost Cause (Official Video)', date: 'Feb 14, 2025', image: '/images/hero/hero-music.webp', duration: '4:27' },
+  { title: 'Still Here (Lyric Video)', date: 'Jan 30, 2025', image: '/images/artist/artist-press-photo-1.webp', duration: '3:45' },
+  { title: "What's Left (Official Visualizer)", date: 'Dec 12, 2024', image: '/images/hero/hero-home.webp', duration: '3:21' },
+];
+
+function releaseYear(value?: string | null) {
+  if (!value) return '—';
+  const year = new Date(value).getFullYear();
+  return Number.isFinite(year) ? String(year) : '—';
+}
 
 export function Home() {
   const featured = useFeaturedAlbum();
   const featuredSongQuery = useFeaturedSong();
-  const letMeFly = useSongByTitle('Let me fly');
-  const tracks = useSongs(featured.data?.id, 5);
+  const featuredTracks = useSongs(featured.data?.id, 12);
+  const albums = useAlbums(8);
+  const latestSongs = useLatestSongs(3);
   const setPlayer = usePlayerStore((state) => state.set);
-  const ref = useScrollReveal<HTMLElement>();
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.tiktok.com/embed.js';
-    script.async = true;
-    document.body.appendChild(script);
-    return () => script.remove();
-  }, []);
-
-  const playableAlbumTracks = tracks.data.flatMap((song) =>
-    song.audio_url ? [{ ...song, audio_url: song.audio_url }] : [],
+  const playableTracks = useMemo(
+    () => featuredTracks.data.filter((song) => Boolean(song.audio_url)),
+    [featuredTracks.data],
   );
-  const fallbackFeaturedSong = playableAlbumTracks[0] ?? null;
-  const featuredSong = featuredSongQuery.data?.audio_url
-    ? { ...featuredSongQuery.data, audio_url: featuredSongQuery.data.audio_url }
-    : fallbackFeaturedSong;
 
-  const playFeatured = () => {
-    if (!featuredSong?.audio_url) return;
-    const albumQueue = featuredSong.album_id ? playableAlbumTracks : [featuredSong];
-    const currentIndex = Math.max(0, albumQueue.findIndex((song) => song.id === featuredSong.id));
+  const featuredSong = featuredSongQuery.data?.audio_url
+    ? featuredSongQuery.data
+    : playableTracks[0] ?? null;
+
+  const playQueue = (queue = playableTracks, index = 0) => {
+    if (!queue.length) return;
+    const song = queue[index] ?? queue[0];
+    if (!song?.audio_url) return;
 
     setPlayer({
-      currentSong: featuredSong,
-      queue: albumQueue,
-      currentIndex,
+      currentSong: song,
+      queue: queue as any,
+      currentIndex: index,
       isPlaying: true,
       status: 'loading',
       currentTime: 0,
@@ -45,108 +51,168 @@ export function Home() {
     });
   };
 
+  const shareSite = async () => {
+    const payload = { title: 'ATTIKID', text: 'ATTIKID — real music. Real shit.', url: window.location.href };
+    try {
+      if (navigator.share) await navigator.share(payload);
+      else await navigator.clipboard.writeText(window.location.href);
+    } catch {
+      // User cancelled or clipboard/share is unavailable.
+    }
+  };
+
+  const moreAlbums = albums.data
+    .filter((album) => album.id !== featured.data?.id)
+    .slice(0, 5);
 
   usePageMeta({
     title: 'ATTIKID | Official Music, Songs & Lyrics',
-    description: 'Listen to ATTIKID music, explore songs and lyrics, and discover the latest tracks from ATTIKID.',
+    description: 'Stream ATTIKID music, explore releases, visuals, and the story behind the songs.',
     canonical: 'https://attikid.vercel.app/',
     type: 'website',
-    keywords: ['ATTIKID', 'music', 'lyrics', 'artist story', 'albums'],
-    image: '/images/hero/hero-home.webp',
-    jsonLd: buildWebSiteJsonLd(),
+    keywords: ['ATTIKID', 'music', 'albums', 'songs', 'visuals', 'artist'],
+    image: '/images/hero/attikid-hero.webp',
   });
 
   return (
-    <div className="immersive-home">
-      <section className="immersive-hero">
-        <img className="immersive-hero__image" src="/images/hero-image.png" alt="ATTIKID in a dim recording room" />
-        <div className="immersive-hero__veil" />
-        <div className="immersive-hero__copy">
-          <span className="eyebrow">ATTIKID</span>
-          <h1>{featuredSong?.title ?? featured.data?.title ?? 'MY HAPPY ENDING'}</h1>
-          <p className="hero-kicker">THE NEW SINGLE <span>•</span> OUT NOW</p>
-          <div className="button-row">
-            <button className="button" type="button" onClick={playFeatured} disabled={!featuredSong?.audio_url}>
-              ▶&nbsp; Listen now
-            </button>
-            <Link className="button secondary" to="/lyrics">View lyrics</Link>
+    <div className="portfolio-home">
+      <main className="portfolio-main">
+        <section className="portfolio-hero">
+          <img src="/images/hero/attikid-hero.webp" alt="ATTIKID on a rooftop at sunset" />
+          <div className="portfolio-hero__veil" />
+          <div className="portfolio-hero__copy">
+            <span className="portfolio-label">ATTIKID / OFFICIAL SITE</span>
+            <p>I&apos;m Attikid. I make music about the things most people don&apos;t talk about. This is my space — my music, my story, my chaos. Thanks for being here.</p>
+            <div className="button-row">
+              <button className="button" type="button" onClick={() => playQueue()} disabled={!featuredSong && !playableTracks.length}>
+                Listen now →
+              </button>
+              <Link className="button secondary" to="/about">Enter the story</Link>
+            </div>
           </div>
-          <p className="hero-microcopy">FOR THE PEOPLE WHO SURVIVED QUIETLY.</p>
-        </div>
-        <div className="hero-side-note">REAL<br />MUSIC<br />FOR<br />REAL<br />PEOPLE</div>
-        <div className="hero-scroll">SCROLL TO ENTER <span>↓</span></div>
-      </section>
+        </section>
 
-      <section ref={ref} className="immersive-section immersive-featured reveal">
-        <div className="immersive-section__heading">
-          <span className="eyebrow">01 / FEATURED LYRIC VIDEO</span>
-          <h2>Official lyric video</h2>
-          <span className="section-rule" />
-        </div>
-
-        <article className="featured-lyric-video-card">
-          <div className="featured-lyric-video-card__title">
-            <span className="mono-label">ATTIKID / CLOUDY WITH A CHANCE</span>
-            <h3>Let me fly</h3>
+        <section className="portfolio-featured">
+          <div className="featured-release-art">
+            {featured.data?.cover_url
+              ? <img src={featured.data.cover_url} alt={featured.data.title} />
+              : <span>ATTIKID</span>}
           </div>
 
-          <div className="featured-lyric-video-card__embed" aria-label="Let me fly official lyric video">
-            <blockquote
-              className="tiktok-embed"
-              cite="https://www.tiktok.com/@iamattikid/video/7686115895256665357"
-              data-video-id="7686115895256665357"
-              style={{ maxWidth: '605px', minWidth: '325px' }}
-            >
-              <section>
-                <a target="_blank" title="@iamattikid" href="https://www.tiktok.com/@iamattikid?refer=embed" rel="noreferrer">
-                  @iamattikid
-                </a>
-                <p>
-                  They called it giving up. I called it finally letting go. 🖤 “LET ME FLY&quot; For the ones who got tired of pretending they were okay. #LetMeFly #EmoRap #SadRap #EmoRapMusic #RapTok #DarkMusic #UndergroundMusic #NewMusic #LyricVideo #Attikid #FYP #ForYou
-                </p>
-                <a target="_blank" title="♬ original sound - Attikid" href="https://www.tiktok.com/music/original-sound-Attikid-7686115966803774221?refer=embed" rel="noreferrer">
-                  ♬ original sound - Attikid
-                </a>
-              </section>
-            </blockquote>
+          <div className="featured-release-info">
+            <span className="portfolio-label">FEATURED ALBUM</span>
+            <h2>{featured.data?.title ?? 'Trauma & Shit'}</h2>
+            <div className="featured-release-meta">
+              {releaseYear(featured.data?.release_date)} <span>•</span> {featured.data?.song_count ?? featuredTracks.data.length} TRACKS
+            </div>
+            <p>{featured.data?.description ?? 'The latest chapter in the ATTIKID catalog.'}</p>
+            <div className="button-row">
+              <button className="button" type="button" onClick={() => playQueue()} disabled={!playableTracks.length}>Play album</button>
+              {featured.data && <Link className="button secondary" to={`/music/${featured.data.slug}`}>View release</Link>}
+            </div>
           </div>
 
-          <div className="featured-lyric-video-card__actions">
-            <Link className="button" to={letMeFly.data ? "/lyrics/" + letMeFly.data.slug : "/lyrics"}>
-              Read Let me fly lyrics
+          <div className="featured-tracklist">
+            {featuredTracks.loading && <div className="portfolio-muted">Loading tracks…</div>}
+            {!featuredTracks.loading && featuredTracks.data.length === 0 && <div className="portfolio-muted">Tracks will appear here after ingest.</div>}
+            {featuredTracks.data.slice(0, 9).map((song, index) => (
+              <button
+                type="button"
+                className="featured-track"
+                key={song.id}
+                onClick={() => song.audio_url ? playQueue(playableTracks, Math.max(0, playableTracks.findIndex((item) => item.id === song.id))) : undefined}
+                disabled={!song.audio_url}
+              >
+                <span className="featured-track__play">{song.audio_url ? (featuredSong?.id === song.id ? '▶' : '·') : '—'}</span>
+                <span className="featured-track__number">{String(index + 1).padStart(2, '0')}</span>
+                <span className="featured-track__title">{song.title}</span>
+                <span className="featured-track__time">{formatDuration(song.duration_seconds ?? 0)}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="portfolio-section">
+          <div className="portfolio-section__heading">
+            <div>
+              <span className="portfolio-label">MORE MUSIC</span>
+              <h2>Releases</h2>
+            </div>
+            <Link to="/music">View all →</Link>
+          </div>
+          <div className="release-grid">
+            {moreAlbums.length ? moreAlbums.map((album) => (
+              <Link className="release-card" to={`/music/${album.slug}`} key={album.id}>
+                <div className="release-card__art">
+                  {album.cover_url ? <img src={album.cover_url} alt={album.title} /> : <span>ATTIKID</span>}
+                </div>
+                <strong>{album.title}</strong>
+                <span>{releaseYear(album.release_date)} <i>•</i> {album.song_count ?? 0} TRACKS</span>
+              </Link>
+            )) : (
+              <div className="portfolio-muted">Your release catalog will appear here as it fills in.</div>
+            )}
+          </div>
+        </section>
+
+        <section className="portfolio-section portfolio-videos">
+          <div className="portfolio-section__heading">
+            <div>
+              <span className="portfolio-label">LATEST VIDEOS</span>
+              <h2>Visuals</h2>
+            </div>
+            <Link to="/videos">View all →</Link>
+          </div>
+          <div className="video-grid">
+            {videoItems.map((video) => (
+              <article className="video-card" key={video.title}>
+                <div className="video-card__thumb">
+                  <img src={video.image} alt="" />
+                  <span className="video-card__play">▶</span>
+                  <span className="video-card__duration">{video.duration}</span>
+                </div>
+                <strong>{video.title}</strong>
+                <span>{video.date}</span>
+              </article>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <aside className="portfolio-aside">
+        <section className="aside-note"><span>“SAME KID.<br />DIFFERENT DEMONS.”</span></section>
+        <section className="aside-section">
+          <span className="portfolio-label">STREAM ANYWHERE</span>
+          <div className="stream-list">
+            {['Spotify', 'Apple Music', 'YouTube Music', 'SoundCloud', 'Amazon Music'].map((service) => (
+              <div className="stream-item" key={service}><span>{service.slice(0, 1)}</span>{service}</div>
+            ))}
+          </div>
+        </section>
+        <section className="aside-section aside-follow">
+          <span className="portfolio-label">FOLLOW & SHARE</span>
+          <div className="social-row">
+            <a href="https://www.tiktok.com/@iamattikid" target="_blank" rel="noreferrer" aria-label="TikTok">♪</a>
+            <button type="button" onClick={() => void shareSite()} aria-label="Share ATTIKID">↗</button>
+            <Link to="/fan-mail" aria-label="Contact">✉</Link>
+          </div>
+        </section>
+        <section className="aside-quote">“MUSIC IS JUST ANOTHER WAY FOR ME TO BE HONEST.”<small>— ATTIKID</small></section>
+        <section className="aside-section community-card">
+          <span className="portfolio-label">JOIN THE COMMUNITY</span>
+          <p>Get updates, new releases, behind the scenes, and more.</p>
+          <Link className="button" to="/fan-mail">Join the list →</Link>
+        </section>
+        <section className="aside-section activity">
+          <span className="portfolio-label">RECENT ACTIVITY</span>
+          {(latestSongs.data.length ? latestSongs.data : featuredTracks.data.slice(0, 3)).map((song) => (
+            <Link className="activity-row" key={song.id} to={`/song/${song.slug}`}>
+              <div className="activity-thumb">{song.artwork_url ? <img src={song.artwork_url} alt="" /> : <span />}</div>
+              <div><strong>New song</strong><span>{song.title}</span></div>
             </Link>
-            <Link className="button secondary" to="/music/cloudy-with-a-chance">
-              Cloudy With A Chance
-            </Link>
-          </div>
-        </article>
-      </section>
-
-      <section className="immersive-story">
-        <div>
-          <span className="eyebrow">02 / THE ARTIST</span>
-          <h2>Music for the things we don't say.</h2>
-        </div>
-        <p>
-          ATTIKID turns restless nights, hard-won perspective, and the quiet pressure of ordinary life into songs that feel immediate and honest. Each release follows a thread through memory, survival, isolation, hope, and the people who keep showing up. Enter the full story to discover the places and experiences behind the voice.
-        </p>
-        <Link to="/about" className="text-link orange-link">Enter the story <span>→</span></Link>
-      </section>
-
-      <section className="immersive-upcoming">
-        <div className="immersive-section__heading">
-          <span className="eyebrow">03 / UPCOMING RELEASES</span>
-          <h2>Next signal.</h2>
-          <span className="section-rule" />
-        </div>
-        <article className="upcoming-release-card">
-          <div>
-            <span className="mono-label">EXPECTED RELEASE / DECEMBER 2026</span>
-            <h3>Cloudy With A Chance</h3>
-          </div>
-          <span className="upcoming-release-card__date">12 / 2026</span>
-        </article>
-      </section>
+          ))}
+        </section>
+      </aside>
     </div>
   );
 }
