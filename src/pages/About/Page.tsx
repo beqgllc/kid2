@@ -10,21 +10,36 @@ export function About() {
     canonical: 'https://attikid.vercel.app/about',
     type: 'profile',
     keywords: ['ATTIKID', 'artist story', 'bio', 'about'],
-    image: '/images/hero/hero-about.webp',
-    jsonLd: buildWebSiteJsonLd()
+    image: '/images/artist/kid-portrait-primary.webp',
+    jsonLd: buildWebSiteJsonLd(),
   });
 
-  return <div className="page">
-    <header className="page-hero page-hero-with-image">
-      <span className="eyebrow">ABOUT</span>
-      <h1>ATTIKID</h1>
-      <p>The person behind the music.</p>
-      <img src="/images/hero/hero-about.webp" alt="Artist portrait in a wood-paneled room" />
-    </header>
-    <article className="prose">
-      <img className="artist-portrait" src="/images/artist/kid-portrait-primary.webp" alt="Portrait of ATTIKID" />
-      <RichContent blocks={aboutContent} />
-      <Link className="button" to="/music">Listen to the music</Link>
-    </article>
-  </div>;
+  return (
+    <div className="page about-portfolio-page">
+      <header className="catalog-hero about-hero">
+        <div>
+          <span className="portfolio-label">ABOUT / THE ARTIST</span>
+          <h1>Same kid.<br />Different demons.</h1>
+          <p>The person behind the music, the records, and the stories between them.</p>
+        </div>
+      </header>
+
+      <section className="about-split">
+        <div className="about-image">
+          <img src="/images/artist/kid-portrait-primary.webp" alt="Portrait of ATTIKID" />
+        </div>
+        <div className="about-story">
+          <span className="portfolio-label">THE STORY</span>
+          <h2>Music for the things we don&apos;t say.</h2>
+          <RichContent blocks={aboutContent} />
+          <Link className="button" to="/music">Listen to the music →</Link>
+        </div>
+      </section>
+
+      <section className="about-quote">
+        <span>“MUSIC IS JUST ANOTHER WAY FOR ME TO BE HONEST.”</span>
+        <small>— ATTIKID</small>
+      </section>
+    </div>
+  );
 }
