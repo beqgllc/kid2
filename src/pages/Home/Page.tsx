@@ -85,6 +85,7 @@ export function Home() {
           <div className="portfolio-hero__veil" />
           <div className="portfolio-hero__copy">
             <span className="portfolio-label">ATTIKID / OFFICIAL SITE</span>
+            <h1>ATTIKID</h1>
             <p>I&apos;m Attikid. I make music about the things most people don&apos;t talk about. This is my space — my music, my story, my chaos. Thanks for being here.</p>
             <div className="button-row">
               <button className="button" type="button" onClick={() => playQueue()} disabled={!featuredSong && !playableTracks.length}>
@@ -190,13 +191,14 @@ export function Home() {
 
       <aside className="portfolio-aside">
         <section className="aside-note"><span>“SAME KID.<br />DIFFERENT DEMONS.”</span></section>
-        <section className="aside-section">
-          <span className="portfolio-label">STREAM ANYWHERE</span>
-          <div className="stream-list">
-            {['Spotify', 'Apple Music', 'YouTube Music', 'SoundCloud', 'Amazon Music'].map((service) => (
-              <div className="stream-item" key={service}><span>{service.slice(0, 1)}</span>{service}</div>
-            ))}
-          </div>
+        <section className="aside-section aside-directory">
+          <span className="portfolio-label">THE SPACE</span>
+          <nav className="aside-directory__list" aria-label="ATTIKID quick links">
+            <Link to="/music"><span>01</span>Music archive</Link>
+            <Link to="/videos"><span>02</span>Visual archive</Link>
+            <Link to="/lyrics"><span>03</span>Lyrics</Link>
+            <Link to="/about"><span>04</span>The story</Link>
+          </nav>
         </section>
         <section className="aside-section aside-follow">
           <span className="portfolio-label">FOLLOW & SHARE</span>
