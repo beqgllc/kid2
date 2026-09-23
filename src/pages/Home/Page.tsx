@@ -79,7 +79,7 @@ export function Home() {
     <div className="portfolio-home">
       <div className="portfolio-main">
         <section className="portfolio-hero">
-          <img src="/images/hero/attikid-hero.webp" alt="ATTIKID on a rooftop at sunset" />
+          <img src="/images/hero/attikid-hero.webp" alt="ATTIKID on a rooftop at sunset" loading="eager" fetchPriority="high" decoding="async" />
           <div className="portfolio-hero__veil" />
           <div className="portfolio-hero__copy">
             <span className="portfolio-label">ATTIKID / OFFICIAL SITE</span>
