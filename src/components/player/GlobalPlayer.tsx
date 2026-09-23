@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ChangeEvent, type SyntheticEvent } from 'react';
 import { usePlayerStore } from '../../stores/playerStore';
-import { formatDuration, } from '../../lib/utils';
+import { formatDuration } from '../../lib/utils';
 import { getNextQueueIndex } from '../../lib/player';
 import { recordPlay } from '../../services/analytics';
 import type { PlayerSong } from '../../types/models';
@@ -229,7 +229,7 @@ export function GlobalPlayer() {
         onTimeUpdate={onTime}
         onProgress={onProgress}
         onWaiting={() => set({ status: 'loading' })}
-        onCanPlay={() => { switchingSource.current = false; set({ status: isPlaying ? 'ready' : 'ready' }); }}
+        onCanPlay={() => { switchingSource.current = false; set({ status: 'ready' }); }}
         onPlaying={() => { switchingSource.current = false; set({ isPlaying: true, status: 'playing', error: null }); }}
         onPlay={() => { switchingSource.current = false; set({ isPlaying: true, status: 'playing', error: null }); }}
         onPause={() => { if (switchingSource.current) return; set({ isPlaying: false, status: 'paused' }); }}
