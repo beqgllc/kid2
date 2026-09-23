@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getLyricVideos } from '../../services/visuals';
 import { usePageMeta } from '../../lib/seo';
 import type { LyricVideo } from '../../types/models';
-import './page.css';
+
+function duration(seconds: number | null) {
+  if (!seconds) return '';
+  return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+}
 
 export function LyricVideos() {
   const [items, setItems] = useState<LyricVideo[]>([]);
@@ -14,6 +19,7 @@ export function LyricVideos() {
     description: 'Watch ATTIKID lyric videos and visual releases.',
     canonical: 'https://attikid.vercel.app/visuals/lyric-videos',
     type: 'website',
+    image: '/images/hero/attikid-hero.webp',
   });
 
   useEffect(() => {
@@ -24,39 +30,37 @@ export function LyricVideos() {
   }, []);
 
   return (
-    <div className="lyric-videos-page">
-      <header className="visuals-page__header">
-        <span className="eyebrow">03 / VISUALS / LYRIC VIDEOS</span>
-        <h1>Words in motion.</h1>
-        <p>Lyric films for the ATTIKID catalog.</p>
+    <div className="page lyric-video-portfolio-page">
+      <header className="catalog-hero">
+        <div>
+          <span className="portfolio-label">VIDEOS / LYRIC FILMS</span>
+          <h1>Words in motion.</h1>
+          <p>The visual side of the catalog — every published lyric video in one place.</p>
+          <div className="music-page-links">
+            <Link to="/videos">All visuals</Link>
+            <Link className="active" to="/visuals/lyric-videos">Lyric videos</Link>
+          </div>
+        </div>
       </header>
 
       {loading && <div className="loading-state">Loading lyric videos…</div>}
       {error && <div className="empty-state">{error}</div>}
-      {!loading && !error && !items.length && (
-        <div className="empty-state">No lyric videos have been published yet.</div>
-      )}
+      {!loading && !error && !items.length && <div className="empty-state">No lyric videos have been published yet.</div>}
 
-      <div className="lyric-videos-grid">
+      <div className="lyric-video-portfolio-grid">
         {items.map((item) => (
-          <article className="lyric-video-card" key={item.id}>
-            <div className="lyric-video-frame">
-              <video
-              controls
-              preload="metadata"
-              poster={item.thumbnail_url ?? undefined}
-              playsInline
-            >
-              <source
-              src={item.video_url ?? undefined}
-              type={item.video_mime_type}
-              />
+          <article className="lyric-video-portfolio-card" key={item.id}>
+            <div className="lyric-video-portfolio-frame">
+              <video controls preload="metadata" poster={item.thumbnail_url ?? undefined} playsInline>
+                {item.video_url && <source src={item.video_url} type={item.video_mime_type} />}
               </video>
+              {item.duration_seconds ? <span className="lyric-video-portfolio-duration">{duration(item.duration_seconds)}</span> : null}
             </div>
-            <div className="lyric-video-card__meta">
-              <span className="eyebrow">LYRIC VIDEO</span>
+            <div className="lyric-video-portfolio-meta">
+              <span className="portfolio-label">LYRIC VIDEO</span>
               <h2>{item.title}</h2>
-              <p>{item.song?.artist_name ?? 'ATTIKID'}{item.song?.album_title ? ` · ${item.song.album_title}` : ''}</p>
+              <p>{item.song?.album_title ?? 'ATTIKID'} <span>•</span> {item.song?.artist_name ?? 'ATTIKID'}</p>
+              {item.song?.slug && <Link className="text-link" to={`/song/${item.song.slug}`}>Open track →</Link>}
             </div>
           </article>
         ))}
