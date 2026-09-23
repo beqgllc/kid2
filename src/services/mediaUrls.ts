@@ -8,6 +8,12 @@ function encodePath(path: string) {
   return path.split('/').map(encodeURIComponent).join('/');
 }
 
+export function fallbackMediaUrl(bucket: string, path: string | null) {
+  if (!path || path.startsWith('r2:')) return null;
+  const client = requireSupabase();
+  return client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
 export function mediaUrl(bucket: string, path: string | null) {
   if (!path) return null;
 
