@@ -76,7 +76,7 @@ export function Home() {
 
   return (
     <div className="portfolio-home">
-      <main className="portfolio-main">
+      <div className="portfolio-main">
         <section className="portfolio-hero">
           <img src="/images/hero/attikid-hero.webp" alt="ATTIKID on a rooftop at sunset" />
           <div className="portfolio-hero__veil" />
@@ -177,7 +177,7 @@ export function Home() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
 
       <aside className="portfolio-aside">
         <section className="aside-note"><span>“SAME KID.<br />DIFFERENT DEMONS.”</span></section>
