@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { SongRow } from '../../components/music/SongRow';
 import { useSongs } from '../../hooks/useCatalog';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
@@ -34,18 +35,16 @@ export function MusicAZ() {
 
   return (
     <div className="page music-catalog-page">
-      <header className="catalog-hero">
-        <div>
-          <span className="portfolio-label">CATALOG / A–Z</span>
-          <h1>Every track.</h1>
-          <p>Every ATTIKID song, alphabetized across albums and standalone releases.</p>
-          <div className="music-page-links">
-            <Link className="active" to="/music/a-z">A–Z</Link>
-            <Link to="/music/albums">Albums</Link>
-            <Link to="/music/singles">Singles</Link>
-          </div>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="CATALOG / A–Z"
+        title="Every track."
+        description="Every ATTIKID song, alphabetized across albums and standalone releases."
+        links={[
+          { to: '/music/a-z', label: 'A–Z', active: true },
+          { to: '/music/albums', label: 'Albums' },
+          { to: '/music/singles', label: 'Singles' },
+        ]}
+      />
 
       <section className="portfolio-section page-section-tight">
         {songs.loading ? (
