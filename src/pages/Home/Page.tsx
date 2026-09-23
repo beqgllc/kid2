@@ -82,8 +82,6 @@ export function Home() {
           <img src="/images/hero/attikid-hero.webp" alt="ATTIKID on a rooftop at sunset" loading="eager" fetchPriority="high" decoding="async" />
           <div className="portfolio-hero__veil" />
           <div className="portfolio-hero__copy">
-            <span className="portfolio-label">ATTIKID / OFFICIAL SITE</span>
-            <h1>ATTIKID</h1>
             <p>I&apos;m Attikid. I make music about the things most people don&apos;t talk about. This is my space — my music, my story, my chaos. Thanks for being here.</p>
             <div className="button-row">
               <button className="button" type="button" onClick={() => playQueue()} disabled={!playableTracks.length}>

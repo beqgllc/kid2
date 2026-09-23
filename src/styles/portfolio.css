@@ -34,11 +34,11 @@ main{overflow:visible}
 .portfolio-home{margin-left:162px;display:grid;grid-template-columns:minmax(0,1fr) 252px;min-height:100vh;background:#070707}
 .portfolio-main{min-width:0;border-right:1px solid #222}
 .portfolio-aside{min-width:0;background:#080808}
-.portfolio-hero{position:relative;min-height:390px;overflow:hidden;border-bottom:1px solid #2a2a2a}
+.portfolio-hero{position:relative;min-height:405px;overflow:hidden;border-bottom:1px solid #2a2a2a}
 .portfolio-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .portfolio-hero__veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.34) 50%,rgba(0,0,0,.12) 100%),linear-gradient(0deg,rgba(0,0,0,.76) 0%,transparent 48%);pointer-events:none}
-.portfolio-hero__copy{position:absolute;left:9%;bottom:30px;width:min(390px,42%);z-index:1}
-.portfolio-hero__copy p{margin:.6rem 0 1rem;max-width:360px;color:#c3c3c3;font-size:.8rem;line-height:1.55}
+.portfolio-hero__copy{position:absolute;left:12%;bottom:30px;width:min(380px,44%);z-index:1}
+.portfolio-hero__copy p{margin:0 0 1rem;max-width:360px;color:#c3c3c3;font-size:.8rem;line-height:1.55}
 .portfolio-label{font:.59rem var(--font-mono);letter-spacing:.16em;color:#9a9a9a;text-transform:uppercase}
 .portfolio-hero .button{min-height:38px;padding:.65rem .9rem;font-size:.65rem}
 .portfolio-hero .button.secondary{background:rgba(0,0,0,.22)}
