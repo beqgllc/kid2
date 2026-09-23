@@ -58,6 +58,7 @@ export interface Song {
   artwork_path?:string|null;
   artwork_url?:string|null;
   audio_url?:string|null;
+  audio_fallback_url?:string|null;
   metadata?:TrackMetadata|null;
   has_lyrics?:boolean;
   play_count?:number;
