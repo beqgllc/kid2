@@ -72,7 +72,7 @@ export function Song() {
             <div><dt>Release</dt><dd>{song.album?.title ?? 'Single'}</dd></div>
             <div><dt>Genre</dt><dd>{song.metadata?.genre ?? '—'}</dd></div>
             <div><dt>Release date</dt><dd>{song.release_date ? new Date(song.release_date).toLocaleDateString() : '—'}</dd></div>
-            <div><dt>Duration</dt><dd>{song.duration_seconds ? `${Math.floor(song.duration_seconds / 60)}:${String(song.duration_seconds % 60).padStart(2, '0')}` : '—'}</dd>
+            <div><dt>Duration</dt><dd>{song.duration_seconds ? `${Math.floor(song.duration_seconds / 60)}:${String(song.duration_seconds % 60).padStart(2, '0')}` : '—'}</dd></div>
           </dl>
         </aside>
       </section>
