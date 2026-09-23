@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { getLyricVideos } from '../../services/visuals';
 import { usePageMeta } from '../../lib/seo';
 import type { LyricVideo } from '../../types/models';
@@ -31,17 +32,15 @@ export function LyricVideos() {
 
   return (
     <div className="page lyric-video-portfolio-page">
-      <header className="catalog-hero">
-        <div>
-          <span className="portfolio-label">VIDEOS / LYRIC FILMS</span>
-          <h1>Words in motion.</h1>
-          <p>The visual side of the catalog — every published lyric video in one place.</p>
-          <div className="music-page-links">
-            <Link to="/videos">All visuals</Link>
-            <Link className="active" to="/visuals/lyric-videos">Lyric videos</Link>
-          </div>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="VIDEOS / LYRIC FILMS"
+        title="Words in motion."
+        description="The visual side of the catalog — every published lyric video in one place."
+        links={[
+          { to: '/videos', label: 'All visuals' },
+          { to: '/visuals/lyric-videos', label: 'Lyric videos', active: true },
+        ]}
+      />
 
       {loading && <div className="loading-state">Loading lyric videos…</div>}
       {error && <div className="empty-state">{error}</div>}
