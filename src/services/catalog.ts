@@ -1,5 +1,5 @@
 import { requireSupabase } from '../lib/supabase/client';
-import { mediaUrl } from './mediaUrls';
+import { fallbackMediaUrl, mediaUrl } from './mediaUrls';
 import type { Album, Song } from '../types/models';
 
 function mapAlbum(row: any): Album {
@@ -51,6 +51,31 @@ export async function getAlbumBySlug(slug: string): Promise<Album | null> {
   return data ? mapAlbum(data) : null;
 }
 
+function normalizeSongTitle(value: string) {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function dedupeSongs(songs: Song[]) {
+  const newestByTitle = new Map<string, Song>();
+
+  for (const song of songs) {
+    const key = normalizeSongTitle(song.title);
+    const existing = newestByTitle.get(key);
+    if (!existing || new Date(song.created_at).getTime() > new Date(existing.created_at).getTime()) {
+      newestByTitle.set(key, song);
+    }
+  }
+
+  return songs.filter((song) => newestByTitle.get(normalizeSongTitle(song.title))?.id === song.id);
+}
+
 function mapSong(row: any): Song {
   const album = row.albums ?? null;
   const artworkPath = row.artwork_path ?? album?.cover_art_path ?? null;
@@ -61,6 +86,7 @@ function mapSong(row: any): Song {
     artwork_path: artworkPath,
     artwork_url: mediaUrl('attikid-artwork', artworkPath),
     audio_url: mediaUrl('attikid-audio', row.audio_path),
+    audio_fallback_url: fallbackMediaUrl('attikid-audio', row.audio_path),
   };
 }
 
@@ -101,7 +127,7 @@ export async function getSongs(options?: { albumId?: string; limit?: number }): 
   if (options?.limit) query = query.limit(options.limit);
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []).map(mapSong);
+  return dedupeSongs((data ?? []).map(mapSong));
 }
 
 export async function getLatestSongs(limit = 6) {
@@ -113,7 +139,7 @@ export async function getLatestSongs(limit = 6) {
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return (data ?? []).map(mapSong);
+  return dedupeSongs((data ?? []).map(mapSong));
 }
 
 export async function getSongBySlug(slug: string): Promise<Song | null> {

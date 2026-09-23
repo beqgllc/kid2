@@ -26,6 +26,7 @@ export function GlobalPlayer() {
   const counted = useRef(false);
   const sessionId = useRef(createSessionId());
   const switchingSource = useRef(false);
+  const fallbackTried = useRef(false);
   const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, status, set } = usePlayerStore();
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export function GlobalPlayer() {
     }
 
     counted.current = false;
+    fallbackTried.current = false;
     set({ status: 'loading', currentTime: 0, duration: 0, buffered: 0, error: null });
   }, [currentSong, set]);
 
@@ -196,12 +198,22 @@ export function GlobalPlayer() {
 
   const mediaError = (event: SyntheticEvent<HTMLAudioElement>) => {
     switchingSource.current = false;
+    if (currentSong?.audio_fallback_url && !fallbackTried.current) {
+      fallbackTried.current = true;
+      switchingSource.current = true;
+      event.currentTarget.src = currentSong.audio_fallback_url;
+      event.currentTarget.load();
+      set({ isPlaying: true, status: 'loading', error: null });
+      void event.currentTarget.play().catch(handlePlaybackFailure);
+      return;
+    }
+
     const code = event.currentTarget.error?.code;
     const detail = code ? ` (media error ${code})` : '';
     set({
       isPlaying: false,
       status: 'error',
-      error: `Unable to play this track${detail}. Check the R2 audio URL and file format.`,
+      error: `Unable to play this track${detail}. The primary R2 source and the fallback source both failed.`,
     });
   };
 

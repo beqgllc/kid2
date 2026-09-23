@@ -42,7 +42,7 @@ export function Album() {
     <div className="page album-portfolio-page">
       <div className="detail-context">
         <span className="portfolio-label">MUSIC / RELEASE</span>
-        <Link to="/music">Back to the music archive <span aria-hidden="true">↗</span></Link>
+        <Link to="/music/albums">Back to the album archive <span aria-hidden="true">↗</span></Link>
       </div>
       <section className="album-detail-hero">
         <div className="album-detail-art">
@@ -51,11 +51,11 @@ export function Album() {
         <div className="album-detail-copy">
           <span className="portfolio-label">RELEASE / {year(album.data.release_date)}</span>
           <h1>{album.data.title}</h1>
-          <div className="album-detail-meta">{album.data.artist_name} <span>•</span> {songs.data.length || album.data.song_count || 0} TRACKS</div>
-          {album.data.description && <p>{album.data.description}</p>}
+          <div className="album-detail-meta">{album.data.artist_name} <span>•</span> {songs.data.length || album.data.song_count || 0} TRACKS <span>•</span> CONFIG {Number(album.data.metadata?.config_track_count) || songs.data.length || 0}</div>
+          {album.data.description && <div className="album-detail-purpose"><span className="portfolio-label">PURPOSE / STORY</span><p>{album.data.description}</p></div>}
           <div className="button-row">
             <button className="button" type="button" onClick={playAlbum} disabled={!playable.length}>Play album →</button>
-            <Link className="button secondary" to="/music">Back to music</Link>
+            <Link className="button secondary" to="/music/albums">Back to albums</Link>
           </div>
         </div>
       </section>
