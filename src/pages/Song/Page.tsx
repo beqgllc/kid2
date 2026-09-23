@@ -14,6 +14,7 @@ export function Song() {
   const { data: song, loading } = useSong(songSlug);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const set = usePlayerStore((state) => state.set);
+  const currentSong = usePlayerStore((state) => state.currentSong);
 
   useEffect(() => {
     if (song) getLyrics(song.id).then(setLyrics).catch(() => null);
@@ -36,6 +37,13 @@ export function Song() {
 
   return (
     <div className="page song-portfolio-page">
+      <div className="detail-context">
+        <span className="portfolio-label">MUSIC / TRACK</span>
+        <div>
+          <Link to="/music">Music archive</Link>
+          {song.album && <><span className="detail-context__slash">/</span><Link to={`/music/${song.album.slug}`}>{song.album.title}</Link></>}
+        </div>
+      </div>
       <section className="song-detail-hero">
         <div className="song-detail-art">
           {song.artwork_url ? <img src={song.artwork_url} alt={`${song.title} artwork`} /> : <span>ATTIKID</span>}
