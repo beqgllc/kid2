@@ -1,17 +1,14 @@
 import { Link } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAlbums, useFeaturedAlbum, useFeaturedSong, useLatestSongs, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { formatDuration } from '../../lib/utils';
 import type { PlayerSong } from '../../types/models';
 import { usePageMeta } from '../../lib/seo';
+import { getLyricVideos } from '../../services/visuals';
+import type { LyricVideo } from '../../types/models';
 
-const videoItems = [
-  { title: 'Funeral (Official Visualizer)', date: 'Mar 28, 2025', image: '/images/hero/hero-about.webp', duration: '3:12' },
-  { title: 'Lost Cause (Official Video)', date: 'Feb 14, 2025', image: '/images/hero/hero-music.webp', duration: '4:27' },
-  { title: 'Still Here (Lyric Video)', date: 'Jan 30, 2025', image: '/images/artist/artist-press-photo-1.webp', duration: '3:45' },
-  { title: "What's Left (Official Visualizer)", date: 'Dec 12, 2024', image: '/images/hero/hero-home.webp', duration: '3:21' },
-];
+
 
 function releaseYear(value?: string | null) {
   if (!value) return '—';
@@ -25,6 +22,11 @@ export function Home() {
   const featuredTracks = useSongs(featured.data?.id, 12);
   const albums = useAlbums(8);
   const latestSongs = useLatestSongs(3);
+  const [videos, setVideos] = useState<LyricVideo[]>([]);
+
+  useEffect(() => {
+    getLyricVideos().then(setVideos).catch(() => undefined);
+  }, []);
   const setPlayer = usePlayerStore((state) => state.set);
 
   const playableTracks = useMemo(
@@ -164,19 +166,25 @@ export function Home() {
             </div>
             <Link to="/videos">View all →</Link>
           </div>
-          <div className="video-grid">
-            {videoItems.map((video) => (
-              <article className="video-card" key={video.title}>
-                <div className="video-card__thumb">
-                  <img src={video.image} alt="" />
-                  <span className="video-card__play">▶</span>
-                  <span className="video-card__duration">{video.duration}</span>
-                </div>
-                <strong>{video.title}</strong>
-                <span>{video.date}</span>
-              </article>
-            ))}
-          </div>
+          {videos.length ? (
+            <div className="video-grid">
+              {videos.slice(0, 4).map((video) => (
+                <Link className="video-card" key={video.id} to="/visuals/lyric-videos">
+                  <div className="video-card__thumb">
+                    {video.thumbnail_url
+                      ? <img src={video.thumbnail_url} alt="" />
+                      : <div className="video-card__fallback">ATTIKID</div>}
+                    <span className="video-card__play">▶</span>
+                    {video.duration_seconds ? <span className="video-card__duration">{formatDuration(video.duration_seconds)}</span> : null}
+                  </div>
+                  <strong>{video.title}</strong>
+                  <span>{video.song?.album_title ?? 'LYRIC VIDEO'}</span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="portfolio-muted">No published lyric videos yet.</div>
+          )}
         </section>
       </div>
 
