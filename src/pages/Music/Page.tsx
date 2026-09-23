@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { useAlbums, useSongs } from '../../hooks/useCatalog';
 import { usePageMeta } from '../../lib/seo';
 
@@ -31,18 +32,16 @@ export function Music() {
 
   return (
     <div className="page music-portfolio-page">
-      <header className="catalog-hero">
-        <div>
-          <span className="portfolio-label">CATALOG / MUSIC</span>
-          <h1>The records.</h1>
-          <p>Albums, singles, and the stories attached to them.</p>
-          <div className="music-page-links">
-            <Link className="active" to="/music/albums">Albums</Link>
-            <Link to="/music/singles">Singles</Link>
-            <Link to="/music/a-z">A–Z</Link>
-          </div>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="CATALOG / MUSIC"
+        title="The records."
+        description="Albums, singles, and the stories attached to them."
+        links={[
+          { to: '/music/albums', label: 'Albums', active: true },
+          { to: '/music/singles', label: 'Singles' },
+          { to: '/music/a-z', label: 'A–Z' },
+        ]}
+      />
 
       <section className="portfolio-section page-section-tight">
         <div className="portfolio-section__heading">
