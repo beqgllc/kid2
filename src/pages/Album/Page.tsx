@@ -15,6 +15,7 @@ export function Album() {
   const songs = useSongs(album.data?.id);
   const albums = useAlbums(8);
   const set = usePlayerStore((state) => state.set);
+  const currentSong = usePlayerStore((state) => state.currentSong);
 
   usePageMeta({
     title: album.data ? `${album.data.title} — ATTIKID Album` : 'ATTIKID Album',
@@ -39,6 +40,10 @@ export function Album() {
 
   return (
     <div className="page album-portfolio-page">
+      <div className="detail-context">
+        <span className="portfolio-label">MUSIC / RELEASE</span>
+        <Link to="/music">Back to the music archive <span aria-hidden="true">↗</span></Link>
+      </div>
       <section className="album-detail-hero">
         <div className="album-detail-art">
           {album.data.cover_url ? <img src={album.data.cover_url} alt={`${album.data.title} cover`} /> : <span>ATTIKID</span>}
@@ -63,7 +68,7 @@ export function Album() {
         <div className="album-detail-tracks">
           {songs.loading ? <div className="loading-state">Loading tracks…</div> : songs.data.map((song, index) => (
             <button
-              className="album-detail-track"
+              className={`album-detail-track${currentSong?.id === song.id ? ' is-current' : ''}`}
               key={song.id}
               type="button"
               disabled={!song.audio_url}
