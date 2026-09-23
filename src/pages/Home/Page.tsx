@@ -123,7 +123,7 @@ export function Home() {
             {featuredTracks.data.slice(0, 9).map((song, index) => (
               <button
                 type="button"
-                className="featured-track"
+                className={`featured-track${currentSong?.id === song.id ? ' is-current' : ''}`}
                 key={song.id}
                 onClick={() => song.audio_url ? playQueue(playableTracks, Math.max(0, playableTracks.findIndex((item) => item.id === song.id))) : undefined}
                 disabled={!song.audio_url}
