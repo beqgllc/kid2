@@ -1,61 +1,87 @@
-import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 import { useAlbums, useSongs } from '../../hooks/useCatalog';
-import { AlbumCard } from '../../components/albums/AlbumCard';
-import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
+import { usePageMeta } from '../../lib/seo';
 
-export function Music(){
-  const albums = useAlbums();
+function year(value?: string | null) {
+  if (!value) return '—';
+  return String(new Date(value).getFullYear());
+}
+
+export function Music() {
+  const albums = useAlbums(12);
   const songs = useSongs();
-  const allSongs = songs.data;
-
   const tracksByAlbum = useMemo(
-    () => allSongs.reduce<Record<string, typeof allSongs>>((groups, song) => {
+    () => songs.data.reduce<Record<string, typeof songs.data>>((groups, song) => {
       if (!song.album_id) return groups;
       (groups[song.album_id] ??= []).push(song);
       return groups;
     }, {}),
-    [allSongs],
+    [songs.data],
   );
 
   usePageMeta({
-    title: 'ATTIKID Albums',
-    description: 'Browse ATTIKID album releases, artwork, purposes, track lists, and credits.',
+    title: 'ATTIKID Music',
+    description: 'Browse ATTIKID releases, albums, singles, stories, and track lists.',
     canonical: 'https://attikid.vercel.app/music/albums',
     type: 'music',
-    keywords: ['ATTIKID music', 'albums', 'records', 'catalog'],
-    image: '/images/hero/hero-music.webp',
-    jsonLd: buildWebSiteJsonLd()
+    keywords: ['ATTIKID music', 'albums', 'releases', 'songs'],
+    image: '/images/hero/attikid-hero.webp',
   });
 
   return (
-    <div className="page music-catalog-page">
-      <header className="page-hero page-hero-with-image">
+    <div className="page music-portfolio-page">
+      <header className="catalog-hero">
         <div>
-          <span className="eyebrow">CATALOG / ALBUMS</span>
-          <h1>Albums</h1>
-          <p>Every ATTIKID album, with the story and metadata behind the tracks.</p>
+          <span className="portfolio-label">CATALOG / MUSIC</span>
+          <h1>The records.</h1>
+          <p>Albums, singles, and the stories attached to them.</p>
           <div className="music-page-links">
-            <Link to="/music/a-z">A-Z</Link>
             <Link className="active" to="/music/albums">Albums</Link>
             <Link to="/music/singles">Singles</Link>
+            <Link to="/music/a-z">A–Z</Link>
           </div>
         </div>
-        <img src="/images/hero/hero-music.webp" alt="ATTIKID music artwork" />
       </header>
 
-      <section className="content-section">
-        <div className="section-heading">
-          <span>Release catalog</span>
-          <h2>Albums</h2>
+      <section className="portfolio-section page-section-tight">
+        <div className="portfolio-section__heading">
+          <div>
+            <span className="portfolio-label">RELEASES</span>
+            <h2>Album catalog</h2>
+          </div>
+          <span className="portfolio-muted">{albums.data.length} releases</span>
         </div>
+
         {albums.loading || songs.loading ? (
-          <div className="loading-state">Loading album catalog…</div>
+          <div className="loading-state">Loading catalog…</div>
         ) : albums.data.length ? (
-          <div className="album-catalog-grid">
-            {albums.data.map((album) => (
-              <AlbumCard key={album.id} album={album} tracks={tracksByAlbum[album.id] ?? []}/>
-            ))}
+          <div className="music-release-grid">
+            {albums.data.map((album) => {
+              const tracks = tracksByAlbum[album.id] ?? [];
+              return (
+                <article className="music-release-card" key={album.id}>
+                  <Link to={`/music/${album.slug}`} className="music-release-card__art">
+                    {album.cover_url ? <img src={album.cover_url} alt={album.title} /> : <span>ATTIKID</span>}
+                  </Link>
+                  <div className="music-release-card__body">
+                    <span className="portfolio-label">{year(album.release_date)} / {tracks.length} TRACKS</span>
+                    <h2><Link to={`/music/${album.slug}`}>{album.title}</Link></h2>
+                    {album.description && <p>{album.description}</p>}
+                    <div className="music-release-card__tracks">
+                      {tracks.slice(0, 5).map((track, index) => (
+                        <Link key={track.id} to={`/song/${track.slug}`}>
+                          <span>{String(index + 1).padStart(2, '0')}</span>
+                          <strong>{track.title}</strong>
+                          <small>{track.duration_seconds ? Math.floor(track.duration_seconds / 60) + ':' + String(track.duration_seconds % 60).padStart(2, '0') : '—'}</small>
+                        </Link>
+                      ))}
+                    </div>
+                    <Link className="text-link" to={`/music/${album.slug}`}>Open release →</Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         ) : (
           <div className="empty-state">No album releases have been ingested yet.</div>
