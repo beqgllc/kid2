@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useAlbums, useFeaturedAlbum, useFeaturedSong, useLatestSongs, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { formatDuration } from '../../lib/utils';
+import type { PlayerSong } from '../../types/models';
 import { usePageMeta } from '../../lib/seo';
 
 const videoItems = [
@@ -27,7 +28,7 @@ export function Home() {
   const setPlayer = usePlayerStore((state) => state.set);
 
   const playableTracks = useMemo(
-    () => featuredTracks.data.filter((song) => Boolean(song.audio_url)),
+    () => featuredTracks.data.filter((song): song is PlayerSong => Boolean(song.audio_url)),
     [featuredTracks.data],
   );
 
@@ -42,7 +43,7 @@ export function Home() {
 
     setPlayer({
       currentSong: song,
-      queue: queue as any,
+      queue,
       currentIndex: index,
       isPlaying: true,
       status: 'loading',
