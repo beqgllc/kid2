@@ -1,1 +1,28 @@
-.site-header{position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:1.05rem max(1rem,calc((100% - 1280px)/2));border-bottom:1px solid var(--color-border);background:color-mix(in srgb,var(--color-bg) 88%,transparent);backdrop-filter:blur(18px)}.brand{font-family:var(--font-mono);font-size:.78rem;font-weight:var(--weight-mono);letter-spacing:var(--tracking-mono-label);color:var(--color-text);text-decoration:none}.brand img{width:1.35rem;height:1.35rem}.site-header nav{display:flex;align-items:center;gap:1.6rem}.site-header nav a,.admin-link{color:var(--color-text-muted);text-decoration:none;text-transform:uppercase;font-family:var(--font-mono);font-size:.7rem;letter-spacing:var(--tracking-mono-label);transition:color .2s ease}.site-header nav a.active,.site-header nav a:hover,.admin-link:hover{color:var(--color-accent)}.admin-link{border:0;background:transparent;cursor:pointer}.menu-button{display:none;background:none;border:0;color:var(--color-text);font-size:1.25rem}@media(max-width:700px){.site-header{padding:1rem}.menu-button{display:block}.site-header nav{display:none;position:absolute;top:100%;left:0;right:0;padding:1.25rem 1rem;background:var(--color-bg-elevated);border-bottom:1px solid var(--color-border);flex-direction:column;align-items:flex-start;gap:1.1rem}.site-header nav.nav-open{display:flex}}
+/* ATTIKID portfolio navigation */
+.site-header{
+  position:fixed;
+  inset:0 auto 0 0;
+  width:162px;
+  height:100vh;
+  z-index:80;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:1.5rem 1.25rem;
+  border-right:1px solid #252525;
+  background:#070707;
+}
+.brand{color:#fff;text-decoration:none}
+.brand-wordmark{font-family:var(--font-marker),cursive;font-size:2.45rem;line-height:1;letter-spacing:-.05em}
+.site-header nav{display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;margin-top:3.6rem}
+.site-header nav a{color:#8f8f8f;text-decoration:none;text-transform:none;font-family:var(--font-body);font-size:.86rem;letter-spacing:0;transition:color .2s ease}
+.site-header nav a.active,.site-header nav a:hover{color:#fff}
+.site-header nav a.active::before{content:'';display:inline-block;width:22px;height:1px;background:#fff;margin-right:11px;vertical-align:middle}
+.menu-button{display:none}
+@media(max-width:900px){
+  .site-header{inset:0 0 auto 0;width:100%;height:auto;min-height:68px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-right:0;border-bottom:1px solid #252525;background:rgba(7,7,7,.92);backdrop-filter:blur(18px)}
+  .brand-wordmark{font-size:2rem}
+  .menu-button{display:block;border:0;background:none;color:#fff;font-size:1.2rem;cursor:pointer}
+  .site-header nav{display:none;position:absolute;top:100%;left:0;right:0;margin:0;padding:1.25rem 1.2rem;align-items:flex-start;gap:1rem;background:#0a0a0a;border-bottom:1px solid #252525}
+  .site-header.nav-open nav{display:flex}
+}
