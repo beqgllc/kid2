@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAlbum, useLatestSongs, useSongByTitle, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { formatDuration } from '../../lib/utils';
 import type { PlayerSong } from '../../types/models';
 import { usePageMeta } from '../../lib/seo';
+import { getLyricVideos } from '../../services/visuals';
+import type { LyricVideo } from '../../types/models';
 
 function releaseYear(value?: string | null) {
   if (!value) return '—';
@@ -20,17 +22,10 @@ export function Home() {
   const setPlayer = usePlayerStore((state) => state.set);
   const currentSong = usePlayerStore((state) => state.currentSong);
 
+  const [lyricVideos, setLyricVideos] = useState<LyricVideo[]>([]);
+
   useEffect(() => {
-    const existing = document.querySelector('script[data-attikid-tiktok-embed]');
-    if (existing) {
-      // TikTok embed script is already on the page.
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://www.tiktok.com/embed.js';
-    script.async = true;
-    script.dataset.attikidTiktokEmbed = 'true';
-    document.body.appendChild(script);
+    getLyricVideos().then(setLyricVideos).catch(() => setLyricVideos([]));
   }, []);
 
   const playableTracks = useMemo(
@@ -158,34 +153,34 @@ export function Home() {
               <h3>Let me fly</h3>
             </div>
 
-            <div className="featured-lyric-video-card__embed" aria-label="Let me fly official lyric video">
-              <blockquote
-                className="tiktok-embed"
-                cite="https://www.tiktok.com/@iamattikid/video/7686115895256665357"
-                data-video-id="7686115895256665357"
-              >
-                <section>
-                  <a
-                    target="_blank"
-                    title="@iamattikid"
-                    href="https://www.tiktok.com/@iamattikid?refer=embed"
-                    rel="noreferrer"
-                  >
-                    @iamattikid
-                  </a>
-                </section>
-              </blockquote>
+            <div className="featured-lyric-video-card__embed">
+              {lyricVideos.find((video) => video.song?.title?.toLowerCase() === 'let me fly') ? (
+                (() => {
+                  const video = lyricVideos.find((item) => item.song?.title?.toLowerCase() === 'let me fly');
+                  return video ? (
+                    <video controls preload="metadata" poster={video.thumbnail_url ?? undefined} playsInline>
+                      {video.video_url && <source src={video.video_url} type={video.video_mime_type} />}
+                    </video>
+                  ) : null;
+                })()
+              ) : (
+                <div className="video-unavailable">
+                  <span className="portfolio-label">VIDEO PLAYER</span>
+                  <strong>Let me fly</strong>
+                  <p>The lyric video is not published to the video archive yet.</p>
+                </div>
+              )}
             </div>
 
             <div className="featured-lyric-video-card__actions">
               <Link className="button" to={letMeFly.data ? `/lyrics/${letMeFly.data.slug}` : '/lyrics'}>
                 Read Let me fly lyrics
               </Link>
-              <Link className="button secondary" to="/music/cloudy-with-a-chance">
-                Cloudy With A Chance
+              <Link className="button secondary" to="/videos">
+                Open Videos
               </Link>
             </div>
-          </article>
+          </article>>
         </section>
       </div>
 
