@@ -682,7 +682,8 @@ async function processVideo(filePath) {
     return;
   }
 
-  const key = `videos/${song.id}/${hash.slice(0, 16)}.mp4`;
+  const ext = path.extname(filePath).toLowerCase() || '.mp4';
+  const key = `videos/${song.id}/${hash.slice(0, 16)}${ext}`;
   const dbPath = `r2:${key}`;
 
   await uploadToR2('video', key, filePath);
