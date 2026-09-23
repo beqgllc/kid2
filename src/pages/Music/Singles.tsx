@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { SongRow } from '../../components/music/SongRow';
 import { useSongs } from '../../hooks/useCatalog';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
@@ -30,18 +30,16 @@ export function MusicSingles() {
 
   return (
     <div className="page music-catalog-page">
-      <header className="catalog-hero">
-        <div>
-          <span className="portfolio-label">CATALOG / SINGLES</span>
-          <h1>The singles.</h1>
-          <p>Individual tracks that live outside the album releases.</p>
-          <div className="music-page-links">
-            <Link to="/music/albums">Albums</Link>
-            <Link to="/music/a-z">A–Z</Link>
-            <Link className="active" to="/music/singles">Singles</Link>
-          </div>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="CATALOG / SINGLES"
+        title="The singles."
+        description="Individual tracks that live outside the album releases."
+        links={[
+          { to: '/music/albums', label: 'Albums' },
+          { to: '/music/a-z', label: 'A–Z' },
+          { to: '/music/singles', label: 'Singles', active: true },
+        ]}
+      />
 
       <section className="portfolio-section page-section-tight">
         {songs.loading ? (

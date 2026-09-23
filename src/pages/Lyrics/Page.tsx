@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { useSongs } from '../../hooks/useCatalog';
 import { getLyricsMap } from '../../services/lyrics';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
@@ -44,13 +45,11 @@ export function Lyrics() {
 
   return (
     <div className="page lyrics-portfolio-page">
-      <header className="catalog-hero">
-        <div>
-          <span className="portfolio-label">WORDS / ARCHIVE</span>
-          <h1>The lyrics.</h1>
-          <p>The written side of the catalog, indexed by song.</p>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="WORDS / ARCHIVE"
+        title="The lyrics."
+        description="The written side of the catalog, indexed by song."
+      />
 
       <section className="portfolio-section page-section-tight">
         <div className="lyrics-toolbar">

@@ -1,68 +1,299 @@
-import { useEffect, useMemo, useRef, type ChangeEvent, type SyntheticEvent } from 'react';
+import { useEffect, useRef, type ChangeEvent, type SyntheticEvent } from 'react';
 import { usePlayerStore } from '../../stores/playerStore';
 import { formatDuration } from '../../lib/utils';
+import { getNextQueueIndex } from '../../lib/player';
 import { recordPlay } from '../../services/analytics';
 import type { PlayerSong } from '../../types/models';
 import './player.css';
 
+function createSessionId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function playbackErrorMessage(error: unknown) {
+  if (error instanceof DOMException && error.name === 'AbortError') return null;
+  if (error instanceof DOMException && error.name === 'NotAllowedError') {
+    return 'Playback was blocked. Press play again.';
+  }
+  return 'Playback could not start. Try again.';
+}
+
 export function GlobalPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const counted = useRef(false);
-  const sessionId = useRef(crypto.randomUUID());
-  const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, set } = usePlayerStore();
+  const sessionId = useRef(createSessionId());
+  const switchingSource = useRef(false);
+  const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, status, set } = usePlayerStore();
 
-  useEffect(() => { if (audioRef.current) { audioRef.current.volume = volume; audioRef.current.muted = muted; } }, [volume, muted]);
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = volume;
+    audio.muted = muted;
+  }, [volume, muted]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!currentSong) {
+      switchingSource.current = false;
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      counted.current = false;
+      set({ status: 'idle', currentTime: 0, duration: 0, buffered: 0, error: null });
+      return;
+    }
+
+    if (audio.src !== currentSong.audio_url) {
+      switchingSource.current = true;
+      audio.src = currentSong.audio_url;
+      audio.load();
+    }
+
+    counted.current = false;
+    set({ status: 'loading', currentTime: 0, duration: 0, buffered: 0, error: null });
+  }, [currentSong, set]);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentSong) return;
-    audio.src = currentSong.audio_url;
-    audio.load(); counted.current = false;
-    set({ status: 'loading', currentTime: 0 });
-  }, [currentSong, set]);
 
-  useEffect(() => { if (!currentSong) return; if (isPlaying && audioRef.current?.paused) audioRef.current.play().catch(() => set({ isPlaying: false, error: 'Playback was blocked. Press play to start.' })); }, [isPlaying, currentSong, set]);
+    if (isPlaying) {
+      void audio.play().catch((playbackError) => {
+        const message = playbackErrorMessage(playbackError);
+        if (message) set({ isPlaying: false, status: 'error', error: message });
+      });
+      return;
+    }
+
+    if (!audio.paused) audio.pause();
+  }, [currentSong, isPlaying, set]);
+
   const onTime = () => {
-    const audio = audioRef.current; if (!audio || !currentSong) return;
-    set({ currentTime: audio.currentTime, duration: Number.isFinite(audio.duration) ? audio.duration : 0 });
-    const threshold = Math.min(8, Math.max(3, (audio.duration || 30) * 0.08));
-    if (!counted.current && audio.currentTime >= threshold) { counted.current = true; recordPlay(currentSong.id, sessionId.current).catch(() => undefined); }
+    const audio = audioRef.current;
+    if (!audio || !currentSong) return;
+
+    const nextDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    set({
+      currentTime: audio.currentTime,
+      duration: nextDuration,
+    });
+
+    const threshold = Math.min(8, Math.max(3, nextDuration > 0 ? nextDuration * 0.08 : 30));
+    if (!counted.current && audio.currentTime >= threshold) {
+      counted.current = true;
+      recordPlay(currentSong.id, sessionId.current).catch(() => undefined);
+    }
   };
-  const nextIndex = useMemo(() => {
-    if (!queue.length) return -1;
-    if (shuffle && queue.length > 1) { const candidates = queue.map((_, i) => i).filter((i) => i !== currentIndex); return candidates[Math.floor(Math.random() * candidates.length)] ?? currentIndex; }
-    return currentIndex + 1;
-  }, [queue, currentIndex, shuffle]);
-  const playSong = async (song: PlayerSong, idx: number, queueOverride?: PlayerSong[]) => {
-    const audio = audioRef.current; if (!audio) return;
-    const same = currentSong?.id === song.id;
-    if (!same) { set({ currentSong: song, queue: queueOverride ?? [song], currentIndex: idx, status: 'loading', error: null }); return; }
-    await audio.play().then(() => set({ isPlaying: true, status: 'playing' })).catch(() => set({ error: 'Playback was blocked. Press play again.' }));
+
+  const onProgress = () => {
+    const audio = audioRef.current;
+    if (!audio || !Number.isFinite(audio.duration) || audio.duration <= 0 || !audio.buffered.length) return;
+    const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
+    set({ buffered: Math.min(1, bufferedEnd / audio.duration) });
   };
-  const toggle = async () => { const audio = audioRef.current; if (!audio || !currentSong) return; if (audio.paused) await audio.play().then(() => set({ isPlaying: true, status: 'playing', error: null })).catch(() => set({ error: 'Playback was blocked.' })); else audio.pause(); };
-  const next = () => { if (!queue.length) return; const idx = nextIndex >= queue.length ? (repeatMode === 'queue' ? 0 : -1) : nextIndex; if (idx >= 0) playSong(queue[idx], idx, queue); };
-  const previous = () => { const audio = audioRef.current; if (!queue.length) return; if (audio && audio.currentTime > 4) { audio.currentTime = 0; return; } const idx = Math.max(0, currentIndex - 1); playSong(queue[idx], idx, queue); };
-  const onEnded = () => { if (repeatMode === 'track') { const audio = audioRef.current; if (audio) { audio.currentTime = 0; void audio.play(); } return; } const idx = nextIndex >= queue.length ? (repeatMode === 'queue' ? 0 : -1) : nextIndex; if (idx >= 0) playSong(queue[idx], idx, queue); else set({ isPlaying: false, status: 'ended' }); };
-  const seek = (e: ChangeEvent<HTMLInputElement>) => { const audio = audioRef.current; if (!audio) return; const value = Number(e.target.value); audio.currentTime = value; set({ currentTime: value }); };
-  const setVol = (e: ChangeEvent<HTMLInputElement>) => set({ volume: Number(e.target.value), muted: false });
-  const repeat = () => set({ repeatMode: repeatMode === 'none' ? 'queue' : repeatMode === 'queue' ? 'track' : 'none' });
-  const mediaError = (e: SyntheticEvent<HTMLAudioElement>) => {
-    const code = e.currentTarget.error?.code;
+
+  const handlePlaybackFailure = (playbackError: unknown) => {
+    const message = playbackErrorMessage(playbackError);
+    if (message) set({ isPlaying: false, status: 'error', error: message });
+  };
+
+  const selectSong = (song: PlayerSong, index: number, queueOverride = queue) => {
+    set({
+      currentSong: song,
+      queue: queueOverride.length ? queueOverride : [song],
+      currentIndex: index,
+      isPlaying: true,
+      status: 'loading',
+      currentTime: 0,
+      duration: 0,
+      buffered: 0,
+      error: null,
+    });
+  };
+
+  const next = () => {
+    const index = getNextQueueIndex(queue.length, currentIndex, repeatMode, shuffle);
+    if (index >= 0) {
+      selectSong(queue[index], index, queue);
+      return;
+    }
+    set({ isPlaying: false, status: 'ended' });
+  };
+
+  const previous = () => {
+    const audio = audioRef.current;
+    if (!queue.length) return;
+
+    if (audio && audio.currentTime > 4) {
+      audio.currentTime = 0;
+      set({ currentTime: 0 });
+      return;
+    }
+
+    const index = Math.max(0, currentIndex - 1);
+    selectSong(queue[index], index, queue);
+  };
+
+  const onEnded = () => {
+    if (repeatMode === 'track') {
+      const audio = audioRef.current;
+      if (!audio) return;
+      audio.currentTime = 0;
+      set({ currentTime: 0, status: 'loading', isPlaying: true, error: null });
+      void audio.play().catch(handlePlaybackFailure);
+      return;
+    }
+
+    const index = getNextQueueIndex(queue.length, currentIndex, repeatMode, shuffle);
+    if (index >= 0) {
+      selectSong(queue[index], index, queue);
+      return;
+    }
+
+    set({ isPlaying: false, status: 'ended', currentTime: duration });
+  };
+
+  const seek = (event: ChangeEvent<HTMLInputElement>) => {
+    const audio = audioRef.current;
+    if (!audio || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    const value = Number(event.target.value);
+    audio.currentTime = value;
+    set({ currentTime: value, error: null });
+  };
+
+  const setVol = (event: ChangeEvent<HTMLInputElement>) => {
+    set({ volume: Number(event.target.value), muted: false });
+  };
+
+  const toggleRepeat = () => {
+    set({
+      repeatMode: repeatMode === 'none'
+        ? 'queue'
+        : repeatMode === 'queue'
+          ? 'track'
+          : 'none',
+    });
+  };
+
+  const toggle = () => {
+    const audio = audioRef.current;
+    if (!audio || !currentSong) return;
+
+    if (audio.paused) {
+      set({ isPlaying: true, status: 'loading', error: null });
+      void audio.play().catch(handlePlaybackFailure);
+      return;
+    }
+
+    audio.pause();
+  };
+
+  const mediaError = (event: SyntheticEvent<HTMLAudioElement>) => {
+    switchingSource.current = false;
+    const code = event.currentTarget.error?.code;
     const detail = code ? ` (media error ${code})` : '';
-    set({ isPlaying: false, status: 'error', error: `Unable to play this track${detail}. Check the audio file format and Storage URL.` });
+    set({
+      isPlaying: false,
+      status: 'error',
+      error: `Unable to play this track${detail}. Check the R2 audio URL and file format.`,
+    });
   };
-  return <>
-    <audio ref={audioRef} data-attikid-player="true" preload="metadata" onLoadedMetadata={(e) => set({ duration: e.currentTarget.duration, status: 'ready' })} onTimeUpdate={onTime} onPlay={() => set({ isPlaying: true, status: 'playing' })} onPause={() => set({ isPlaying: false, status: 'paused' })} onEnded={onEnded} onError={mediaError} />
-    <section className="global-player" aria-label="Music player">
-      <div className="player-track">
-        <div className="player-art">{currentSong?.artwork_url ? <img src={currentSong.artwork_url} alt={`${currentSong.title ?? 'ATTIKID'} artwork`} /> : <span>AK</span>}</div>
-        <div className="player-meta"><strong>{currentSong?.title ?? 'Select a track'}</strong><span>{currentSong?.artist_name ?? 'ATTIKID'}</span></div>
-      </div>
-      <div className="player-main">
-        <div className="player-controls"><button onClick={previous} disabled={!currentSong} aria-label="Previous track">◀</button><button className="play-button" onClick={() => void toggle()} disabled={!currentSong} aria-label={isPlaying ? 'Pause' : 'Play'}>{isPlaying ? '❚❚' : '▶'}</button><button onClick={next} disabled={!currentSong} aria-label="Next track">▶</button></div>
-        <div className="player-progress"><span>{formatDuration(currentTime)}</span><input type="range" min="0" max={duration || 0} step="0.1" value={Math.min(currentTime, duration || 0)} onChange={seek} aria-label="Seek" /><span>{formatDuration(duration)}</span></div>
-      </div>
-      <div className="player-options"><button onClick={repeat} aria-label="Repeat mode">↻{repeatMode === 'track' ? '1' : ''}</button><button onClick={() => set({ shuffle: !shuffle })} aria-label="Shuffle" className={shuffle ? 'active-control' : ''}>⤨</button><button onClick={() => set({ muted: !muted })} aria-label={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button><input type="range" min="0" max="1" step="0.01" value={muted ? 0 : volume} onChange={setVol} aria-label="Volume" /></div>
-      {error && <div className="player-error" role="status">{error}</div>}
-    </section>
-  </>;
+
+  const statusLabel = error
+    ? 'ERROR'
+    : isPlaying
+      ? 'PLAYING'
+      : status === 'loading'
+        ? 'LOADING'
+        : currentSong
+          ? status === 'ended' ? 'ENDED' : 'PAUSED'
+          : 'IDLE';
+
+  return (
+    <>
+      <audio
+        ref={audioRef}
+        data-attikid-player="true"
+        preload="metadata"
+        onLoadedMetadata={(event) => {
+          switchingSource.current = false;
+          const nextDuration = Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : 0;
+          set({ duration: nextDuration, status: 'ready', error: null });
+        }}
+        onTimeUpdate={onTime}
+        onProgress={onProgress}
+        onWaiting={() => set({ status: 'loading' })}
+        onCanPlay={() => { switchingSource.current = false; set({ status: 'ready' }); }}
+        onPlaying={() => { switchingSource.current = false; set({ isPlaying: true, status: 'playing', error: null }); }}
+        onPlay={() => { switchingSource.current = false; set({ isPlaying: true, status: 'playing', error: null }); }}
+        onPause={() => { if (switchingSource.current) return; set({ isPlaying: false, status: 'paused' }); }}
+        onEnded={onEnded}
+        onError={mediaError}
+      />
+      <section className="global-player" aria-label="Music player">
+        <div className="player-track">
+          <div className="player-art">
+            {currentSong?.artwork_url
+              ? <img src={currentSong.artwork_url} alt={`${currentSong.title ?? 'ATTIKID'} artwork`} />
+              : <span>AK</span>}
+          </div>
+          <div className="player-meta">
+            <strong>{currentSong?.title ?? 'Select a track'}</strong>
+            <span>{currentSong?.artist_name ?? 'ATTIKID'}</span>
+            <small className="player-status" aria-live="polite">
+              {statusLabel}
+              {currentSong && duration > 0 ? ` · ${formatDuration(currentTime)} / ${formatDuration(duration)}` : ''}
+            </small>
+            {error && <small className="player-error" role="status">{error}</small>}
+          </div>
+        </div>
+
+        <div className="player-main">
+          <div className="player-controls">
+            <button type="button" onClick={previous} disabled={!currentSong || !queue.length} aria-label="Previous track" title="Previous">◀</button>
+            <button type="button" className="play-button" onClick={toggle} disabled={!currentSong} aria-label={isPlaying ? 'Pause' : 'Play'} title={isPlaying ? 'Pause' : 'Play'}>
+              {isPlaying ? '❚❚' : '▶'}
+            </button>
+            <button type="button" onClick={next} disabled={!currentSong || !queue.length} aria-label="Next track" title="Next">▶</button>
+          </div>
+
+          <div className="player-progress">
+            <span>{formatDuration(currentTime)}</span>
+            <input
+              type="range"
+              min="0"
+              max={duration || 0}
+              step="0.1"
+              value={Math.min(currentTime, duration || 0)}
+              onChange={seek}
+              disabled={!duration}
+              aria-label="Seek"
+            />
+            <span>{formatDuration(duration)}</span>
+          </div>
+        </div>
+
+        <div className="player-options">
+          <button
+            type="button"
+            onClick={toggleRepeat}
+            aria-label={repeatMode === 'none' ? 'Repeat off' : repeatMode === 'queue' ? 'Repeat queue' : 'Repeat track'}
+            aria-pressed={repeatMode !== 'none'}
+            title={repeatMode === 'none' ? 'Repeat off' : repeatMode === 'queue' ? 'Repeat queue' : 'Repeat track'}
+          >
+            ↻{repeatMode === 'track' ? '1' : ''}
+          </button>
+          <button type="button" onClick={() => set({ shuffle: !shuffle })} aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'} aria-pressed={shuffle} title={shuffle ? 'Shuffle on' : 'Shuffle off'} className={shuffle ? 'active-control' : ''}>⤨</button>
+          <button type="button" onClick={() => set({ muted: !muted })} aria-label={muted ? 'Unmute' : 'Mute'} aria-pressed={muted} title={muted ? 'Unmute' : 'Mute'}>{muted ? '🔇' : '🔊'}</button>
+          <input type="range" min="0" max="1" step="0.01" value={muted ? 0 : volume} onChange={setVol} aria-label="Volume" />
+        </div>
+      </section>
+    </>
+  );
 }

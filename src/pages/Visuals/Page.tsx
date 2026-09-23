@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { usePageMeta } from '../../lib/seo';
 
 const visuals = [
@@ -19,17 +20,15 @@ export function Visuals() {
 
   return (
     <div className="visuals-page portfolio-visuals-page">
-      <header className="catalog-hero">
-        <div>
-          <span className="portfolio-label">VIDEOS / VISUALS</span>
-          <h1>The archive in motion.</h1>
-          <p>Visualizers, lyric films, photography, and the images that live with the records.</p>
-          <div className="music-page-links">
-            <Link className="active" to="/videos">Videos</Link>
-            <Link to="/visuals/lyric-videos">Lyric videos</Link>
-          </div>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="VIDEOS / VISUALS"
+        title="The archive in motion."
+        description="Visualizers, lyric films, photography, and the images that live with the records."
+        links={[
+          { to: '/videos', label: 'Videos', active: true },
+          { to: '/visuals/lyric-videos', label: 'Lyric videos' },
+        ]}
+      />
       <div className="visuals-grid">
         {visuals.map((visual) => (
           <article className={`visual-tile ${visual.className}`} key={visual.title}>
