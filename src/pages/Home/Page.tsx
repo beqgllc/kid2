@@ -177,7 +177,7 @@ export function Home() {
                 Open Videos
               </Link>
             </div>
-          </article>>
+          </article>
         </section>
       </div>
 
