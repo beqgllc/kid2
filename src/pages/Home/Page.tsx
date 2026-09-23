@@ -28,6 +28,7 @@ export function Home() {
     getLyricVideos().then(setVideos).catch(() => undefined);
   }, []);
   const setPlayer = usePlayerStore((state) => state.set);
+  const currentSong = usePlayerStore((state) => state.currentSong);
 
   const playableTracks = useMemo(
     () => featuredTracks.data.filter((song): song is PlayerSong => Boolean(song.audio_url)),
@@ -127,7 +128,7 @@ export function Home() {
                 onClick={() => song.audio_url ? playQueue(playableTracks, Math.max(0, playableTracks.findIndex((item) => item.id === song.id))) : undefined}
                 disabled={!song.audio_url}
               >
-                <span className="featured-track__play">{song.audio_url ? (featuredSong?.id === song.id ? '▶' : '·') : '—'}</span>
+                <span className="featured-track__play">{song.audio_url ? (currentSong?.id === song.id ? '▶' : '·') : '—'}</span>
                 <span className="featured-track__number">{String(index + 1).padStart(2, '0')}</span>
                 <span className="featured-track__title">{song.title}</span>
                 <span className="featured-track__time">{formatDuration(song.duration_seconds ?? 0)}</span>
