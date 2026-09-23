@@ -236,7 +236,6 @@ async function ensureAlbumFromRelease(config, fallbackArtist = 'ATTIKID', fallba
     id: crypto.randomUUID(),
     title,
     artist_name: artistName,
-    featured_artists: null,
     release_date: releaseDate,
     slug: slugify(title),
     description: config.purpose || null,
