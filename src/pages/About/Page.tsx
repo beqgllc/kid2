@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { RichContent } from '../../components/content/RichContent';
 import { aboutContent } from '../../content/about';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
@@ -16,13 +17,12 @@ export function About() {
 
   return (
     <div className="page about-portfolio-page">
-      <header className="catalog-hero about-hero">
-        <div>
-          <span className="portfolio-label">ABOUT / THE ARTIST</span>
-          <h1>Same kid.<br />Different demons.</h1>
-          <p>The person behind the music, the records, and the stories between them.</p>
-        </div>
-      </header>
+      <PortfolioPageHeader
+        eyebrow="ABOUT / THE ARTIST"
+        title={<>Same kid.<br />Different demons.</>}
+        description="The person behind the music, the records, and the stories between them."
+        className="about-hero"
+      />
 
       <section className="about-split">
         <div className="about-image">
