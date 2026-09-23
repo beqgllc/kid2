@@ -476,3 +476,305 @@ main{overflow:visible}
 .featured-track.is-current .featured-track__play{
   color:#fff;
 }
+
+/* Unified interior system */
+.catalog-hero{
+  position:relative;
+  min-height:300px;
+  padding:2rem 0 2.35rem;
+  overflow:hidden;
+}
+.catalog-hero__inner{
+  max-width:900px;
+}
+.catalog-hero__inner::after{
+  content:'ATTIKID';
+  position:absolute;
+  top:2.1rem;
+  right:0;
+  color:#2f2f2f;
+  font: .55rem var(--font-mono);
+  letter-spacing:.22em;
+}
+.catalog-hero h1{
+  max-width:900px;
+  margin:.55rem 0 .9rem;
+}
+.catalog-hero p{
+  max-width:640px;
+}
+.music-page-links{
+  width:fit-content;
+  display:flex;
+  gap:1.25rem;
+  margin-top:1.6rem;
+  padding-top:.8rem;
+  border-top:1px solid #252525;
+}
+.music-page-links a{
+  position:relative;
+  border:0;
+  padding:0 0 .45rem;
+  background:transparent;
+  color:#777;
+  font:.58rem var(--font-mono);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.music-page-links a:hover,
+.music-page-links a.active{
+  color:#fff;
+}
+.music-page-links a.active::after{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:1px;
+  background:#fff;
+}
+.portfolio-section{
+  background:transparent;
+}
+.music-release-card{
+  border-color:#242424;
+  background:#0a0a0a;
+  transition:border-color .2s ease,background .2s ease;
+}
+.music-release-card:hover{
+  border-color:#444;
+  background:#0c0c0c;
+}
+.music-release-card__body h2 a{
+  transition:color .2s ease;
+}
+.music-release-card__body h2 a:hover{
+  color:#cfcfcf;
+}
+.detail-context{
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:.8rem 0;
+  border-bottom:1px solid #292929;
+}
+.detail-context > div{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+}
+.detail-context a{
+  color:#8d8d8d;
+  text-decoration:none;
+  font:.58rem var(--font-mono);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.detail-context a:hover{
+  color:#fff;
+}
+.detail-context__slash{
+  color:#3e3e3e;
+  font:.58rem var(--font-mono);
+}
+.album-detail-hero,
+.song-detail-hero{
+  padding-top:2.5rem;
+}
+.album-detail-art,
+.song-detail-art{
+  box-shadow:0 20px 60px rgba(0,0,0,.28);
+}
+.album-detail-copy h1,
+.song-detail-copy h1{
+  letter-spacing:-.015em;
+}
+.album-detail-track,
+.featured-track{
+  transition:background .18s ease,color .18s ease;
+}
+.album-detail-track.is-current{
+  background:#151515;
+  color:#fff;
+}
+.album-detail-track.is-current strong{
+  color:#fff;
+}
+.song-detail-body{
+  align-items:start;
+}
+.song-detail-body > div:first-child{
+  min-width:0;
+}
+.song-detail-facts,
+.lyrics-entry-meta{
+  background:#0a0a0a;
+}
+.lyrics-entry-page .catalog-hero{
+  padding-bottom:2rem;
+}
+.lyrics-entry-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 280px;
+  gap:4rem;
+  padding:3rem 0 5rem;
+  border-bottom:1px solid #292929;
+}
+.lyrics-entry-copy{
+  max-width:760px;
+}
+.lyrics-entry-copy > .portfolio-label{
+  display:block;
+  margin-bottom:1.4rem;
+}
+.lyrics-entry-copy .lyrics-viewer{
+  max-width:58ch;
+  padding-left:1.4rem;
+  border-left:1px solid #2c2c2c;
+  color:#d6d6d6;
+  font:1rem/1.9 var(--font-body);
+}
+.lyrics-entry-copy .lyrics-viewer p{
+  min-height:1.9em;
+}
+.lyrics-entry-meta{
+  border-left:1px solid #292929;
+  padding:0 0 0 1.25rem;
+}
+.lyrics-entry-meta dl{
+  margin:1rem 0 0;
+}
+.lyrics-entry-meta dl div{
+  padding:.75rem 0;
+  border-top:1px solid #222;
+}
+.lyrics-entry-meta dt{
+  color:#666;
+  font:.55rem var(--font-mono);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.lyrics-entry-meta dd{
+  margin:.25rem 0 0;
+  color:#ddd;
+  font-size:.72rem;
+  line-height:1.4;
+}
+.lyrics-entry-meta a{
+  color:#ddd;
+}
+.lyrics-entry-meta a:hover{
+  color:#fff;
+}
+.lyrics-viewer{
+  color:#d0d0d0;
+}
+.lyrics-viewer p{
+  margin:0;
+}
+.comments{
+  padding:3rem 0 5rem;
+  border-bottom:1px solid #292929;
+}
+.comments .form-card,
+.comments input,
+.comments textarea,
+.comments .reaction-bar button{
+  border-radius:0!important;
+}
+.comments .form-card{
+  padding:0;
+  border:0;
+  background:transparent;
+}
+.comments input,
+.comments textarea,
+.search-input{
+  background:#0b0b0b!important;
+  border:1px solid #292929!important;
+}
+.reaction-bar{
+  gap:.45rem;
+}
+.reaction-bar button{
+  background:#0b0b0b;
+  color:#aaa;
+  border-color:#292929;
+}
+.reaction-bar button:hover,
+.reaction-bar button.selected{
+  color:#fff;
+  border-color:#777;
+}
+.loading-state,
+.empty-state{
+  border-radius:0;
+  background:#0b0b0b;
+  border:1px solid #292929;
+  padding:1.4rem;
+  font:.65rem var(--font-mono);
+  letter-spacing:.04em;
+}
+.lyric-video-portfolio-card{
+  transition:border-color .2s ease,transform .2s ease;
+}
+.lyric-video-portfolio-card:hover{
+  border-color:#444;
+  transform:translateY(-2px);
+}
+.lyric-video-portfolio-meta h2{
+  letter-spacing:-.005em;
+}
+.portfolio-visuals-page .catalog-hero{
+  margin-bottom:0;
+}
+.portfolio-visuals-page .visuals-grid{
+  margin-top:0;
+}
+.portfolio-visuals-page .visual-tile{
+  border-color:#292929;
+}
+.portfolio-visuals-page .visual-tile__caption{
+  padding:1.5rem;
+}
+.portfolio-visuals-page .visual-tile__caption h2{
+  letter-spacing:-.005em;
+}
+.portfolio-visuals-page .visual-link{
+  display:inline-block;
+  margin-top:.45rem;
+}
+@media(max-width:900px){
+  .catalog-hero__inner::after{display:none}
+  .detail-context{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:.55rem;
+  }
+  .lyrics-entry-layout{
+    grid-template-columns:1fr;
+    gap:2rem;
+  }
+  .lyrics-entry-meta{
+    border-left:0;
+    border-top:1px solid #292929;
+    padding:1rem 0 0;
+  }
+}
+@media(max-width:640px){
+  .catalog-hero{
+    min-height:0;
+    padding:1.5rem 0 2rem;
+  }
+  .music-page-links{
+    gap:1rem;
+    flex-wrap:wrap;
+  }
+  .lyrics-entry-copy .lyrics-viewer{
+    padding-left:1rem;
+    font-size:.93rem;
+  }
+}
