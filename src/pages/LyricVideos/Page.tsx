@@ -3,36 +3,6 @@ import { getLyricVideos } from '../../services/visuals';
 import { usePageMeta } from '../../lib/seo';
 import type { LyricVideo } from '../../types/models';
 
-const LET_ME_FLY_VIDEO_ID = '7686115895256665357';
-const LET_ME_FLY_VIDEO_URL = 'https://www.tiktok.com/@iamattikid/video/7686115895256665357';
-
-function LetMeFlyEmbed() {
-  useEffect(() => {
-    const existing = document.querySelector('script[data-attikid-tiktok-embed]');
-    if (existing) return;
-    const script = document.createElement('script');
-    script.src = 'https://www.tiktok.com/embed.js';
-    script.async = true;
-    script.dataset.attikidTiktokEmbed = 'true';
-    document.body.appendChild(script);
-  }, []);
-
-  return (
-    <article className="lyric-video-only-card">
-      <div className="lyric-video-only-card__embed">
-        <blockquote
-          className="tiktok-embed"
-          cite={LET_ME_FLY_VIDEO_URL}
-          data-video-id={LET_ME_FLY_VIDEO_ID}
-        >
-          <section />
-        </blockquote>
-      </div>
-      <h2>Let me fly</h2>
-    </article>
-  );
-}
-
 export function LyricVideos() {
   const [items, setItems] = useState<LyricVideo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +33,7 @@ export function LyricVideos() {
       {loading && <div className="loading-state">Loading lyric videos…</div>}
       {error && !loading && <div className="empty-state">{error}</div>}
 
-      {!loading && !error && !items.length && <LetMeFlyEmbed />}
+      {!loading && !error && !items.length && <div className="empty-state">No lyric videos have been published yet.</div>}
 
       {!loading && !error && items.length > 0 && (
         <div className="lyric-video-only-grid">
