@@ -11,18 +11,25 @@ function encodePath(path: string) {
 export function mediaUrl(bucket: string, path: string | null) {
   if (!path) return null;
 
-  if (path.startsWith('r2:')) {
-    const key = path.slice(3);
-    const prefix = key.split('/')[0];
-    const base =
-      prefix === 'audio'
-        ? R2_AUDIO_BASE_URL
-        : prefix === 'artwork'
-          ? R2_ARTWORK_BASE_URL
-          : prefix === 'videos'
-            ? R2_VIDEO_BASE_URL
-            : undefined;
+  const key = path.startsWith('r2:') ? path.slice(3) : path;
+  const prefix = key.split('/')[0];
+  const base =
+    prefix === 'audio'
+      ? R2_AUDIO_BASE_URL
+      : prefix === 'artwork'
+        ? R2_ARTWORK_BASE_URL
+        : prefix === 'videos'
+          ? R2_VIDEO_BASE_URL
+          : undefined;
 
+  // Existing songs were migrated to R2 without changing their database
+  // paths, so they still look like legacy Supabase paths. Prefer R2 for
+  // audio whenever the public R2 base is configured.
+  if (bucket === 'attikid-audio' && R2_AUDIO_BASE_URL && prefix === 'audio') {
+    return `${R2_AUDIO_BASE_URL}/${encodePath(key)}`;
+  }
+
+  if (path.startsWith('r2:')) {
     if (!base) {
       throw new Error(`Missing R2 public base URL for ${prefix} media.`);
     }
