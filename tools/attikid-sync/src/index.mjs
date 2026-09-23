@@ -15,9 +15,10 @@ const ROOT = path.resolve(
 );
 
 const FOLDERS = {
-  audio: path.join(ROOT, 'music'),
+  // Canonical library: release folders contain config.json, cover.webp, and tracks.
+  audio: path.join(ROOT, 'albums'),
   release: path.join(ROOT, 'albums'),
-  artwork: path.join(ROOT, 'artwork'),
+  artwork: path.join(ROOT, 'albums'),
   video: path.join(ROOT, 'videos'),
   review: {
     audio: path.join(ROOT, '_review', 'music'),
@@ -753,7 +754,7 @@ async function collectFiles(root) {
 }
 
 async function initialScan() {
-  const roots = [FOLDERS.audio, FOLDERS.release, FOLDERS.artwork, FOLDERS.video];
+  const roots = [...new Set([FOLDERS.release, FOLDERS.video])];
   for (const root of roots) {
     for (const file of await collectFiles(root)) {
       if (path.basename(file).toLowerCase() === 'config.json') await processReleaseConfig(file);
@@ -765,7 +766,7 @@ async function initialScan() {
 await ensureDirectories();
 
 log(`ATTIKID MEDIA SYNC → ${ROOT}`);
-log('Folders ready: music / albums / artwork / videos');
+log('Folders ready: albums / videos');
 log('Review queue: _review/');
 log('Archive: _processed/');
 
@@ -775,7 +776,7 @@ if (process.argv.includes('--once')) {
 }
 
 const watcher = chokidar.watch(
-  [FOLDERS.audio, FOLDERS.release, FOLDERS.artwork, FOLDERS.video],
+  [...new Set([FOLDERS.release, FOLDERS.video])],
   {
     ignoreInitial: false,
     awaitWriteFinish: {
