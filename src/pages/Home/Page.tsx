@@ -28,10 +28,16 @@ export function Home() {
     getLyricVideos().then(setLyricVideos).catch(() => setLyricVideos([]));
   }, []);
 
-  const letMeFlyVideo = lyricVideos.find((video) => video.song?.title?.toLowerCase() === 'let me fly') ?? null;
+  const letMeFlyVideo = lyricVideos.find(
+    (video) => video.song?.title?.trim().toLowerCase() === 'let me fly',
+  ) ?? null;
 
   const featuredTracks = useMemo(
-    () => featured.data ? tracks.data.filter((song) => song.album_id === featured.data?.id) : [],
+    () => featured.data
+      ? tracks.data
+        .filter((song) => song.album_id === featured.data?.id)
+        .sort((a, b) => (a.track_number ?? Number.MAX_SAFE_INTEGER) - (b.track_number ?? Number.MAX_SAFE_INTEGER)),
+      : [],
     [featured.data, tracks.data],
   );
 
@@ -100,7 +106,7 @@ export function Home() {
         <section className="portfolio-featured">
           <div className="featured-release-art">
             {featured.data?.cover_url
-              ? <img src="/images/albums/cloudy-with-a-chance.svg" alt="Cloudy With A Chance" />
+              ? <img src={featured.data.cover_url} alt="Cloudy With A Chance" loading="lazy" />
               : <span>ATTIKID</span>}
           </div>
 
