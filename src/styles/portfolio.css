@@ -327,3 +327,80 @@ main{overflow:visible}
   .lyrics-toolbar{gap:1rem}
   .store-grid{grid-template-columns:1fr 1fr}
 }
+
+/* Final editorial polish */
+.portfolio-hero__copy h1{
+  margin:.35rem 0 .65rem;
+  font:400 clamp(3.7rem,8vw,7.6rem)/.82 var(--font-display);
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+}
+.portfolio-hero__copy p{
+  max-width:420px;
+}
+.aside-directory__list{
+  display:grid;
+  margin-top:12px;
+}
+.aside-directory__list a{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:8px;
+  align-items:center;
+  padding:10px 0;
+  border-top:1px solid #1e1e1e;
+  color:#d8d8d8;
+  text-decoration:none;
+  font-size:.68rem;
+}
+.aside-directory__list a:first-child{border-top:0}
+.aside-directory__list a:hover{color:#fff}
+.aside-directory__list a span{
+  color:#555;
+  font:.56rem var(--font-mono);
+}
+.release-card__art,
+.video-card__thumb,
+.featured-release-art,
+.album-detail-art,
+.song-detail-art,
+.about-image{
+  position:relative;
+}
+.release-card__art img,
+.video-card__thumb img,
+.featured-release-art img,
+.album-detail-art img,
+.song-detail-art img,
+.about-image img{
+  transition:transform .45s cubic-bezier(.2,.7,.2,1),filter .45s ease;
+}
+.release-card:hover .release-card__art img,
+.video-card:hover .video-card__thumb img{
+  transform:scale(1.025);
+  filter:brightness(.8);
+}
+.release-card:hover strong,
+.video-card:hover strong{color:#fff}
+.release-card:focus-visible,
+.video-card:focus-visible,
+.activity-row:focus-visible,
+.aside-directory__list a:focus-visible,
+.social-row a:focus-visible,
+.social-row button:focus-visible{
+  outline:1px solid #fff;
+  outline-offset:4px;
+}
+.portfolio-section__heading a::after,
+.text-link::after{
+  content:'';
+  display:block;
+  width:100%;
+  height:1px;
+  transform:scaleX(0);
+  transform-origin:left;
+  background:#fff;
+  transition:transform .2s ease;
+}
+.portfolio-section__heading a:hover::after,
+.text-link:hover::after{transform:scaleX(1)}
