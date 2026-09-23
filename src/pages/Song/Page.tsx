@@ -14,7 +14,6 @@ export function Song() {
   const { data: song, loading } = useSong(songSlug);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const set = usePlayerStore((state) => state.set);
-  const currentSong = usePlayerStore((state) => state.currentSong);
 
   useEffect(() => {
     if (song) getLyrics(song.id).then(setLyrics).catch(() => null);
@@ -73,7 +72,7 @@ export function Song() {
             <div><dt>Release</dt><dd>{song.album?.title ?? 'Single'}</dd></div>
             <div><dt>Genre</dt><dd>{song.metadata?.genre ?? '—'}</dd></div>
             <div><dt>Release date</dt><dd>{song.release_date ? new Date(song.release_date).toLocaleDateString() : '—'}</dd></div>
-            <div><dt>Duration</dt><dd>{song.duration_seconds ? `${Math.floor(song.duration_seconds / 60)}:${String(song.duration_seconds % 60).padStart(2, '0')}` : '—'}</dd></div>
+            <div><dt>Duration</dt><dd>{song.duration_seconds ? `${Math.floor(song.duration_seconds / 60)}:${String(song.duration_seconds % 60).padStart(2, '0')}` : '—'}</dd>
           </dl>
         </aside>
       </section>
