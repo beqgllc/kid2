@@ -28,6 +28,8 @@ export function Home() {
     getLyricVideos().then(setLyricVideos).catch(() => setLyricVideos([]));
   }, []);
 
+  const letMeFlyVideo = lyricVideos.find((video) => video.song?.title?.toLowerCase() === 'let me fly') ?? null;
+
   const playableTracks = useMemo(
     () => tracks.data.filter((song): song is PlayerSong => Boolean(song.audio_url)),
     [tracks.data],
@@ -154,15 +156,10 @@ export function Home() {
             </div>
 
             <div className="featured-lyric-video-card__embed">
-              {lyricVideos.find((video) => video.song?.title?.toLowerCase() === 'let me fly') ? (
-                (() => {
-                  const video = lyricVideos.find((item) => item.song?.title?.toLowerCase() === 'let me fly');
-                  return video ? (
-                    <video controls preload="metadata" poster={video.thumbnail_url ?? undefined} playsInline>
-                      {video.video_url && <source src={video.video_url} type={video.video_mime_type} />}
-                    </video>
-                  ) : null;
-                })()
+              {letMeFlyVideo ? (
+                <video controls preload="metadata" poster={letMeFlyVideo.thumbnail_url ?? undefined} playsInline>
+                  {letMeFlyVideo.video_url && <source src={letMeFlyVideo.video_url} type={letMeFlyVideo.video_mime_type} />}
+                </video>
               ) : (
                 <div className="video-unavailable">
                   <span className="portfolio-label">VIDEO PLAYER</span>
