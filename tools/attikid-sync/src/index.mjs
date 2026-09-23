@@ -449,17 +449,6 @@ async function findSong(title) {
   return matches.length === 1 ? matches[0] : null;
 }
 
-async function findSongInAlbum(albumId, title) {
-  const { data, error } = await supabase
-    .from('songs')
-    .select('id,title,album_id,artist_name,slug')
-    .eq('album_id', albumId);
-  if (error) throw error;
-  const target = normalize(title);
-  const matches = (data || []).filter((song) => normalize(song.title) === target);
-  return matches.length === 1 ? matches[0] : null;
-}
-
 async function findStandaloneSong(title) {
   const { data, error } = await supabase
     .from('songs')
@@ -527,9 +516,7 @@ async function processAudio(filePath) {
       )
     : null;
 
-  const duplicate = album
-    ? await findSongInAlbum(album.id, title)
-    : await findStandaloneSong(title);
+  const duplicate = await findSong(title);
 
   if (duplicate) {
     await logIngest({
