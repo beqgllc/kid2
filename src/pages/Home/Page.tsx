@@ -1,21 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useFeaturedAlbum, useFeaturedSong, useAlbums, useSongByTitle, useSongs } from '../../hooks/useCatalog';
+import { useFeaturedAlbum, useFeaturedSong, useSongByTitle, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
 
-const FEATURED_RELEASE_TITLES = [
-  'Dead Flowers Still Bloom',
-  'Trauma & Shit',
-  'Misery Motel',
-  'More Trauma & Shit',
-];
-
 export function Home() {
   const featured = useFeaturedAlbum();
   const featuredSongQuery = useFeaturedSong();
-  const albums = useAlbums();
   const letMeFly = useSongByTitle('Let me fly');
   const tracks = useSongs(featured.data?.id, 5);
   const setPlayer = usePlayerStore((state) => state.set);
@@ -53,10 +45,6 @@ export function Home() {
     });
   };
 
-  const featuredReleases = FEATURED_RELEASE_TITLES.map((title) => ({
-    title,
-    album: albums.data.find((album) => album.title.trim().toLowerCase() === title.toLowerCase()),
-  }));
 
   usePageMeta({
     title: 'ATTIKID | Official Music, Songs & Lyrics',
