@@ -9,7 +9,7 @@ function formatReleaseDate(value: string | null | undefined) {
   return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export function MusicSingles(){
+export function MusicSingles() {
   const songs = useSongs();
   const singles = useMemo(
     () => songs.data
@@ -24,31 +24,35 @@ export function MusicSingles(){
     canonical: 'https://attikid.vercel.app/music/singles',
     type: 'music',
     keywords: ['ATTIKID singles', 'single releases', 'songs'],
-    image: '/images/hero/hero-music.webp',
-    jsonLd: buildWebSiteJsonLd()
+    image: '/images/hero/attikid-hero.webp',
+    jsonLd: buildWebSiteJsonLd(),
   });
 
   return (
     <div className="page music-catalog-page">
-      <header className="page-hero">
-        <span className="eyebrow">CATALOG / SINGLES</span>
-        <h1>Singles.</h1>
-        <p>Individual tracks that are not part of an album or release.</p>
-        <div className="music-page-links">
-          <Link to="/music/a-z">A-Z</Link>
-          <Link to="/music/albums">Albums</Link>
-          <Link className="active" to="/music/singles">Singles</Link>
+      <header className="catalog-hero">
+        <div>
+          <span className="portfolio-label">CATALOG / SINGLES</span>
+          <h1>The singles.</h1>
+          <p>Individual tracks that live outside the album releases.</p>
+          <div className="music-page-links">
+            <Link to="/music/albums">Albums</Link>
+            <Link to="/music/a-z">A–Z</Link>
+            <Link className="active" to="/music/singles">Singles</Link>
+          </div>
         </div>
       </header>
 
-      <section className="content-section">
-        {songs.loading ? <div className="loading-state">Loading singles…</div> : singles.length ? (
+      <section className="portfolio-section page-section-tight">
+        {songs.loading ? (
+          <div className="loading-state">Loading singles…</div>
+        ) : singles.length ? (
           <div className="single-list">
             {singles.map((song, index) => (
               <article className="single-list__item" key={song.id}>
                 <div className="single-list__number">{String(index + 1).padStart(2, '0')}</div>
                 <div className="single-list__main">
-                  <SongRow song={song} index={index} songs={singles}/>
+                  <SongRow song={song} index={index} songs={singles} />
                   <div className="single-list__details">
                     <span>{song.artist_name}</span>
                     <span>{formatReleaseDate(song.release_date)}</span>
