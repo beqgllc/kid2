@@ -369,7 +369,9 @@ async function moveToReview(filePath, kind, reason, details = {}) {
   try {
     await fsp.access(target);
     target = path.join(targetRoot, safeParent + '--' + safeStem + '-' + Date.now() + ext);
-  } catch {}
+  } catch {
+    // target does not exist
+  }
   await fsp.copyFile(filePath, target);
   await fsp.writeFile(
     `${target}.json`,
