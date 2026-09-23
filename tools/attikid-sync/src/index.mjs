@@ -527,9 +527,7 @@ async function processAudio(filePath) {
       )
     : null;
 
-  const duplicate = album
-    ? await findSongInAlbum(album.id, title)
-    : await findStandaloneSong(title);
+  const duplicate = await findSong(title);
 
   if (duplicate) {
     await logIngest({
