@@ -25,6 +25,7 @@ export function GlobalPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const counted = useRef(false);
   const sessionId = useRef(createSessionId());
+  const switchingSource = useRef(false);
   const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, status, set } = usePlayerStore();
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export function GlobalPlayer() {
     if (!audio) return;
 
     if (!currentSong) {
+      switchingSource.current = false;
       audio.pause();
       audio.removeAttribute('src');
       audio.load();
@@ -48,6 +50,7 @@ export function GlobalPlayer() {
     }
 
     if (audio.src !== currentSong.audio_url) {
+      switchingSource.current = true;
       audio.src = currentSong.audio_url;
       audio.load();
     }
@@ -192,6 +195,7 @@ export function GlobalPlayer() {
   };
 
   const mediaError = (event: SyntheticEvent<HTMLAudioElement>) => {
+    switchingSource.current = false;
     const code = event.currentTarget.error?.code;
     const detail = code ? ` (media error ${code})` : '';
     set({
@@ -218,15 +222,17 @@ export function GlobalPlayer() {
         data-attikid-player="true"
         preload="metadata"
         onLoadedMetadata={(event) => {
+          switchingSource.current = false;
           const nextDuration = Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : 0;
           set({ duration: nextDuration, status: 'ready', error: null });
         }}
         onTimeUpdate={onTime}
         onProgress={onProgress}
         onWaiting={() => set({ status: 'loading' })}
-        onPlaying={() => set({ isPlaying: true, status: 'playing', error: null })}
-        onPlay={() => set({ isPlaying: true, status: 'playing', error: null })}
-        onPause={() => set({ isPlaying: false, status: 'paused' })}
+        onCanPlay={() => { switchingSource.current = false; set({ status: isPlaying ? 'ready' : 'ready' }); }}
+        onPlaying={() => { switchingSource.current = false; set({ isPlaying: true, status: 'playing', error: null }); }}
+        onPlay={() => { switchingSource.current = false; set({ isPlaying: true, status: 'playing', error: null }); }}
+        onPause={() => { if (switchingSource.current) return; set({ isPlaying: false, status: 'paused' }); }}
         onEnded={onEnded}
         onError={mediaError}
       />
