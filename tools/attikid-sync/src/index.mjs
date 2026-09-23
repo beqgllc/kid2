@@ -363,7 +363,14 @@ async function moveToReview(filePath, kind, reason, details = {}) {
   const targetRoot = FOLDERS.review[kind];
   const ext = path.extname(filePath);
   const stem = path.basename(filePath, ext);
-  const target = path.join(targetRoot, `${stem}${ext}`);
+  const parent = path.basename(path.dirname(filePath));
+  const safeParent = parent.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-');
+  const safeStem = stem.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-');
+  let target = path.join(targetRoot, safeParent + '--' + safeStem + ext);
+  try {
+    await fsp.access(target);
+    target = path.join(targetRoot, safeParent + '--' + safeStem + '-' + Date.now() + ext);
+  } catch {}
   await fsp.copyFile(filePath, target);
   await fsp.writeFile(
     `${target}.json`,
@@ -378,14 +385,35 @@ async function hasBeenIngested(hash) {
     .from('media_ingest')
     .select('id,status,storage_path')
     .eq('file_hash', hash)
+    .in('status', ['processed', 'duplicate'])
     .maybeSingle();
   if (error) throw error;
   return data;
 }
 
 async function logIngest(entry) {
-  const { error } = await supabase.from('media_ingest').insert(entry);
-  if (error && !String(error.message).toLowerCase().includes('duplicate')) throw error;
+  const { error } = await supabase
+    .from('media_ingest')
+    .upsert(entry, { onConflict: 'file_hash' });
+  if (error) throw error;
+}
+
+function formatError(error) {
+  if (error instanceof Error) {
+    const parts = [error.name, error.message].filter(Boolean);
+    if (error.code) parts.push(`code=${error.code}`);
+    if (error.status) parts.push(`status=${error.status}`);
+    if (error.$metadata?.httpStatusCode) parts.push(`http=${error.$metadata.httpStatusCode}`);
+    if (error.details) parts.push(`details=${error.details}`);
+    if (error.hint) parts.push(`hint=${error.hint}`);
+    return parts.join(' | ') || 'Unknown error';
+  }
+  if (error && typeof error === 'object') {
+    const parts = [error.name, error.message, error.code ? `code=${error.code}` : '', error.status ? `status=${error.status}` : '', error.$metadata?.httpStatusCode ? `http=${error.$metadata.httpStatusCode}` : '', error.details ? `details=${error.details}` : '', error.hint ? `hint=${error.hint}` : ''].filter(Boolean);
+    if (parts.length) return parts.join(' | ');
+    try { return JSON.stringify(error); } catch { return String(error); }
+  }
+  return String(error ?? 'Unknown error');
 }
 
 function log(message) {
@@ -721,7 +749,7 @@ async function processFile(filePath) {
     if (kind === 'artwork') await processArtwork(filePath);
     if (kind === 'video') await processVideo(filePath);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = formatError(error);
     log(`FAILED: ${path.basename(filePath)} → ${message}`);
     try {
       await moveToReview(filePath, kind, message);
@@ -791,16 +819,32 @@ const watcher = chokidar.watch(
 );
 
 watcher.on('add', (filePath) => {
-  if (path.basename(filePath).toLowerCase() === 'config.json') void processReleaseConfig(filePath);
-  else void processFile(filePath);
+  const task = path.basename(filePath).toLowerCase() === 'config.json'
+    ? processReleaseConfig(filePath)
+    : processFile(filePath);
+  void task.catch((error) => {
+    log(`FAILED: ${path.basename(filePath)} → ${formatError(error)}`);
+  });
 });
 
 watcher.on('change', (filePath) => {
-  if (path.basename(filePath).toLowerCase() === 'config.json') void processReleaseConfig(filePath);
+  if (path.basename(filePath).toLowerCase() === 'config.json') {
+    void processReleaseConfig(filePath).catch((error) => {
+      log(`FAILED CONFIG: ${path.basename(filePath)} → ${formatError(error)}`);
+    });
+  }
+});
+
+process.on('unhandledRejection', (reason) => {
+  log(`UNHANDLED REJECTION: ${formatError(reason)}`);
+});
+
+process.on('uncaughtException', (error) => {
+  log(`UNCAUGHT EXCEPTION: ${formatError(error)}`);
 });
 
 watcher.on('error', (error) => {
-  log(`WATCHER ERROR: ${error instanceof Error ? error.message : String(error)}`);
+  log(`WATCHER ERROR: ${formatError(error)}`);
 });
 
 process.on('SIGINT', async () => {
