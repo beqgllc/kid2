@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/layout/AppShell';
 import { useSessionBootstrap } from '../hooks/useAuth';
@@ -15,7 +15,6 @@ import { About } from '../pages/About/Page';
 import { Visuals } from '../pages/Visuals/Page';
 import { LyricVideos } from '../pages/LyricVideos/Page';
 import { FanMail } from '../pages/FanMail/Page';
-import { Journal } from '../pages/Journal/Page';
 import { Store } from '../pages/Store/Page';
 import { NotFound } from '../pages/NotFound/Page';
 import { AdminShell } from '../pages/Admin/AdminShell';
@@ -48,20 +47,18 @@ export function App() {
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<Home />} />
-            <Route path="/music" element={<Music />} />
+            <Route path="/music" element={<Navigate to="/music/albums" replace />} />
             <Route path="/music/a-z" element={<MusicAZ />} />
             <Route path="/music/albums" element={<Music />} />
-            <Route path="/music/singles" element={<MusicSingles />} />
             <Route path="/music/:albumSlug" element={<Album />} />
             <Route path="/song/:songSlug" element={<Song />} />
             <Route path="/lyrics" element={<Lyrics />} />
             <Route path="/lyrics/:songSlug" element={<LyricsEntry />} />
             <Route path="/about" element={<About />} />
-            <Route path="/videos" element={<Visuals />} />
-            <Route path="/visuals" element={<Visuals />} />
-            <Route path="/visuals/lyric-videos" element={<LyricVideos />} />
+            <Route path="/videos" element={<LyricVideos />} />
+            <Route path="/visuals" element={<Navigate to="/videos" replace />} />
+            <Route path="/visuals/lyric-videos" element={<Navigate to="/videos" replace />} />
             <Route path="/fan-mail" element={<FanMail />} />
-            <Route path="/journal" element={<Journal />} />
             <Route path="/store" element={<Store />} />
           </Route>
           <Route path="/admin/login" element={<AdminLoginEntry />} />
