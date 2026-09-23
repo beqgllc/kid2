@@ -58,9 +58,13 @@
   text-align:left;
 }
 .music-menu__trigger span{
-  margin-left:auto;
+  position:absolute;
+  right:4px;
+  top:50%;
+  margin:0;
   color:#666;
-  font:.7rem var(--font-mono);
+  font:.7rem/1 var(--font-mono);
+  transform:translateY(-50%);
 }
 .music-menu__panel{
   position:absolute;
@@ -137,7 +141,7 @@
     border-bottom:1px solid #1c1c1c;
   }
   .site-header.nav-open nav{display:flex}
-  .music-menu{width:auto}
+  .music-menu{width:100%}
   .music-menu__trigger{font-size:.82rem;min-height:34px}
   .music-menu__panel{
     position:static;
@@ -155,3 +159,11 @@
   .music-menu__panel a{padding:.5rem .75rem}
 }
 
+
+/* Keep every primary navigation label on the same text column. */
+.site-header nav > a,
+.site-header nav .music-menu__trigger{
+  justify-content:flex-start;
+  text-align:left;
+  padding-left:28px;
+}
