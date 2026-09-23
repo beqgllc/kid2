@@ -41,7 +41,6 @@ export function MusicAZ() {
         links={[
           { to: '/music/a-z', label: 'A–Z', active: true },
           { to: '/music/albums', label: 'Albums' },
-          { to: '/music/singles', label: 'Singles' },
         ]}
       />
 

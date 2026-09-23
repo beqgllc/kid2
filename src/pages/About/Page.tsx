@@ -32,7 +32,7 @@ export function About() {
           <span className="portfolio-label">THE STORY</span>
           <h2>Music for the things we don&apos;t say.</h2>
           <RichContent blocks={aboutContent} />
-          <Link className="button" to="/music">Listen to the music →</Link>
+          <Link className="button" to="/music/albums">Listen to the music →</Link>
         </div>
       </section>
 

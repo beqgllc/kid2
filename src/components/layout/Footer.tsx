@@ -9,10 +9,9 @@ export function Footer() {
       </div>
       <div className="site-footer__links">
         <Link to="/">Home</Link>
-        <Link to="/music">Music</Link>
+        <Link to="/music/albums">Music</Link>
         <Link to="/videos">Videos</Link>
         <Link to="/about">About</Link>
-        <Link to="/journal">Journal</Link>
         <Link to="/store">Store</Link>
       </div>
       <small>© {new Date().getFullYear()} ATTIKID. ALL RIGHTS RESERVED.</small>
