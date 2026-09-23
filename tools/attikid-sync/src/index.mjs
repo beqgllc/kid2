@@ -449,6 +449,17 @@ async function findSong(title) {
   return matches.length === 1 ? matches[0] : null;
 }
 
+async function findStandaloneSong(title) {
+  const { data, error } = await supabase
+    .from('songs')
+    .select('id,title,album_id,artist_name,slug,audio_path,artwork_path')
+    .is('album_id', null);
+  if (error) throw error;
+  const target = normalize(title);
+  const matches = (data || []).filter((song) => normalize(song.title) === target);
+  return matches.length === 1 ? matches[0] : null;
+}
+
 async function uploadToR2(kind, key, filePath) {
   const bucket = BUCKETS[kind];
   const body = createReadStream(filePath);
