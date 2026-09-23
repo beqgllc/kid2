@@ -5,13 +5,11 @@ import os from 'node:os';
 
 const root = path.resolve(
   process.env.ATTIKID_MEDIA_ROOT ||
-    path.join(os.homedir(), 'ATTIKID-MEDIA'),
+    path.join(os.homedir(), 'attikid-media'),
 );
 
 const folders = [
-  'music',
   'albums',
-  'artwork',
   'videos',
   '_review/music',
   '_review/artwork',
