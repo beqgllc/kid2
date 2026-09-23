@@ -468,3 +468,11 @@ main{overflow:visible}
 }
 .player-meta strong{color:#f3f3f3}
 .player-meta span{color:#6d6d6d}
+
+.featured-track.is-current{
+  background:#151515;
+  color:#fff;
+}
+.featured-track.is-current .featured-track__play{
+  color:#fff;
+}
