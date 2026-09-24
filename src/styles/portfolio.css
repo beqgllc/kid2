@@ -1118,3 +1118,10 @@ body,
   display:block;
   background:#0A0A0A;
 }
+
+
+/* Typography system override: League Gothic / Syne / JetBrains Mono / Inter */
+.portfolio-home h1,.portfolio-home .portfolio-hero__copy h1,.catalog-hero h1,.album-detail-copy h1,.song-detail-copy h1,.videos-minimal-header h1,.journal-row h2{font-family:var(--font-display)!important;font-weight:400!important;text-transform:uppercase!important;letter-spacing:-.04em!important}
+.portfolio-home h2,.portfolio-home h3,.portfolio-home h4,.portfolio-home h5,.portfolio-home h6,.portfolio-home button,.portfolio-home .button,.portfolio-home .release-card strong,.portfolio-home .video-card strong,.portfolio-home .featured-track__title,.portfolio-home .aside-directory__list a,.portfolio-home .community-card .button,.music-release-card__body h2,.album-detail-track strong,.lyrics-index h2,.lyrics-index a,.lyric-video-portfolio-meta h2,.lyric-video-only-card h2,.store-card h2{font-family:var(--font-ui)!important;font-weight:800!important;text-transform:uppercase!important;letter-spacing:-.02em!important}
+.portfolio-home p,.portfolio-home li,.portfolio-home .about-story,.portfolio-home .community-card p,.portfolio-home .activity-row span,.portfolio-home .video-unavailable p,.lyrics-entry-copy .lyrics-viewer{font-family:var(--font-body);font-weight:400;line-height:1.6;color:#a3a3a3}
+.portfolio-home .portfolio-label,.portfolio-home .featured-release-meta,.portfolio-home .featured-track__number,.portfolio-home .featured-track__time,.portfolio-home .video-card__duration,.portfolio-home .video-card>span,.portfolio-home .activity-row strong,.portfolio-home .aside-quote small,.portfolio-home .player-status,.portfolio-home .player-error,.portfolio-home .player-progress{font-family:var(--font-mono)!important;font-weight:500!important;font-variant-numeric:tabular-nums}
