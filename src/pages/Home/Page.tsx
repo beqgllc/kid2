@@ -44,7 +44,7 @@ function trackKey(value: string) {
 export function Home() {
   const featured = useAlbum('cloudy-with-a-chance');
   const albums = useAlbums(12);
-  const catalogSongs = useSongs(undefined, 100);
+  const catalogSongs = useSongs();
   const latestSongs = useLatestSongs(3);
   const letMeFly = useSongByTitle('Let me fly');
   const setPlayer = usePlayerStore((state) => state.set);
