@@ -24,6 +24,15 @@ export function PortfolioPageHeader({
 }: PortfolioPageHeaderProps) {
   return (
     <header className={`catalog-hero ${className}`.trim()}>
+      <img
+        className="catalog-hero__image"
+        src="/images/hero/attikid-hero.webp"
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+      />
+      <div className="catalog-hero__scrim" aria-hidden="true" />
       <div className="catalog-hero__inner">
         <span className="portfolio-label">{eyebrow}</span>
         <h1>{title}</h1>
