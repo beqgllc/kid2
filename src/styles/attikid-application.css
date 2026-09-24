@@ -1,8 +1,8 @@
 :root {
-  --font-display: 'League Gothic', Impact, sans-serif;
-  --font-body: 'Inter', 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
-  --font-marker: 'Inter', 'Segoe UI', sans-serif;
+  --font-display: 'Arial Narrow', Impact, sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-marker: 'Caveat', cursive;
   --bg: var(--color-bg);
   --surface: var(--color-bg-elevated);
   --surface-2: var(--color-bg-elevated);
@@ -560,9 +560,3 @@ main {
     border-bottom: 2px solid var(--color-accent);
   }
 }
-
-
-:root{--font-ui:'Syne','Arial',sans-serif}
-html,body,#root{font-family:var(--font-body);font-weight:400;line-height:1.6;color:#a3a3a3}
-h2,h3,h4,h5,h6,.button,button,.site-header nav a,.music-menu__trigger,.album-card-meta strong,.song-info strong{font-family:var(--font-ui);font-weight:800;text-transform:uppercase;letter-spacing:-.02em}
-code,pre,time,.eyebrow{font-family:var(--font-mono);font-weight:500;font-variant-numeric:tabular-nums}
