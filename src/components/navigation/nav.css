@@ -167,3 +167,46 @@
   text-align:left;
   padding-left:28px;
 }
+
+
+/* Navigation spacing polish */
+.site-header nav{
+  gap:.42rem;
+  margin-top:1.15rem;
+}
+.site-header nav::before{
+  margin-bottom:.2rem;
+}
+.site-header nav a,
+.music-menu__trigger{
+  min-height:28px;
+  padding-left:22px;
+  line-height:1.15;
+}
+.music-menu__trigger{
+  gap:.35rem;
+}
+.site-header nav a.active::before{
+  width:14px;
+  margin-right:8px;
+}
+.music-menu__trigger span{
+  right:2px;
+}
+.music-menu__panel{
+  left:calc(100% + 10px);
+}
+@media(max-width:900px){
+  .site-header nav{
+    gap:.35rem;
+    margin-top:0;
+  }
+  .site-header nav::before{
+    margin-bottom:.35rem;
+  }
+  .site-header nav a,
+  .music-menu__trigger{
+    min-height:32px;
+    padding-left:20px;
+  }
+}
