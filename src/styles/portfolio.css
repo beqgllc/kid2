@@ -1118,3 +1118,58 @@ body,
   display:block;
   background:#0A0A0A;
 }
+
+
+/* Supplied header image */
+.catalog-hero{
+  position:relative;
+  isolation:isolate;
+}
+.catalog-hero__image{
+  position:absolute;
+  inset:0 0 0 auto;
+  width:min(48%, 620px);
+  height:100%;
+  object-fit:cover;
+  object-position:center 58%;
+  opacity:.72;
+  filter:grayscale(1) contrast(1.05);
+  z-index:-3;
+}
+.catalog-hero__scrim{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg, #0A0A0A 0%, rgba(10,10,10,.96) 34%, rgba(10,10,10,.72) 61%, rgba(10,10,10,.2) 100%),
+    linear-gradient(180deg, rgba(10,10,10,.15), rgba(10,10,10,.55));
+  z-index:-2;
+  pointer-events:none;
+}
+.catalog-hero__inner{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:900px){
+  .catalog-hero{
+    min-height:320px;
+  }
+  .catalog-hero__image{
+    inset:auto 0 0 0;
+    width:100%;
+    height:58%;
+    opacity:.46;
+    object-position:center 52%;
+  }
+  .catalog-hero__scrim{
+    background:
+      linear-gradient(180deg, #0A0A0A 0%, rgba(10,10,10,.88) 45%, rgba(10,10,10,.3) 100%);
+  }
+}
+@media(max-width:640px){
+  .catalog-hero{
+    min-height:280px;
+  }
+  .catalog-hero__image{
+    height:50%;
+  }
+}
