@@ -71,6 +71,7 @@ const r2 = new S3Client({
 
 const normalize = (value = '') =>
   value
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
@@ -381,7 +382,7 @@ async function moveToReview(filePath, kind, reason, details = {}) {
   log(`REVIEW: ${reason} → ${target}`);
 }
 
-async function hasBeenIngested(hash) {
+async function getIngested(hash) {
   const { data, error } = await supabase
     .from('media_ingest')
     .select('id,status,storage_path')
@@ -390,6 +391,10 @@ async function hasBeenIngested(hash) {
     .maybeSingle();
   if (error) throw error;
   return data;
+}
+
+async function hasBeenIngested(hash) {
+  return Boolean(await getIngested(hash));
 }
 
 async function logIngest(entry) {
@@ -600,10 +605,7 @@ function artworkLabel(filePath) {
 
 async function processArtwork(filePath) {
   const hash = await fileHash(filePath);
-  if (await hasBeenIngested(hash)) {
-    await archiveFile(filePath, FOLDERS.processed.duplicate, 'DUPLICATE');
-    return;
-  }
+  const priorIngest = await getIngested(hash);
 
   const label = artworkLabel(filePath);
   const releaseContext = await findReleaseContext(filePath, label);
@@ -614,6 +616,35 @@ async function processArtwork(filePath) {
       ? await findAlbum(label)
       : null;
   const song = album ? null : await findStandaloneSong(stripMediaSuffixes(label));
+
+  // A previous sync may have recorded this exact artwork hash before the
+  // matching album existed or before its cover path was linked. Re-link an
+  // existing processed upload when possible instead of suppressing it forever.
+  if (priorIngest) {
+    if (album && !album.cover_art_path && priorIngest.status === 'processed' && priorIngest.storage_path) {
+      const { error } = await supabase
+        .from('albums')
+        .update({ cover_art_path: priorIngest.storage_path })
+        .eq('id', album.id);
+      if (error) throw error;
+      await logIngest({
+        file_hash: hash,
+        source_name: path.basename(filePath),
+        media_type: 'artwork',
+        status: 'processed',
+        album_id: album.id,
+        storage_bucket: BUCKETS.artwork,
+        storage_path: priorIngest.storage_path,
+        metadata: { label, relinked: true },
+      });
+      await archiveFile(filePath, FOLDERS.processed.artwork, 'RELINKED');
+      log('ARTWORK: "' + path.basename(filePath) + '" → ' + album.title + ' (relinked existing upload)');
+      return;
+    }
+
+    await archiveFile(filePath, FOLDERS.processed.duplicate, 'DUPLICATE');
+    return;
+  }
 
   if (!album && !song) {
     await moveToReview(filePath, 'artwork', 'No unique release or single match for "' + label + '"');
