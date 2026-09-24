@@ -36,7 +36,7 @@ export function Home() {
     () => featured.data
       ? tracks.data
         .filter((song) => song.album_id === featured.data?.id)
-        .sort((a, b) => (a.track_number ?? Number.MAX_SAFE_INTEGER) - (b.track_number ?? Number.MAX_SAFE_INTEGER)),
+        .sort((a, b) => (a.track_number ?? Number.MAX_SAFE_INTEGER) - (b.track_number ?? Number.MAX_SAFE_INTEGER))
       : [],
     [featured.data, tracks.data],
   );
