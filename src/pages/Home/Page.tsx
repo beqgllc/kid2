@@ -163,7 +163,7 @@ export function Home() {
 
               return (
                 <div
-                  className={\`featured-track\${isCurrent ? ' is-current' : ''}\`}
+                  className={`featured-track${isCurrent ? ' is-current' : ''}`}
                   key={row.title}
                 >
                   <button
@@ -171,13 +171,13 @@ export function Home() {
                     className="featured-track__play"
                     onClick={() => queueIndex >= 0 && playQueue(playableTracks, queueIndex)}
                     disabled={queueIndex < 0}
-                    aria-label={queueIndex >= 0 ? \`Play \${song?.title}\` : \`\${row.title} unavailable\`}
+                    aria-label={queueIndex >= 0 ? `Play ${song?.title}` : `${row.title} unavailable`}
                   >
                     {queueIndex >= 0 ? (isCurrent ? 'Ⅱ' : '▶') : '—'}
                   </button>
                   <span className="featured-track__number">{String(index + 1).padStart(2, '0')}</span>
                   {song ? (
-                    <Link className="featured-track__title" to={\`/song/\${song.slug}\`}>
+                    <Link className="featured-track__title" to={`/song/${song.slug}`}>
                       {song.title}
                     </Link>
                   ) : (
@@ -209,10 +209,10 @@ export function Home() {
                 const count = Number.isFinite(trackCount) && trackCount > 0 ? trackCount : connectedTracks;
 
                 return (
-                  <Link className="release-card" to={\`/music/\${item.slug}\`} key={item.id}>
+                  <Link className="release-card" to={`/music/${item.slug}`} key={item.id}>
                     <div className="release-card__art">
                       {item.cover_url ? (
-                        <img src={item.cover_url} alt={\`\${item.title} cover\`} loading="lazy" />
+                        <img src={item.cover_url} alt={`${item.title} cover`} loading="lazy" />
                       ) : (
                         <span>ATTIKID</span>
                       )}
