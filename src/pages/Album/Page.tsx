@@ -40,7 +40,7 @@ export function Album() {
   const { albumSlug = '' } = useParams();
   const album = useAlbum(albumSlug);
   const songs = useSongs(album.data?.id);
-  const catalogSongs = useSongs(undefined, 100);
+  const catalogSongs = useSongs();
   const albums = useAlbums(8);
   const set = usePlayerStore((state) => state.set);
   const currentSong = usePlayerStore((state) => state.currentSong);
