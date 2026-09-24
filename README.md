@@ -11,7 +11,7 @@ A responsive music portfolio + lightweight artist CMS powered by React, Vite, Ty
 - Likes / dislikes
 - Anonymous comments
 - Fan mail inbox
-- Admin authentication
+-  authentication
 - Admin catalog editing
 - Individual + bulk audio uploads (up to 50 files)
 - Song / album analytics
@@ -69,7 +69,7 @@ Create an email/password user in Supabase Auth matching `VITE_ADMIN_EMAIL`. Then
 
 The originally requested `admin / attikid` login should be treated as an initial bootstrap credential only. Do not hard-code that password into the frontend or commit it to source control. Supabase Auth is the authority for the administrator account.
 
-The login screen accepts `admin` as a convenience username and maps it to `VITE_ADMIN_EMAIL`.
+The login screen accepts `attikidllc` as a convenience username and maps it to `VITE_ADMIN_EMAIL`.
 
 ## 4. Run
 

@@ -3,7 +3,7 @@ import { requireSupabase } from '../lib/supabase/client';
 export async function signInAdmin(username: string, password: string) {
   const supabase = requireSupabase();
   const configuredEmail = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
-  if (!username.includes('@') && username !== 'thekid') throw new Error('Invalid admin credentials.');
+  if (!username.includes('@') && username !== 'attikidllc') throw new Error('Invalid admin credentials.');
   const email = username.includes('@') ? username : configuredEmail;
   if (!email) throw new Error('Admin email is not configured.');
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
