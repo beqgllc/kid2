@@ -15,7 +15,7 @@ function AdminAuthForm({
   onClosed?: () => void;
   onHandled?: () => void;
 }) {
-  const [username, setUsername] = useState('thekid');
+  const [username, setUsername] = useState('attikidllc');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,7 +50,7 @@ function AdminAuthForm({
     <p className="auth-card-intro">Sign in to manage the ATTIKID archive.</p>
     <label>
       Username or email
-      <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" placeholder="thekid" />
+      <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" placeholder="attikidllc" />
     </label>
     <label>
       Password
