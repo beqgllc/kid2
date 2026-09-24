@@ -1002,3 +1002,22 @@ body,
 .album-card-artist{
   color:#B8B8B8;
   font:.62rem var(--font-mono);
+
+.aside-admin-access p{
+  margin:.65rem 0 1rem;
+  color:#B8B8B8;
+  font-size:.68rem;
+  line-height:1.45;
+}
+.aside-admin-access .button{
+  width:100%;
+  font-size:.6rem;
+}
+.aside-admin-access .button.secondary{
+  border-color:#FF4E00;
+  color:#F5F5F5;
+}
+.aside-admin-access .button.secondary:hover:not(:disabled){
+  background:#FF4E00;
+  color:#0A0A0A;
+}
