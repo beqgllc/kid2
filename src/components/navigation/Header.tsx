@@ -15,7 +15,7 @@ export function Header() {
   return (
     <header className={`site-header${mobileMenuOpen ? ' nav-open' : ''}`}>
       <Link className="brand" to="/" onClick={closeNavigation} aria-label="ATTIKID home">
-        <img className="brand-logo" src="/images/brand/attikid-logo.svg" alt="ATTIKID" />
+        <img className="brand-logo" src="/images/brand/logo.svg" alt="ATTIKID" />
       </Link>
 
       <button

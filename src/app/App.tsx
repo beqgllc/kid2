@@ -26,6 +26,7 @@ import { Analytics } from '../pages/Admin/Analytics';
 import { Settings } from '../pages/Admin/Settings';
 import { AdminLoginEntry } from '../pages/Admin/Login';
 
+
 function ConfigNotice() {
   return <div className="config-notice"><div><span className="eyebrow">SETUP REQUIRED</span><h1>Connect ATTIKID to Supabase.</h1><p>Copy <code>.env.example</code> to <code>.env.local</code>, add your Supabase project URL and publishable key, run the migrations, then restart Vite.</p></div></div>;
 }
