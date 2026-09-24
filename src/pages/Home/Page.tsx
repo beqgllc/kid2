@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { useAlbum, useLatestSongs, useSongByTitle, useSongs } from '../../hooks/useCatalog';
+import { useAlbum, useAlbums, useLatestSongs, useSongByTitle, useSongs } from '../../hooks/useCatalog';
 import { usePlayerStore } from '../../stores/playerStore';
 import { formatDuration } from '../../lib/utils';
 import type { PlayerSong } from '../../types/models';
@@ -14,9 +14,37 @@ function releaseYear(value?: string | null) {
   return Number.isFinite(year) ? String(year) : '—';
 }
 
+const CLOUDY_WITH_A_CHANCE_TRACKLIST = [
+  "Men don't cry",
+  "Problems on problems",
+  "Checkmate",
+  "Today",
+  "Don't Forget",
+  "Happy Birthday",
+  "Let me fly",
+  "One day",
+  "Paranoid",
+  "Drowning",
+  "Change me",
+  "Falling",
+  "Funeral",
+] as const;
+
+function trackKey(value: string) {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
 export function Home() {
   const featured = useAlbum('cloudy-with-a-chance');
-  const tracks = useSongs(featured.data?.id, 20);
+  const albums = useAlbums(12);
+  const catalogSongs = useSongs(undefined, 100);
   const latestSongs = useLatestSongs(3);
   const letMeFly = useSongByTitle('Let me fly');
   const setPlayer = usePlayerStore((state) => state.set);
@@ -32,18 +60,19 @@ export function Home() {
     (video) => video.song?.title?.trim().toLowerCase() === 'let me fly',
   ) ?? null;
 
-  const featuredTracks = useMemo(
-    () => featured.data
-      ? tracks.data
-        .filter((song) => song.album_id === featured.data?.id)
-        .sort((a, b) => (a.track_number ?? Number.MAX_SAFE_INTEGER) - (b.track_number ?? Number.MAX_SAFE_INTEGER))
-      : [],
-    [featured.data, tracks.data],
+  const featuredTrackRows = useMemo(
+    () => CLOUDY_WITH_A_CHANCE_TRACKLIST.map((title) => ({
+      title,
+      song: catalogSongs.data.find((song) => trackKey(song.title) === trackKey(title)) ?? null,
+    })),
+    [catalogSongs.data],
   );
 
   const playableTracks = useMemo(
-    () => featuredTracks.filter((song): song is PlayerSong => Boolean(song.audio_url)),
-    [featuredTracks],
+    () => featuredTrackRows
+      .map((row) => row.song)
+      .filter((song): song is PlayerSong => Boolean(song?.audio_url)),
+    [featuredTrackRows],
   );
 
   const playQueue = (queue = playableTracks, index = 0) => {
@@ -114,7 +143,7 @@ export function Home() {
             <span className="portfolio-label">FEATURED ALBUM</span>
             <h2>{featured.data?.title ?? 'Cloudy With A Chance'}</h2>
             <div className="featured-release-meta">
-              {releaseYear(featured.data?.release_date)} <span>•</span> {featured.data?.song_count ?? featuredTracks.length} TRACKS
+              {releaseYear(featured.data?.release_date)} <span>•</span> {CLOUDY_WITH_A_CHANCE_TRACKLIST.length} TRACKS
             </div>
             <p>{featured.data?.description ?? 'The latest chapter in the ATTIKID catalog.'}</p>
             <div className="button-row">
@@ -126,27 +155,75 @@ export function Home() {
           </div>
 
           <div className="featured-tracklist">
-            {tracks.loading && <div className="portfolio-muted">Loading tracks…</div>}
-            {!tracks.loading && featuredTracks.length === 0 && <div className="portfolio-muted">Tracks will appear here after ingest.</div>}
-            {featuredTracks.map((song, index) => (
-              <button
-                type="button"
-                className={`featured-track${currentSong?.id === song.id ? ' is-current' : ''}`}
-                key={song.id}
-                onClick={() => {
-                  const queueIndex = playableTracks.findIndex((item) => item.id === song.id);
-                  if (queueIndex >= 0) playQueue(playableTracks, queueIndex);
-                }}
-                disabled={!song.audio_url}
-                aria-label={song.audio_url ? `Play ${song.title}` : `${song.title} unavailable`}
-              >
-                <span className="featured-track__play">{song.audio_url ? (currentSong?.id === song.id ? '▶' : '·') : '—'}</span>
-                <span className="featured-track__number">{String(index + 1).padStart(2, '0')}</span>
-                <span className="featured-track__title">{song.title}</span>
-                <span className="featured-track__time">{formatDuration(song.duration_seconds ?? 0)}</span>
-              </button>
-            ))}
+            {catalogSongs.loading && <div className="portfolio-muted">Loading tracks…</div>}
+            {!catalogSongs.loading && featuredTrackRows.map((row, index) => {
+              const song = row.song;
+              const isCurrent = Boolean(song && currentSong?.id === song.id);
+              const queueIndex = song ? playableTracks.findIndex((item) => item.id === song.id) : -1;
+
+              return (
+                <div
+                  className={\`featured-track\${isCurrent ? ' is-current' : ''}\`}
+                  key={row.title}
+                >
+                  <button
+                    type="button"
+                    className="featured-track__play"
+                    onClick={() => queueIndex >= 0 && playQueue(playableTracks, queueIndex)}
+                    disabled={queueIndex < 0}
+                    aria-label={queueIndex >= 0 ? \`Play \${song?.title}\` : \`\${row.title} unavailable\`}
+                  >
+                    {queueIndex >= 0 ? (isCurrent ? 'Ⅱ' : '▶') : '—'}
+                  </button>
+                  <span className="featured-track__number">{String(index + 1).padStart(2, '0')}</span>
+                  {song ? (
+                    <Link className="featured-track__title" to={\`/song/\${song.slug}\`}>
+                      {song.title}
+                    </Link>
+                  ) : (
+                    <span className="featured-track__title">{row.title}</span>
+                  )}
+                  <span className="featured-track__time">{formatDuration(song?.duration_seconds ?? 0)}</span>
+                </div>
+              );
+            })}
           </div>
+        </section>
+
+        <section className="portfolio-section portfolio-more-music">
+          <div className="portfolio-section__heading">
+            <div>
+              <span className="portfolio-label">MORE MUSIC</span>
+              <h2>The catalog.</h2>
+            </div>
+            <Link to="/music/albums">View all →</Link>
+          </div>
+
+          {albums.loading ? (
+            <div className="portfolio-muted">Loading album covers…</div>
+          ) : (
+            <div className="release-grid">
+              {albums.data.map((item) => {
+                const trackCount = Number(item.metadata?.config_track_count);
+                const connectedTracks = catalogSongs.data.filter((song) => song.album_id === item.id).length;
+                const count = Number.isFinite(trackCount) && trackCount > 0 ? trackCount : connectedTracks;
+
+                return (
+                  <Link className="release-card" to={\`/music/\${item.slug}\`} key={item.id}>
+                    <div className="release-card__art">
+                      {item.cover_url ? (
+                        <img src={item.cover_url} alt={\`\${item.title} cover\`} loading="lazy" />
+                      ) : (
+                        <span>ATTIKID</span>
+                      )}
+                    </div>
+                    <strong>{item.title}</strong>
+                    <span>{releaseYear(item.release_date)} <i>•</i> {count} TRACKS</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         <section className="portfolio-section portfolio-videos">
