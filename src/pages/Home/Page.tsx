@@ -220,7 +220,7 @@ export function Home() {
 
         <section className="aside-section activity">
           <span className="portfolio-label">RECENT ACTIVITY</span>
-          {(latestSongs.data.length ? latestSongs.data : tracks.data.slice(0, 3)).map((song) => (
+          {(latestSongs.data.length ? latestSongs.data : catalogSongs.data.slice(0, 3)).map((song) => (
             <Link className="activity-row" key={song.id} to={`/song/${song.slug}`}>
               <div className="activity-thumb">{song.artwork_url ? <img src={song.artwork_url} alt="" /> : <span />}</div>
               <div><strong>New song</strong><span>{song.title}</span></div>
