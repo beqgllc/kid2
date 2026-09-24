@@ -84,7 +84,7 @@ const slugify = (value) => normalize(value).replace(/ /g, '-');
 
 const stripMediaSuffixes = (value) =>
   normalize(value)
-    .replace(/\b(official|music|lyric|lyrics|video|visualizer|visual)\b/g, ' ')
+    .replace(/\b(official|music|lyric|lyrics|video|visualizer|visual|officialvideo|musicvideo|lyricvideo|lyricsvideo|lyricvisualizer|visualizer)\b/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
