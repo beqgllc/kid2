@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 975 230" role="img" aria-labelledby="title desc">
+  <title id="title">ATTIKID</title>
+  <desc id="desc">Gold ATTIKID wordmark with crown emblem</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3b0"/>
+      <stop offset="0.28" stop-color="#c98d29"/>
+      <stop offset="0.55" stop-color="#fff0a0"/>
+      <stop offset="0.82" stop-color="#9a5b13"/>
+      <stop offset="1" stop-color="#f4c85c"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="1.5" flood-color="#3b1700" flood-opacity=".9"/>
+    </filter>
+  </defs>
+  <g fill="url(#gold)" stroke="#5f2e08" stroke-width="3" paint-order="stroke" filter="url(#shadow)" font-family="Georgia, 'Times New Roman', serif" font-size="126" font-weight="700" letter-spacing="25">
+    <text x="21" y="128">ATTIKID</text>
+  </g>
+  <g fill="url(#gold)" stroke="#5f2e08" stroke-width="4" paint-order="stroke" filter="url(#shadow)">
+    <path d="M443 153l24-28 18 18 18-39 18 39 18-18 24 28-18 49h-84z"/>
+    <path d="M444 216h100" fill="none" stroke-width="7"/>
+    <circle cx="503" cy="104" r="4" stroke-width="2"/>
+  </g>
+  <path d="M130 194h292M584 194h260" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round"/>
+</svg>

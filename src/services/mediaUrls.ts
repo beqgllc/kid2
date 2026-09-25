@@ -35,6 +35,10 @@ export function mediaUrl(bucket: string, path: string | null) {
     return `${R2_AUDIO_BASE_URL}/${encodePath(key)}`;
   }
 
+  if (bucket === 'attikid-artwork' && R2_ARTWORK_BASE_URL && prefix === 'artwork') {
+    return `${R2_ARTWORK_BASE_URL}/${encodePath(key)}`;
+  }
+
   if (path.startsWith('r2:')) {
     if (!base) {
       throw new Error(`Missing R2 public base URL for ${prefix} media.`);

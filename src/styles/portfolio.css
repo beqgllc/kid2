@@ -15,7 +15,7 @@ main{overflow:visible}
 .visuals-page{margin-left:0;padding-left:210px}
 .site-footer{margin:0 0 0 162px;max-width:none;padding:2rem 22px 7rem 48px;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:end;background:#070707}
 .site-footer__brand{display:flex;align-items:baseline;gap:1rem}
-.site-footer__brand strong{font:2rem var(--font-marker),cursive;font-weight:400;letter-spacing:-.04em}
+.site-footer__brand img{display:block;width:min(26rem,100%);height:auto}
 .site-footer__brand span{font:.6rem var(--font-mono);letter-spacing:.14em;color:#8b8b8b}
 .site-footer__links{display:flex;gap:1.2rem;flex-wrap:wrap}
 .site-footer__links a{color:#8b8b8b;text-decoration:none;font-size:.72rem}

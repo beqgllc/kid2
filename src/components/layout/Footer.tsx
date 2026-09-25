@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="site-footer__brand">
-        <strong>Attikid</strong>
+        <img src="/images/brand/attikid-wordmark.svg" alt="ATTIKID" />
         <span>REAL MUSIC. REAL SHIT.</span>
       </div>
       <div className="site-footer__links">
