@@ -7,6 +7,7 @@ import type { PlayerSong } from '../../types/models';
 import { usePageMeta } from '../../lib/seo';
 import { getLyricVideos } from '../../services/visuals';
 import type { LyricVideo } from '../../types/models';
+import { AdminAuthModal } from '../Admin/Login';
 
 function releaseYear(value?: string | null) {
   if (!value) return '—';
@@ -51,6 +52,7 @@ export function Home() {
   const currentSong = usePlayerStore((state) => state.currentSong);
 
   const [lyricVideos, setLyricVideos] = useState<LyricVideo[]>([]);
+  const [adminModalOpen, setAdminModalOpen] = useState(false);
 
   useEffect(() => {
     getLyricVideos().then(setLyricVideos).catch(() => setLyricVideos([]));
@@ -304,29 +306,35 @@ export function Home() {
           <Link className="button" to="/fan-mail">Join the list →</Link>
         </section>
 
-        ```tsx
-<section className="aside-section activity">
-  <span className="portfolio-label">RECENT ACTIVITY</span>
+        <section className="aside-section activity">
+          <span className="portfolio-label">RECENT ACTIVITY</span>
 
-  {latestSongs.data.slice(0, 3).map((song) => (
-    <Link className="activity-row" key={song.id} to={`/song/${song.slug}`}>
-      <div className="activity-thumb">
-        {song.artwork_url ? (
-          <img src={song.artwork_url} alt="" />
-        ) : (
-          <span />
-        )}
-      </div>
+          {latestSongs.data.slice(0, 3).map((song) => (
+            <Link className="activity-row" key={song.id} to={`/song/${song.slug}`}>
+              <div className="activity-thumb">
+                {song.artwork_url ? <img src={song.artwork_url} alt="" /> : <span />}
+              </div>
+              <div>
+                <strong>New song</strong>
+                <span>{song.title}</span>
+              </div>
+            </Link>
+          ))}
+        </section>
 
-      <div>
-        <strong>New song</strong>
-        <span>{song.title}</span>
-      </div>
-    </Link>
-  ))}
-</section>
-```
+        <section className="aside-section aside-admin-access">
+          <span className="portfolio-label">PRIVATE ACCESS</span>
+          <p>Admin console access for managing the ATTIKID archive.</p>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={() => setAdminModalOpen(true)}
+          >
+            Admin login →
+          </button>
+        </section>
       </aside>
+      <AdminAuthModal open={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
     </div>
   );
 }
