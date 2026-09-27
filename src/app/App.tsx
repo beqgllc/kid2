@@ -4,6 +4,7 @@ import { AppShell } from '../components/layout/AppShell';
 import { useSessionBootstrap } from '../hooks/useAuth';
 import { supabaseConfigured } from '../lib/supabase/client';
 import { Home } from '../pages/Home/Page';
+import { FigmaHome } from '../pages/Home/FigmaPage';
 import { Music } from '../pages/Music/Page';
 import { MusicAZ } from '../pages/Music/AZ';
 import { Album } from '../pages/Album/Page';
@@ -45,7 +46,7 @@ export function App() {
       {!supabaseConfigured ? <ConfigNotice /> : <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<FigmaHome />} />
             <Route path="/music" element={<Navigate to="/music/albums" replace />} />
             <Route path="/music/a-z" element={<MusicAZ />} />
             <Route path="/music/albums" element={<Music />} />
