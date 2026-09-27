@@ -15,3 +15,9 @@ create policy artwork_public_read on storage.objects for select to public using 
 create policy artwork_admin_write on storage.objects for all to authenticated using (bucket_id='attikid-artwork' and public.is_admin()) with check (bucket_id='attikid-artwork' and public.is_admin());
 create policy assets_public_read on storage.objects for select to public using (bucket_id='attikid-assets');
 create policy assets_admin_write on storage.objects for all to authenticated using (bucket_id='attikid-assets' and public.is_admin()) with check (bucket_id='attikid-assets' and public.is_admin());
+
+
+drop policy if exists videos_public_read on storage.objects;
+create policy videos_public_read on storage.objects for select to public using (bucket_id='attikid-videos');
+drop policy if exists videos_admin_write on storage.objects;
+create policy videos_admin_write on storage.objects for all to authenticated using (bucket_id='attikid-videos' and public.is_admin()) with check (bucket_id='attikid-videos' and public.is_admin());
