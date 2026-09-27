@@ -27,6 +27,11 @@ export function GlobalPlayer() {
   const sessionId = useRef(createSessionId());
   const switchingSource = useRef(false);
   const fallbackTried = useRef(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const meterFrameRef = useRef<number | null>(null);
+  const meterBarsRef = useRef<Array<HTMLSpanElement | null>>([]);
   const { currentSong, queue, currentIndex, isPlaying, currentTime, duration, volume, muted, repeatMode, shuffle, error, status, set } = usePlayerStore();
 
   useEffect(() => {
@@ -35,6 +40,82 @@ export function GlobalPlayer() {
     audio.volume = volume;
     audio.muted = muted;
   }, [volume, muted]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.crossOrigin = 'anonymous';
+
+    return () => {
+      if (meterFrameRef.current !== null) cancelAnimationFrame(meterFrameRef.current);
+      meterFrameRef.current = null;
+      sourceNodeRef.current?.disconnect();
+      analyserRef.current?.disconnect();
+      sourceNodeRef.current = null;
+      analyserRef.current = null;
+      if (audioContextRef.current) {
+        void audioContextRef.current.close().catch(() => undefined);
+        audioContextRef.current = null;
+      }
+    };
+  }, []);
+
+  const startMeter = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      if (!audioContextRef.current) {
+        const AudioContextCtor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioContextCtor) return;
+
+        const context = new AudioContextCtor();
+        const analyser = context.createAnalyser();
+        analyser.fftSize = 64;
+        analyser.smoothingTimeConstant = 0.72;
+
+        const source = context.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(context.destination);
+
+        audioContextRef.current = context;
+        analyserRef.current = analyser;
+        sourceNodeRef.current = source;
+      }
+
+      const context = audioContextRef.current;
+      const analyser = analyserRef.current;
+      if (!context || !analyser) return;
+
+      void context.resume().catch(() => undefined);
+
+      if (meterFrameRef.current !== null) cancelAnimationFrame(meterFrameRef.current);
+
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      const tick = () => {
+        analyser.getByteFrequencyData(data);
+        const bars = meterBarsRef.current;
+        const count = bars.length;
+        for (let index = 0; index < count; index += 1) {
+          const start = Math.floor((index / count) * data.length);
+          const end = Math.max(start + 1, Math.floor(((index + 1) / count) * data.length));
+          let sum = 0;
+          for (let i = start; i < end; i += 1) sum += data[i];
+          const normalized = Math.min(1, (sum / (end - start)) / 255);
+          const floor = 0.08 + (index % 3) * 0.025;
+          const level = Math.min(1, floor + normalized * 0.92);
+          bars[index]?.style.setProperty('--meter-level', level.toFixed(3));
+        }
+        meterFrameRef.current = requestAnimationFrame(tick);
+      };
+
+      tick();
+    } catch {
+      // A browser may block Web Audio analysis for a cross-origin source.
+      // Playback remains functional; the meter simply stays idle.
+    }
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -66,6 +147,7 @@ export function GlobalPlayer() {
     if (!audio || !currentSong) return;
 
     if (isPlaying) {
+      startMeter();
       void audio.play().catch((playbackError) => {
         const message = playbackErrorMessage(playbackError);
         if (message) set({ isPlaying: false, status: 'error', error: message });
@@ -232,6 +314,7 @@ export function GlobalPlayer() {
       <audio
         ref={audioRef}
         data-attikid-player="true"
+        crossOrigin="anonymous"
         preload="metadata"
         onLoadedMetadata={(event) => {
           switchingSource.current = false;
