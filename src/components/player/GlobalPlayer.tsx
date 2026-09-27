@@ -350,6 +350,18 @@ export function GlobalPlayer() {
         </div>
 
         <div className="player-main">
+          <div className="analog-meter" aria-label="Live audio level" role="img">
+            <span className="analog-meter__label">ANALOG ROOM / LEVEL</span>
+            <div className="analog-meter__bars" aria-hidden="true">
+              {Array.from({ length: 12 }, (_, index) => (
+                <span
+                  key={index}
+                  ref={(node) => { meterBarsRef.current[index] = node; }}
+                  className="analog-meter__bar"
+                />
+              ))}
+            </div>
+          </div>
           <div className="player-controls">
             <button type="button" onClick={previous} disabled={!currentSong || !queue.length} aria-label="Previous track" title="Previous">◀</button>
             <button type="button" className="play-button" onClick={toggle} disabled={!currentSong} aria-label={isPlaying ? 'Pause' : 'Play'} title={isPlaying ? 'Pause' : 'Play'}>
