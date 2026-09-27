@@ -70,6 +70,7 @@ export interface Song {
 export interface Lyrics { id:string; song_id:string; content:string; created_at:string; updated_at:string; }
 export interface LyricVideo { id:string; song_id:string; title:string; video_path:string; video_mime_type:string; file_size:number|null; duration_seconds:number|null; thumbnail_path:string|null; published:boolean; created_at:string; updated_at:string; video_url:string|null; thumbnail_url:string|null; song?:{id:string;title:string;artist_name:string;slug:string;album_title:string|null}|null; }
 export interface Comment { id:string; song_id:string; visitor_id:string; display_name:string|null; content:string; created_at:string; updated_at:string; }
+export interface AdminComment extends Comment { song?: { title:string; slug:string }|null; }
 export interface FanMail { id:string; sender_name:string|null; sender_email:string|null; message:string; is_read:boolean; created_at:string; updated_at:string; }
 export interface AnalyticsSummary { total_plays:number; total_songs:number; total_albums:number; total_likes:number; total_dislikes:number; total_comments:number; unread_fan_mail:number; }
 export interface SongAnalytics { song_id:string; play_count:number; like_count:number; dislike_count:number; comment_count:number; }
