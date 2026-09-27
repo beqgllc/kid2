@@ -75,6 +75,26 @@ export async function uploadSong(input: { file: File; title: string; artistName:
   return data;
 }
 
+export async function replaceSongAudio(song: { id: string; album_id: string | null; audio_path: string }, file: File) {
+  assertAudio(file);
+  const supabase = requireSupabase();
+  const folder = song.album_id ?? 'singles';
+  const path = 'audio/' + folder + '/' + song.id + '/' + crypto.randomUUID() + '.' + extension(file);
+  const contentType = audioContentType(file);
+  const durationSeconds = await getAudioDuration(file);
+  const { error: uploadError } = await supabase.storage.from('attikid-audio').upload(path, file, { contentType, upsert: false });
+  if (uploadError) throw uploadError;
+  const { error: updateError } = await supabase.from('songs').update({
+    audio_path: path, audio_mime_type: contentType, file_size: file.size, duration_seconds: durationSeconds || null,
+  }).eq('id', song.id);
+  if (updateError) {
+    await supabase.storage.from('attikid-audio').remove([path]);
+    throw updateError;
+  }
+  const { error: removeError } = await supabase.storage.from('attikid-audio').remove([song.audio_path]);
+  if (removeError) throw removeError;
+}
+
 export async function deleteSong(song: any) {
   const supabase = requireSupabase();
   const { error: storageError } = await supabase.storage.from('attikid-audio').remove([song.audio_path]);
