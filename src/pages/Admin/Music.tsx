@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { getAlbums, getSongs } from '../../services/catalog';
-import { deleteSong, ensureAlbum, updateSong, uploadSong } from '../../services/uploads';
+import { deleteSong, ensureAlbum, replaceSongAudio, updateSong, uploadSong } from '../../services/uploads';
 import type { Album, Song } from '../../types/models';
 
 export function Music() {
@@ -75,9 +75,19 @@ function SongEditor({ song, albums, refresh, remove }: { song: Song; albums: Alb
   const [albumId, setAlbumId] = useState(song.album_id);
   const [release, setRelease] = useState(song.release_date ?? '');
   const [track, setTrack] = useState(song.track_number?.toString() ?? '');
-  const save = async () => { await updateSong(song.id, { title, artist_name: artist, album_id: albumId, release_date: release || null, track_number: track ? Number(track) : null }); setEditing(false); await refresh(); };
+  const [replacement, setReplacement] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const save = async () => {
+    setBusy(true);
+    try {
+      await updateSong(song.id, { title, artist_name: artist, album_id: albumId, release_date: release || null, track_number: track ? Number(track) : null });
+      if (replacement) { await replaceSongAudio(song, replacement); setReplacement(null); }
+      setEditing(false);
+      await refresh();
+    } finally { setBusy(false); }
+  };
   return <div className="admin-list-row admin-song-editor">
-    {!editing ? <div><strong>{song.title}</strong><span>{song.album?.title ?? '—'} · {song.artist_name}</span></div> : <div className="editor-fields"><input value={title} onChange={e=>setTitle(e.target.value)} /><input value={artist} onChange={e=>setArtist(e.target.value)} /><select value={albumId ?? ''} onChange={e=>setAlbumId(e.target.value || null)}><option value="">No album / single</option>{albums.map(a=><option key={a.id} value={a.id}>{a.title}</option>)}</select><input type="date" value={release} onChange={e=>setRelease(e.target.value)} /><input type="number" min="1" value={track} onChange={e=>setTrack(e.target.value)} /></div>}
-    <div className="button-row"><button onClick={()=>editing ? void save() : setEditing(true)}>{editing ? 'Save' : 'Edit'}</button><button onClick={()=>void remove()}>Delete</button></div>
+    {!editing ? <div><strong>{song.title}</strong><span>{song.album?.title ?? '—'} · {song.artist_name}</span></div> : <div className="editor-fields"><input value={title} onChange={e=>setTitle(e.target.value)} aria-label="Song title" /><input value={artist} onChange={e=>setArtist(e.target.value)} aria-label="Artist name" /><select value={albumId ?? ''} onChange={e=>setAlbumId(e.target.value || null)}><option value="">No album / single</option>{albums.map(a=><option key={a.id} value={a.id}>{a.title}</option>)}</select><input type="date" value={release} onChange={e=>setRelease(e.target.value)} aria-label="Release date" /><input type="number" min="1" value={track} onChange={e=>setTrack(e.target.value)} aria-label="Track number" /><label className="replace-audio"><span>Replace audio file</span><input type="file" accept="audio/*" onChange={e=>setReplacement(e.target.files?.[0] ?? null)} /></label></div>}
+    <div className="button-row"><button disabled={busy} onClick={()=>editing ? void save() : setEditing(true)}>{editing ? (busy ? 'Saving…' : 'Save') : 'Edit'}</button><button disabled={busy} onClick={()=>void remove()}>Delete</button></div>
   </div>;
 }
