@@ -22,6 +22,7 @@ import { Music as AdminMusic } from '../pages/Admin/Music';
 import { Albums } from '../pages/Admin/Albums';
 import { AdminLyrics } from '../pages/Admin/Lyrics';
 import { CommentsAdmin } from '../pages/Admin/Comments';
+import { VideosAdmin } from '../pages/Admin/Videos';
 import { FanMailAdmin } from '../pages/Admin/FanMail';
 import { Analytics } from '../pages/Admin/Analytics';
 import { Settings } from '../pages/Admin/Settings';
@@ -69,6 +70,7 @@ export function App() {
               <Route path="/admin/albums" element={<Albums />} />
               <Route path="/admin/lyrics" element={<AdminLyrics />} />
               <Route path="/admin/comments" element={<CommentsAdmin />} />
+              <Route path="/admin/videos" element={<VideosAdmin />} />
               <Route path="/admin/fan-mail" element={<FanMailAdmin />} />
               <Route path="/admin/analytics" element={<Analytics />} />
               <Route path="/admin/settings" element={<Settings />} />
