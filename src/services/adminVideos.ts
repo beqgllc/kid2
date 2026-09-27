@@ -1,5 +1,4 @@
 import { requireSupabase } from '../lib/supabase/client';
-import { slugify } from '../lib/utils';
 import type { LyricVideo } from '../types/models';
 import { mediaUrl } from './mediaUrls';
 
