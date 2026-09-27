@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '../components/layout/AppShell';
 import { useSessionBootstrap } from '../hooks/useAuth';
 import { supabaseConfigured } from '../lib/supabase/client';
-import { Home } from '../pages/Home/Page';
 import { FigmaHome } from '../pages/Home/FigmaPage';
 import { Music } from '../pages/Music/Page';
 import { MusicAZ } from '../pages/Music/AZ';
