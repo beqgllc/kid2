@@ -13,6 +13,9 @@ A responsive music portfolio + lightweight artist CMS powered by React, Vite, Ty
 - Fan mail inbox
 -  authentication
 - Admin catalog editing
+- Admin visual archive (lyric-video upload/edit/publish/delete)
+- Admin comment moderation
+- Live Analog Room audio level meter
 - Individual + bulk audio uploads (up to 50 files)
 - Song / album analytics
 - Loading states, transitions, hover and scroll effects
@@ -60,6 +63,7 @@ Create these Storage buckets:
 - `attikid-audio`
 - `attikid-artwork`
 - `attikid-assets`
+- `attikid-videos`
 
 Apply the Storage policies from `supabase/migrations/015_storage.sql`.
 
@@ -86,3 +90,43 @@ npm run build
 ## Notes
 
 Anonymous Auth is used for low-friction public interactions. Production deployments should enable CAPTCHA / additional abuse controls on anonymous sign-in and public write endpoints as appropriate.
+
+
+## Production deployment
+
+### Vercel
+
+This repository includes `vercel.json` for Vite SPA routing, immutable asset caching, image caching, and baseline security headers.
+
+Set these Vercel environment variables for **Production**, **Preview**, and **Development** as needed:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_ADMIN_EMAIL`
+- `VITE_R2_AUDIO_PUBLIC_BASE_URL` (optional)
+- `VITE_R2_ARTWORK_PUBLIC_BASE_URL` (optional)
+- `VITE_R2_VIDEO_PUBLIC_BASE_URL` (optional)
+
+Never expose a Supabase service-role key or Cloudflare secret in a `VITE_` variable.
+
+### Supabase production checklist
+
+1. Run every migration in `supabase/migrations/` in filename order.
+2. Confirm the `attikid-audio`, `attikid-artwork`, `attikid-assets`, and `attikid-videos` buckets exist and are public-read.
+3. Confirm the admin user's `profiles.role` is `admin`.
+4. Confirm RLS policies are enabled.
+5. Configure CAPTCHA/abuse controls for anonymous public writes.
+6. If R2 is used, configure CORS to allow the production ATTIKID origin and send `GET`, `HEAD`, and `OPTIONS`.
+7. Test a song upload, replacement, playback, comment moderation, video upload, and video deletion from the production admin console.
+
+### Admin CMS map
+
+- `/admin` — overview and totals
+- `/admin/music` — upload, edit, replace audio, delete songs
+- `/admin/albums` — album metadata, artwork, track ordering
+- `/admin/lyrics` — lyrics editor
+- `/admin/videos` — lyric-video upload, publish/draft, edit, delete
+- `/admin/comments` — search, edit, delete public comments
+- `/admin/analytics` — song and album performance
+- `/admin/fan-mail` — community inbox
+- `/admin/settings` — environment/configuration notes
