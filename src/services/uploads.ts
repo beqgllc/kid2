@@ -119,6 +119,7 @@ export async function deleteSong(song: any) {
   const supabase = requireSupabase();
   const { error: storageError } = await supabase.storage.from('attikid-audio').remove([song.audio_path]);
   if (storageError) throw storageError;
+  if (song.artwork_path) await supabase.storage.from('attikid-artwork').remove([song.artwork_path]);
   const { error } = await supabase.from('songs').delete().eq('id', song.id);
   if (error) throw error;
 }
