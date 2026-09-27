@@ -95,6 +95,26 @@ export async function replaceSongAudio(song: { id: string; album_id: string | nu
   if (removeError) throw removeError;
 }
 
+export async function replaceSongArtwork(song: { id: string; artwork_path?: string | null }, file: File) {
+  const contentType = imageContentType(file);
+  if (!contentType) throw new Error('Choose a JPG, PNG, or WebP image.');
+  if (file.size <= 0) throw new Error('Artwork file is empty.');
+  if (file.size > 10 * 1024 * 1024) throw new Error('Artwork must be 10 MB or smaller.');
+
+  const supabase = requireSupabase();
+  const path = 'songs/' + song.id + '/' + crypto.randomUUID() + '.' + extension(file);
+  const { error: uploadError } = await supabase.storage.from('attikid-artwork').upload(path, file, { contentType, upsert: false });
+  if (uploadError) throw uploadError;
+
+  const { error: updateError } = await supabase.from('songs').update({ artwork_path: path }).eq('id', song.id);
+  if (updateError) {
+    await supabase.storage.from('attikid-artwork').remove([path]);
+    throw updateError;
+  }
+
+  if (song.artwork_path) await supabase.storage.from('attikid-artwork').remove([song.artwork_path]);
+}
+
 export async function deleteSong(song: any) {
   const supabase = requireSupabase();
   const { error: storageError } = await supabase.storage.from('attikid-audio').remove([song.audio_path]);
