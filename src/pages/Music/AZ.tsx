@@ -40,6 +40,7 @@ export function MusicAZ() {
   return (
     <div className="page music-catalog-page">
       <PortfolioPageHeader
+        image="/images/new/hero/atozhero.webp"
         eyebrow="CATALOG / A–Z"
         title="Every track."
         description="Every ATTIKID song, alphabetized across albums and standalone releases."
