@@ -6,7 +6,7 @@ import type { Song } from '../../types/models';
 import './albums.css';
 
 function coverFor(title: string, fallback?: string | null) {
-  const key = title.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\\s+/g, ' ');
+  const key = title.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
   const covers: Record<string, string> = {
     'cloudy with a chance': '/images/new/cover/cloudywithachance.webp',
     'dead flowers still bloom': '/images/new/cover/deadflowersstillbloom.webp',
