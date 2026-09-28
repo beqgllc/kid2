@@ -3,6 +3,7 @@ import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHea
 import { useAlbums, useSongs } from '../../hooks/useCatalog';
 import { usePageMeta } from '../../lib/seo';
 import type { Song } from '../../types/models';
+import './albums.css';
 
 function year(value?: string | null) {
   if (!value) return '—';
@@ -51,7 +52,7 @@ export function Music() {
         {albums.loading || songs.loading ? (
           <div className="loading-state">Loading album archive…</div>
         ) : albums.data.length ? (
-          <div className="music-release-grid">
+          <div className="music-release-grid album-cover-carousel">
             {albums.data.map((album) => {
               const tracks = tracksByAlbum[album.id] ?? [];
               const configuredTrackCount = Number(album.metadata?.config_track_count);
@@ -60,7 +61,7 @@ export function Music() {
                 : tracks.length;
 
               return (
-                <article className="music-release-card" key={album.id}>
+                <article className="music-release-card album-hover-card" key={album.id}>
                   <Link to={`/music/${album.slug}`} className="music-release-card__art">
                     {album.cover_url
                       ? <img src={album.cover_url} alt={`${album.title} cover`} />
