@@ -174,9 +174,6 @@
   gap:.42rem;
   margin-top:1.15rem;
 }
-.site-header nav::before{
-  margin-bottom:.2rem;
-}
 .site-header nav a,
 .music-menu__trigger{
   min-height:28px;
@@ -200,9 +197,6 @@
   .site-header nav{
     gap:.35rem;
     margin-top:0;
-  }
-  .site-header nav::before{
-    margin-bottom:.35rem;
   }
   .site-header nav a,
   .music-menu__trigger{
