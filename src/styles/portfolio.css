@@ -679,6 +679,31 @@ main{overflow:visible}
 .lyrics-viewer p{
   margin:0;
 }
+.music-search{
+  max-width:32rem;
+  margin-bottom:1.5rem;
+}
+.music-search label{
+  display:block;
+  color:var(--color-text-muted);
+  font:.65rem var(--font-mono);
+  letter-spacing:var(--tracking-mono-label);
+}
+.music-search .search-input{
+  width:100%;
+  margin:.55rem 0 0!important;
+  padding:.8rem!important;
+  border:1px solid var(--color-border)!important;
+  border-radius:0!important;
+  background:var(--color-bg)!important;
+  color:var(--color-text)!important;
+  font-family:var(--font-body);
+}
+.music-search__status{
+  margin:.45rem 0 0;
+  color:var(--color-text-muted);
+  font:.62rem var(--font-mono);
+}
 .comments{
   padding:3rem 0 5rem;
   border-bottom:1px solid #292929;

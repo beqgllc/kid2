@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { SongRow } from '../../components/music/SongRow';
 import { useSongs } from '../../hooks/useCatalog';
@@ -6,21 +6,26 @@ import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
 
 export function MusicAZ() {
   const songs = useSongs();
+  const [query, setQuery] = useState('');
   const sorted = useMemo(
     () => songs.data.slice().sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })),
     [songs.data],
   );
+  const filteredSongs = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return sorted.filter((song) => song.title.toLowerCase().includes(normalizedQuery));
+  }, [query, sorted]);
 
   const groups = useMemo(() => {
-    const grouped = new Map<string, typeof sorted>();
-    sorted.forEach((song) => {
+    const grouped = new Map<string, typeof filteredSongs>();
+    filteredSongs.forEach((song) => {
       const letter = song.title.trim().charAt(0).toUpperCase() || '#';
       const existing = grouped.get(letter) ?? [];
       existing.push(song);
       grouped.set(letter, existing);
     });
     return [...grouped.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [sorted]);
+  }, [filteredSongs]);
 
   usePageMeta({
     title: 'ATTIKID Music A-Z',
@@ -45,9 +50,30 @@ export function MusicAZ() {
       />
 
       <section className="portfolio-section page-section-tight">
+        <div className="music-search">
+          <label htmlFor="music-title-search">FIND A SONG</label>
+          <input
+            id="music-title-search"
+            className="search-input"
+            type="search"
+            list="music-title-suggestions"
+            placeholder="Search by song title"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <datalist id="music-title-suggestions">
+            {sorted.map((song) => <option key={song.id} value={song.title} />)}
+          </datalist>
+          <p className="music-search__status" aria-live="polite">
+            {query.trim()
+              ? `${filteredSongs.length} matching ${filteredSongs.length === 1 ? 'track' : 'tracks'}`
+              : `${sorted.length} tracks`}
+          </p>
+        </div>
+
         {songs.loading ? (
           <div className="loading-state">Loading tracks…</div>
-        ) : groups.length ? (
+        ) : filteredSongs.length ? (
           <div className="music-az-list">
             {groups.map(([letter, items]) => (
               <section key={letter}>
@@ -65,6 +91,8 @@ export function MusicAZ() {
               </section>
             ))}
           </div>
+        ) : query.trim() ? (
+          <div className="empty-state">No tracks match “{query.trim()}”.</div>
         ) : (
           <div className="empty-state">No tracks have been ingested yet.</div>
         )}
