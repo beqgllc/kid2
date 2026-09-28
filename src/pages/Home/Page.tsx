@@ -154,7 +154,7 @@ export function Home() {
         <section className="portfolio-featured">
           <div className="featured-release-art">
             {(localCover(featured.data?.title) ?? featured.data?.cover_url)
-              ? <img src={localCover(featured.data?.title) ?? featured.data?.cover_url!} alt="Cloudy With A Chance" loading="lazy" />
+              ? <img src={localCover(featured.data?.title) ?? featured.data?.cover_url ?? undefined} alt="Cloudy With A Chance" loading="lazy" />
               : <span>ATTIKID</span>}
           </div>
 
@@ -231,7 +231,7 @@ export function Home() {
                   <Link className="release-card" to={`/music/${item.slug}`} key={item.id}>
                     <div className="release-card__art">
                       {(localCover(item.title) ?? item.cover_url) ? (
-                        <img src={localCover(item.title) ?? item.cover_url!} alt={`${item.title} cover`} loading="lazy" />
+                        <img src={localCover(item.title) ?? item.cover_url ?? undefined} alt={`${item.title} cover`} loading="lazy" />
                       ) : (
                         <span>ATTIKID</span>
                       )}
@@ -329,7 +329,7 @@ export function Home() {
           {latestSongs.data.slice(0, 3).map((song) => (
             <Link className="activity-row" key={song.id} to={`/song/${song.slug}`}>
               <div className="activity-thumb">
-                {(albumForSong(song) ?? song.artwork_url) ? <img src={albumForSong(song) ?? song.artwork_url!} alt="" /> : <span />}
+                {(albumForSong(song) ?? song.artwork_url) ? <img src={albumForSong(song) ?? song.artwork_url ?? undefined} alt="" /> : <span />}
               </div>
               <div>
                 <strong>New song</strong>
