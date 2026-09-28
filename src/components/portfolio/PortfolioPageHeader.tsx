@@ -13,6 +13,7 @@ type PortfolioPageHeaderProps = {
   description: ReactNode;
   links?: PortfolioHeaderLink[];
   className?: string;
+  image?: string;
 };
 
 export function PortfolioPageHeader({
@@ -21,12 +22,13 @@ export function PortfolioPageHeader({
   description,
   links = [],
   className = '',
+  image = '/images/hero/attikid-hero.webp',
 }: PortfolioPageHeaderProps) {
   return (
     <header className={`catalog-hero ${className}`.trim()}>
       <img
         className="catalog-hero__image"
-        src="/images/hero/attikid-hero.webp"
+        src={image}
         alt=""
         aria-hidden="true"
         loading="eager"
