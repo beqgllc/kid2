@@ -3,6 +3,7 @@ import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHea
 import { RichContent } from '../../components/content/RichContent';
 import { aboutContent } from '../../content/about';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
+import '../Music/albums.css';
 
 export function About() {
   usePageMeta({
