@@ -3,6 +3,19 @@ import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHea
 import { useAlbums, useSongs } from '../../hooks/useCatalog';
 import { usePageMeta } from '../../lib/seo';
 import type { Song } from '../../types/models';
+import './albums.css';
+
+function coverFor(title: string, fallback?: string | null) {
+  const key = title.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
+  const covers: Record<string, string> = {
+    'cloudy with a chance': '/images/new/cover/cloudywithachance.webp',
+    'dead flowers still bloom': '/images/new/cover/deadflowersstillbloom.webp',
+    'misery motel': '/images/new/cover/miserymotel.webp',
+    'more trauma and shit': '/images/new/cover/moretraumaandshit.webp',
+    'trauma and shit': '/images/new/cover/traumaandshit.webp',
+  };
+  return covers[key] ?? fallback ?? null;
+}
 
 function year(value?: string | null) {
   if (!value) return '—';
@@ -51,7 +64,7 @@ export function Music() {
         {albums.loading || songs.loading ? (
           <div className="loading-state">Loading album archive…</div>
         ) : albums.data.length ? (
-          <div className="music-release-grid">
+          <div className="music-release-grid album-cover-carousel">
             {albums.data.map((album) => {
               const tracks = tracksByAlbum[album.id] ?? [];
               const configuredTrackCount = Number(album.metadata?.config_track_count);
@@ -60,10 +73,10 @@ export function Music() {
                 : tracks.length;
 
               return (
-                <article className="music-release-card" key={album.id}>
+                <article className="music-release-card album-hover-card" key={album.id}>
                   <Link to={`/music/${album.slug}`} className="music-release-card__art">
-                    {album.cover_url
-                      ? <img src={album.cover_url} alt={`${album.title} cover`} />
+                    {coverFor(album.title, album.cover_url)
+                      ? <img src={coverFor(album.title, album.cover_url)!} alt={`${album.title} cover`} />
                       : <span>ATTIKID</span>}
                   </Link>
 

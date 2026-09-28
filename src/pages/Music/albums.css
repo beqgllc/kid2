@@ -1,0 +1,26 @@
+/* ATTIKID album archive: side-scroll covers, reveal tracklists on hover */
+.album-cover-carousel{display:flex;gap:1rem;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;padding:0 0 1rem}
+.album-cover-carousel .album-hover-card{position:relative;display:flex;flex:0 0 min(440px,82vw);min-height:320px;scroll-snap-align:start;overflow:hidden;background:#090909}
+.album-cover-carousel .music-release-card__art{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:0}
+.album-cover-carousel .music-release-card__art img{transition:opacity .25s ease,transform .45s ease}
+.album-cover-carousel .music-release-card__body{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;min-height:320px;padding:1.1rem;background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.68) 44%,rgba(0,0,0,.08))}
+.album-cover-carousel .music-release-card__body h2{margin:.4rem 0;font-size:clamp(1.8rem,3vw,2.5rem)}
+.album-cover-carousel .music-release-card__body>p,.album-cover-carousel .album-card-purpose,.album-cover-carousel .album-card-artist,.album-cover-carousel .album-card-meta-line,.album-cover-carousel .text-link{display:none}
+.album-cover-carousel .music-release-card__tracks{display:none;max-height:230px;overflow:auto;margin:.65rem 0 0;border-top:1px solid rgba(255,255,255,.28)}
+.album-cover-carousel .music-release-card__tracks a{color:#f2f2f2;border-color:rgba(255,255,255,.14)}
+.album-cover-carousel .album-hover-card:hover .music-release-card__art img,.album-cover-carousel .album-hover-card:focus-within .music-release-card__art img{opacity:.13;transform:scale(1.04)}
+.album-cover-carousel .album-hover-card:hover .music-release-card__body,.album-cover-carousel .album-hover-card:focus-within .music-release-card__body{background:rgba(0,0,0,.76);justify-content:flex-start}
+.album-cover-carousel .album-hover-card:hover .music-release-card__tracks,.album-cover-carousel .album-hover-card:focus-within .music-release-card__tracks{display:block}
+.album-cover-carousel .music-release-card__tracks a{padding:.42rem 0}
+@media(max-width:640px){.album-cover-carousel .album-hover-card{flex-basis:84vw;min-height:300px}.album-cover-carousel .music-release-card__body{min-height:300px}}
+@media(prefers-reduced-motion:reduce){.album-cover-carousel .music-release-card__art img{transition:none}}
+.about-intro{display:grid;grid-template-columns:minmax(260px,46%) 1fr;gap:clamp(1.5rem,5vw,4rem);align-items:center;padding:2rem 0 3rem;border-bottom:1px solid #292929}
+.about-intro__image{height:clamp(240px,32vw,440px);overflow:hidden;border:1px solid #292929;background:#111}
+.about-intro__image img{width:100%;height:100%;object-fit:cover;display:block}
+.about-intro__copy h2{font:400 clamp(2.3rem,4vw,4.2rem)/.95 var(--font-display);text-transform:uppercase;margin:.7rem 0 1rem}
+.about-intro__copy p{color:#a0a0a0;line-height:1.7;max-width:38rem}
+.about-intro__copy a{display:inline-block;margin-top:.5rem}
+.featured-track__title{min-width:0;padding:0;border:0;background:none;color:#f2f2f2;text-align:left;font:inherit;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.featured-track__title:hover:not(:disabled){color:#fff;text-decoration:underline;text-underline-offset:3px}
+.featured-track__title:disabled{cursor:default;opacity:.65}
+@media(max-width:800px){.about-intro{grid-template-columns:1fr}.about-intro__image{height:clamp(220px,60vw,380px)}}

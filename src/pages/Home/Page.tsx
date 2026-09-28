@@ -31,6 +31,18 @@ const CLOUDY_WITH_A_CHANCE_TRACKLIST = [
   "Funeral",
 ] as const;
 
+function localCover(title?: string | null) {
+  const key = trackKey(title ?? '');
+  const covers: Record<string, string> = {
+    'cloudy with a chance': '/images/new/cover/cloudywithachance.webp',
+    'dead flowers still bloom': '/images/new/cover/deadflowersstillbloom.webp',
+    'misery motel': '/images/new/cover/miserymotel.webp',
+    'more trauma and shit': '/images/new/cover/moretraumaandshit.webp',
+    'trauma and shit': '/images/new/cover/traumaandshit.webp',
+  };
+  return covers[key] ?? null;
+}
+
 function trackKey(value: string) {
   return value
     .normalize('NFKD')
@@ -69,6 +81,11 @@ export function Home() {
     })),
     [catalogSongs.data],
   );
+
+  const albumForSong = (song: { album_id?: string | null; album?: { title?: string | null; cover_url?: string | null } | null }) => {
+    const album = albums.data.find((item) => item.id === song.album_id) ?? song.album;
+    return localCover(album?.title) ?? album?.cover_url ?? null;
+  };
 
   const playableTracks = useMemo(
     () => featuredTrackRows
@@ -136,8 +153,8 @@ export function Home() {
 
         <section className="portfolio-featured">
           <div className="featured-release-art">
-            {featured.data?.cover_url
-              ? <img src={featured.data.cover_url} alt="Cloudy With A Chance" loading="lazy" />
+            {(localCover(featured.data?.title) ?? featured.data?.cover_url)
+              ? <img src={localCover(featured.data?.title) ?? featured.data?.cover_url!} alt="Cloudy With A Chance" loading="lazy" />
               : <span>ATTIKID</span>}
           </div>
 
@@ -179,9 +196,9 @@ export function Home() {
                   </button>
                   <span className="featured-track__number">{String(index + 1).padStart(2, '0')}</span>
                   {song ? (
-                    <Link className="featured-track__title" to={`/song/${song.slug}`}>
+                    <button className="featured-track__title" type="button" onClick={() => queueIndex >= 0 && playQueue(playableTracks, queueIndex)} disabled={queueIndex < 0}>
                       {song.title}
-                    </Link>
+                    </button>
                   ) : (
                     <span className="featured-track__title">{row.title}</span>
                   )}
@@ -213,8 +230,8 @@ export function Home() {
                 return (
                   <Link className="release-card" to={`/music/${item.slug}`} key={item.id}>
                     <div className="release-card__art">
-                      {item.cover_url ? (
-                        <img src={item.cover_url} alt={`${item.title} cover`} loading="lazy" />
+                      {(localCover(item.title) ?? item.cover_url) ? (
+                        <img src={localCover(item.title) ?? item.cover_url!} alt={`${item.title} cover`} loading="lazy" />
                       ) : (
                         <span>ATTIKID</span>
                       )}
@@ -312,7 +329,7 @@ export function Home() {
           {latestSongs.data.slice(0, 3).map((song) => (
             <Link className="activity-row" key={song.id} to={`/song/${song.slug}`}>
               <div className="activity-thumb">
-                {song.artwork_url ? <img src={song.artwork_url} alt="" /> : <span />}
+                {(albumForSong(song) ?? song.artwork_url) ? <img src={albumForSong(song) ?? song.artwork_url!} alt="" /> : <span />}
               </div>
               <div>
                 <strong>New song</strong>
