@@ -11,7 +11,7 @@ export function About() {
     canonical: 'https://attikid.vercel.app/about',
     type: 'profile',
     keywords: ['ATTIKID', 'artist story', 'bio', 'about'],
-    image: '/images/artist/kid-portrait-primary.webp',
+    image: '/images/new/about/about-hero.png',
     jsonLd: buildWebSiteJsonLd(),
   });
 
@@ -22,11 +22,12 @@ export function About() {
         title={<>Same kid.<br />Different demons.</>}
         description="The person behind the music, the records, and the stories between them."
         className="about-hero"
+        image="/images/new/about/about-hero.png"
       />
 
-      <section className="about-split">
+      <section className="about-intro"><div className="about-intro__image"><img src="/images/new/about/about-image.webp" alt="ATTIKID visual portrait" loading="lazy" /></div><div className="about-intro__copy"><span className="portfolio-label">ARTIST / ARCHIVE</span><h2>Real experiences. No clean endings.</h2><p>Attikid turns lived experience into an emotional archive—songs about the parts of life that are difficult to explain, let alone say out loud.</p><Link className="text-link" to="/music/albums">Explore the catalog →</Link></div></section><section className="about-split">
         <div className="about-image">
-          <img src="/images/artist/kid-portrait-primary.webp" alt="Portrait of ATTIKID" />
+          <img src="/images/new/about/about.webp" alt="ATTIKID artist imagery" loading="lazy" />
         </div>
         <div className="about-story">
           <span className="portfolio-label">THE STORY</span>
