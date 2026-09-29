@@ -8,7 +8,7 @@
 .album-cover-carousel .music-release-card__body>p,.album-cover-carousel .album-card-purpose,.album-cover-carousel .album-card-artist,.album-cover-carousel .album-card-meta-line,.album-cover-carousel .text-link{display:none}
 .album-cover-carousel .music-release-card__tracks{display:none;max-height:230px;overflow:auto;margin:.65rem 0 0;border-top:1px solid rgba(255,255,255,.28)}
 .album-cover-carousel .music-release-card__tracks a{color:#f2f2f2;border-color:rgba(255,255,255,.14)}
-.album-cover-carousel .album-hover-card:hover .music-release-card__art img,.album-cover-carousel .album-hover-card:focus-within .music-release-card__art img{opacity:.13;transform:scale(1.04)}
+.album-cover-carousel .album-hover-card:hover .music-release-card__art img,.album-cover-carousel .album-hover-card:focus-within .music-release-card__art img{opacity:1;transform:none}
 .album-cover-carousel .album-hover-card:hover .music-release-card__body,.album-cover-carousel .album-hover-card:focus-within .music-release-card__body{background:rgba(0,0,0,.76);justify-content:flex-start}
 .album-cover-carousel .album-hover-card:hover .music-release-card__tracks,.album-cover-carousel .album-hover-card:focus-within .music-release-card__tracks{display:block}
 .album-cover-carousel .music-release-card__tracks a{padding:.42rem 0}
@@ -16,7 +16,7 @@
 @media(prefers-reduced-motion:reduce){.album-cover-carousel .music-release-card__art img{transition:none}}
 .about-intro{display:grid;grid-template-columns:minmax(260px,46%) 1fr;gap:clamp(1.5rem,5vw,4rem);align-items:center;padding:2rem 0 3rem;border-bottom:1px solid #292929}
 .about-intro__image{height:clamp(240px,32vw,440px);overflow:hidden;border:1px solid #292929;background:#111}
-.about-intro__image img{width:100%;height:100%;object-fit:cover;display:block}
+.about-intro__image img{width:100%;height:100%;object-fit:contain;display:block}
 .about-intro__copy h2{font:400 clamp(2.3rem,4vw,4.2rem)/.95 var(--font-display);text-transform:uppercase;margin:.7rem 0 1rem}
 .about-intro__copy p{color:#a0a0a0;line-height:1.7;max-width:38rem}
 .about-intro__copy a{display:inline-block;margin-top:.5rem}
