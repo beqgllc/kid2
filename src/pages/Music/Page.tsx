@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
 import { useAlbums, useSongs } from '../../hooks/useCatalog';
@@ -23,13 +24,21 @@ function year(value?: string | null) {
 }
 
 export function Music() {
-  const albums = useAlbums(12);
+  const albums = useAlbums();
   const songs = useSongs();
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const scrollAlbums = (direction: -1 | 1) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const slide = carousel.querySelector<HTMLElement>('.album-hover-card');
+    carousel.scrollBy({ left: direction * ((slide?.offsetWidth ?? carousel.clientWidth) + 20), behavior: 'smooth' });
+  };
   const tracksByAlbum = songs.data.reduce<Record<string, Song[]>>((groups, song) => {
     if (!song.album_id) return groups;
     (groups[song.album_id] ??= []).push(song);
     return groups;
   }, {});
+  Object.values(tracksByAlbum).forEach((tracks) => tracks.sort((a, b) => (a.track_number ?? 999) - (b.track_number ?? 999)));
 
   usePageMeta({
     title: 'ATTIKID Albums',
@@ -64,7 +73,15 @@ export function Music() {
         {albums.loading || songs.loading ? (
           <div className="loading-state">Loading album archive…</div>
         ) : albums.data.length ? (
-          <div className="music-release-grid album-cover-carousel">
+          <>
+          <div className="album-carousel-controls">
+            <span className="portfolio-muted">Swipe or scroll to browse every album and tracklist.</span>
+            <div>
+              <button type="button" aria-label="Previous album" onClick={() => scrollAlbums(-1)}>←</button>
+              <button type="button" aria-label="Next album" onClick={() => scrollAlbums(1)}>→</button>
+            </div>
+          </div>
+          <div className="music-release-grid album-cover-carousel" ref={carouselRef} role="region" aria-label="Album carousel">
             {albums.data.map((album) => {
               const tracks = tracksByAlbum[album.id] ?? [];
               const configuredTrackCount = Number(album.metadata?.config_track_count);
@@ -73,7 +90,7 @@ export function Music() {
                 : tracks.length;
 
               return (
-                <article className="music-release-card album-hover-card" key={album.id}>
+                <article className="music-release-card album-hover-card" key={album.id} aria-label={`${album.title} album and tracklist`}>
                   <Link to={`/music/${album.slug}`} className="music-release-card__art">
                     {coverFor(album.title, album.cover_url)
                       ? <img src={coverFor(album.title, album.cover_url)!} alt={`${album.title} cover`} />
@@ -122,6 +139,7 @@ export function Music() {
               );
             })}
           </div>
+          </>
         ) : (
           <div className="empty-state">No album releases have been ingested yet.</div>
         )}
