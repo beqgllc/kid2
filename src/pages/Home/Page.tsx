@@ -84,7 +84,7 @@ export function Home() {
 
   const albumForSong = (song: { album_id?: string | null; album?: { title?: string | null; cover_url?: string | null } | null }) => {
     const album = albums.data.find((item) => item.id === song.album_id) ?? song.album;
-    return localCover(album?.title) ?? album?.cover_url ?? null;
+    return album?.cover_url ?? localCover(album?.title) ?? null;
   };
 
   const playableTracks = useMemo(
@@ -153,8 +153,8 @@ export function Home() {
 
         <section className="portfolio-featured">
           <div className="featured-release-art">
-            {(localCover(featured.data?.title) ?? featured.data?.cover_url)
-              ? <img src={localCover(featured.data?.title) ?? featured.data?.cover_url ?? undefined} alt="Cloudy With A Chance" loading="lazy" />
+            {(featured.data?.cover_url ?? localCover(featured.data?.title))
+              ? <img src={featured.data?.cover_url ?? localCover(featured.data?.title) ?? undefined} alt="Cloudy With A Chance" loading="lazy" />
               : <span>ATTIKID</span>}
           </div>
 
@@ -230,8 +230,8 @@ export function Home() {
                 return (
                   <Link className="release-card" to={`/music/${item.slug}`} key={item.id}>
                     <div className="release-card__art">
-                      {(localCover(item.title) ?? item.cover_url) ? (
-                        <img src={localCover(item.title) ?? item.cover_url ?? undefined} alt={`${item.title} cover`} loading="lazy" />
+                      {(item.cover_url ?? localCover(item.title)) ? (
+                        <img src={item.cover_url ?? localCover(item.title) ?? undefined} alt={`${item.title} cover`} loading="lazy" />
                       ) : (
                         <span>ATTIKID</span>
                       )}
