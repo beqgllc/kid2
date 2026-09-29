@@ -46,9 +46,9 @@ test('legacy visuals URLs redirect to videos', async ({ page }) => {
   await skipWhenSupabaseIsNotConfigured(page);
 
   await page.goto('/visuals');
-  await expect(page).toHaveURL(/\\/videos$/);
+  await expect(page).toHaveURL(/\/videos$/);
   await page.goto('/visuals/lyric-videos');
-  await expect(page).toHaveURL(/\\/videos$/);
+  await expect(page).toHaveURL(/\/videos$/);
 });
 
 test('unknown routes show the not-found page', async ({ page }) => {

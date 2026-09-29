@@ -1027,6 +1027,7 @@ body,
 .album-card-artist{
   color:#B8B8B8;
   font:.62rem var(--font-mono);
+}
 
 /* ATTIKID page header image */
 .catalog-hero{
@@ -1080,6 +1081,7 @@ body,
   .catalog-hero__image{
     height:50%;
   }
+}
 .aside-admin-access p{
   margin:.65rem 0 1rem;
   color:#B8B8B8;
