@@ -26,7 +26,15 @@ export function About() {
         image="/images/new/about/about-hero.png"
       />
 
-      <section className="about-intro"><div className="about-intro__image"><img src="/images/new/about/about-image.webp" alt="ATTIKID visual portrait" loading="lazy" /></div><div className="about-intro__copy"><span className="portfolio-label">ARTIST / ARCHIVE</span><h2>Real experiences. No clean endings.</h2><p>Attikid turns lived experience into an emotional archive—songs about the parts of life that are difficult to explain, let alone say out loud.</p><Link className="text-link" to="/music/albums">Explore the catalog →</Link></div></section><section className="about-split">
+      <section className="about-intro">
+        <div className="about-intro__copy">
+          <span className="portfolio-label">ARTIST / ARCHIVE</span>
+          <h2>Real experiences. No clean endings.</h2>
+          <p>Attikid turns lived experience into an emotional archive—songs about the parts of life that are difficult to explain, let alone say out loud.</p>
+          <Link className="text-link" to="/music/albums">Explore the catalog →</Link>
+        </div>
+      </section>
+      <section className="about-split">
         <div className="about-image">
           <img src="/images/new/about/about.webp" alt="ATTIKID artist imagery" loading="lazy" />
         </div>

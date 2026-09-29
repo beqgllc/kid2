@@ -19,13 +19,10 @@
 .album-cover-carousel .text-link{margin-top:.7rem}
 @media(max-width:640px){.album-carousel-controls{align-items:flex-start}.album-cover-carousel .album-hover-card{grid-template-columns:1fr;flex-basis:min(440px,88vw);gap:.75rem}.album-cover-carousel .music-release-card__art{max-height:72vw}.album-cover-carousel .music-release-card__body{padding:0}.album-cover-carousel .music-release-card__tracks{max-height:260px}}
 @media(prefers-reduced-motion:reduce){.album-cover-carousel{scroll-behavior:auto}}
-.about-intro{display:grid;grid-template-columns:minmax(260px,46%) 1fr;gap:clamp(1.5rem,5vw,4rem);align-items:center;padding:2rem 0 3rem;border-bottom:1px solid #292929}
-.about-intro__image{height:clamp(240px,32vw,440px);overflow:hidden;border:1px solid #292929;background:#111}
-.about-intro__image img{width:100%;height:100%;object-fit:contain;display:block}
+.about-intro{display:grid;grid-template-columns:minmax(0,1fr);padding:2rem 0 3rem;border-bottom:1px solid #292929}
 .about-intro__copy h2{font:400 clamp(2.3rem,4vw,4.2rem)/.95 var(--font-display);text-transform:uppercase;margin:.7rem 0 1rem}
 .about-intro__copy p{color:#a0a0a0;line-height:1.7;max-width:38rem}
 .about-intro__copy a{display:inline-block;margin-top:.5rem}
 .featured-track__title{min-width:0;padding:0;border:0;background:none;color:#f2f2f2;text-align:left;font:inherit;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .featured-track__title:hover:not(:disabled){color:#fff;text-decoration:underline;text-underline-offset:3px}
 .featured-track__title:disabled{cursor:default;opacity:.65}
-@media(max-width:800px){.about-intro{grid-template-columns:1fr}.about-intro__image{height:clamp(220px,60vw,380px)}}
