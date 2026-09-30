@@ -153,9 +153,7 @@ export function Home() {
 
         <section className="portfolio-featured">
           <div className="featured-release-art">
-            {(featured.data?.cover_url ?? localCover(featured.data?.title))
-              ? <img src={featured.data?.cover_url ?? localCover(featured.data?.title) ?? undefined} alt="Cloudy With A Chance" loading="lazy" />
-              : <span>ATTIKID</span>}
+            <img src="/images/new/cover/cloudywithachance.webp" alt="Cloudy With A Chance cover artwork" loading="lazy" />
           </div>
 
           <div className="featured-release-info">
