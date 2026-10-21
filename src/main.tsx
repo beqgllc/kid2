@@ -5,5 +5,7 @@ import './styles/globals.css';
 import './styles/immersive.css';
 import './styles/attikid-catalog.css';
 import './styles/portfolio.css';
+import './pages/Studio/studio.css';
+import './styles/site-frame.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

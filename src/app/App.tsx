@@ -25,6 +25,7 @@ import { FanMailAdmin } from '../pages/Admin/FanMail';
 import { Analytics } from '../pages/Admin/Analytics';
 import { Settings } from '../pages/Admin/Settings';
 import { AdminLoginEntry } from '../pages/Admin/Login';
+import { StudioHome, StudioToolRoute } from '../pages/Studio/Page';
 
 
 function ConfigNotice() {
@@ -42,12 +43,20 @@ export function App() {
   return (
     <>
       {showSplash && <div />}
-      {!supabaseConfigured ? <ConfigNotice /> : <BrowserRouter>
+      <BrowserRouter>
+      {!supabaseConfigured ? <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/studio" element={<StudioHome />} />
+          <Route path="/studio/tools/:toolSlug" element={<StudioToolRoute />} />
+          <Route path="*" element={<ConfigNotice />} />
+        </Route>
+      </Routes> :
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<Home />} />
             <Route path="/music" element={<Navigate to="/music/albums" replace />} />
-            <Route path="/music/a-z" element={<MusicAZ />} />
+            <Route path="/music/a-z" element={<Navigate to="/music/songs" replace />} />
+            <Route path="/music/songs" element={<MusicAZ />} />
             <Route path="/music/albums" element={<Music />} />
             <Route path="/music/:albumSlug" element={<Album />} />
             <Route path="/song/:songSlug" element={<Song />} />
@@ -59,6 +68,8 @@ export function App() {
             <Route path="/visuals/lyric-videos" element={<Navigate to="/videos" replace />} />
             <Route path="/fan-mail" element={<FanMail />} />
             <Route path="/store" element={<Store />} />
+            <Route path="/studio" element={<StudioHome />} />
+            <Route path="/studio/tools/:toolSlug" element={<StudioToolRoute />} />
           </Route>
           <Route path="/admin/login" element={<AdminLoginEntry />} />
           <Route element={<RequireAdmin />}>
@@ -74,7 +85,8 @@ export function App() {
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>}
+      }
+      </BrowserRouter>
     </>
   );
 }

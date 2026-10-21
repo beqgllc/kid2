@@ -17,6 +17,7 @@ A responsive music portfolio + lightweight artist CMS powered by React, Vite, Ty
 - Song / album analytics
 - Loading states, transitions, hover and scroll effects
 - Custom 404
+- ATTIKID Studio with eight browser-based writing, planning, and release tools
 
 ## 1. Install
 
@@ -82,6 +83,12 @@ npm run dev
 ```bash
 npm run build
 ```
+
+## ATTIKID Studio
+
+Open `/studio` for the rhyme finder, bar counter, prompt builder, lyric formatter, BPM planner, split sheet, release checklist, and EPK builder. Studio tools run in the browser and do not require an AI account. The rhyme finder uses the public Datamuse API and requires an internet connection. The release checklist is stored in local browser storage on this device; the split sheet and EPK are not persisted. Export files when you want to keep a copy. Percentage and contributor details are planning drafts, not legal agreements.
+
+The Studio pages are reachable when Supabase is not configured. Existing music catalog and admin features continue to require the existing Supabase setup.
 
 ## Notes
 

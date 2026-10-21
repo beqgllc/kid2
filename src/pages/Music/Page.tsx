@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
+import { MusicSearch } from '../../components/music/MusicSearch';
 import { useAlbums, useSongs } from '../../hooks/useCatalog';
 import { usePageMeta } from '../../lib/seo';
 import type { Song } from '../../types/models';
@@ -26,6 +27,7 @@ function year(value?: string | null) {
 export function Music() {
   const albums = useAlbums();
   const songs = useSongs();
+  const [query, setQuery] = useState('');
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollAlbums = (direction: -1 | 1) => {
     const carousel = carouselRef.current;
@@ -39,10 +41,14 @@ export function Music() {
     return groups;
   }, {});
   Object.values(tracksByAlbum).forEach((tracks) => tracks.sort((a, b) => (a.track_number ?? 999) - (b.track_number ?? 999)));
+  const normalizedQuery = query.trim().toLowerCase();
+  const visibleAlbums = albums.data.filter((album) => !normalizedQuery
+    || album.title.toLowerCase().includes(normalizedQuery)
+    || (tracksByAlbum[album.id] ?? []).some((track) => track.title.toLowerCase().includes(normalizedQuery)));
 
   usePageMeta({
-    title: 'ATTIKID Albums',
-    description: 'Browse every ATTIKID album with its cover, full tracklist, release details, and story.',
+    title: 'ATTIKID Music | Albums & Releases',
+    description: 'Browse ATTIKID albums and releases with covers, tracklists, details, and stories.',
     canonical: 'https://attikid.vercel.app/music/albums',
     type: 'music',
     keywords: ['ATTIKID music', 'albums', 'tracklists', 'music catalog'],
@@ -52,27 +58,31 @@ export function Music() {
   return (
     <div className="page music-portfolio-page">
       <PortfolioPageHeader
-        eyebrow="CATALOG / ALBUMS"
+        eyebrow="MUSIC / ALBUMS"
         title="The albums."
         description="Every ATTIKID album, presented with the same editorial treatment as the records themselves."
         links={[
           { to: '/music/albums', label: 'Albums', active: true },
-          { to: '/music/a-z', label: 'A–Z' },
+          { to: '/music/songs', label: 'Songs' },
         ]}
       />
 
-      <section className="portfolio-section page-section-tight">
+      <section id="album-archive" className="portfolio-section page-section-tight">
+        <MusicSearch mode="albums" songs={songs.data} albums={albums.data} query={query} onQueryChange={setQuery} />
+        <p className="music-search__status" aria-live="polite">
+          {normalizedQuery ? `${visibleAlbums.length} matching releases` : `${albums.data.length} releases`}
+        </p>
         <div className="portfolio-section__heading">
           <div>
             <span className="portfolio-label">ALBUM ARCHIVE</span>
             <h2>Every record.</h2>
           </div>
-          <span className="portfolio-muted">{albums.data.length} albums</span>
+          <span className="portfolio-muted">{visibleAlbums.length} releases</span>
         </div>
 
         {albums.loading || songs.loading ? (
           <div className="loading-state">Loading album archive…</div>
-        ) : albums.data.length ? (
+        ) : visibleAlbums.length ? (
           <>
           <div className="album-carousel-controls">
             <span className="portfolio-muted">Swipe or scroll to browse every album and tracklist.</span>
@@ -82,7 +92,7 @@ export function Music() {
             </div>
           </div>
           <div className="music-release-grid album-cover-carousel" ref={carouselRef} role="region" aria-label="Album carousel">
-            {albums.data.map((album) => {
+            {visibleAlbums.map((album) => {
               const tracks = tracksByAlbum[album.id] ?? [];
               const configuredTrackCount = Number(album.metadata?.config_track_count);
               const detailTrackCount = Number.isFinite(configuredTrackCount) && configuredTrackCount > 0
@@ -141,7 +151,7 @@ export function Music() {
           </div>
           </>
         ) : (
-          <div className="empty-state">No album releases have been ingested yet.</div>
+          <div className="empty-state">{normalizedQuery ? `No releases or tracks match “${query.trim()}”.` : 'No album releases have been ingested yet.'}</div>
         )}
       </section>
     </div>

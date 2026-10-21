@@ -12,6 +12,15 @@ const publicRoutes = [
   '/lyrics',
   '/fan-mail',
   '/store',
+  '/studio',
+  '/studio/tools/rhyme-finder',
+  '/studio/tools/bar-counter',
+  '/studio/tools/prompt-builder',
+  '/studio/tools/lyric-formatter',
+  '/studio/tools/bpm-planner',
+  '/studio/tools/split-sheet',
+  '/studio/tools/release-checklist',
+  '/studio/tools/epk-builder',
 ];
 
 async function skipWhenSupabaseIsNotConfigured(page: import('@playwright/test').Page) {
@@ -49,6 +58,16 @@ test('legacy visuals URLs redirect to videos', async ({ page }) => {
   await expect(page).toHaveURL(/\/videos$/);
   await page.goto('/visuals/lyric-videos');
   await expect(page).toHaveURL(/\/videos$/);
+});
+
+test('Studio is available without Supabase and its tools are navigable', async ({ page }) => {
+  await page.goto('/studio');
+  await expect(page.getByRole('heading', { name: /keep it yours/i })).toBeVisible();
+  await page.getByRole('link', { name: /rhyme finder/i }).click();
+  await expect(page).toHaveURL(/\/studio\/tools\/rhyme-finder$/);
+  await expect(page.getByRole('heading', { name: 'Rhyme Finder' })).toBeVisible();
+  await page.goto('/studio/tools/release-checklist');
+  await expect(page.getByText(/tasks complete/i)).toBeVisible();
 });
 
 test('unknown routes show the not-found page', async ({ page }) => {

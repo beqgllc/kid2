@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
 import { PortfolioPageHeader } from '../../components/portfolio/PortfolioPageHeader';
+import { MusicSearch } from '../../components/music/MusicSearch';
+import { useAlbums } from '../../hooks/useCatalog';
 import { SongRow } from '../../components/music/SongRow';
 import { useSongs } from '../../hooks/useCatalog';
 import { buildWebSiteJsonLd, usePageMeta } from '../../lib/seo';
 
 export function MusicAZ() {
   const songs = useSongs();
+  const albums = useAlbums();
   const [query, setQuery] = useState('');
   const sorted = useMemo(
     () => songs.data.slice().sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })),
@@ -28,11 +31,11 @@ export function MusicAZ() {
   }, [filteredSongs]);
 
   usePageMeta({
-    title: 'ATTIKID Music A-Z',
+    title: 'ATTIKID Music | Songs',
     description: 'Browse every ATTIKID track alphabetically across albums and single releases.',
-    canonical: 'https://attikid.vercel.app/music/a-z',
+    canonical: 'https://attikid.vercel.app/music/songs',
     type: 'music',
-    keywords: ['ATTIKID songs', 'A-Z', 'tracks', 'music catalog'],
+    keywords: ['ATTIKID songs', 'tracks', 'music catalog'],
     image: '/images/hero/attikid-hero.webp',
     jsonLd: buildWebSiteJsonLd(),
   });
@@ -41,36 +44,20 @@ export function MusicAZ() {
     <div className="page music-catalog-page">
       <PortfolioPageHeader
         image="/images/new/hero/atozhero.webp"
-        eyebrow="CATALOG / A–Z"
+        eyebrow="MUSIC / SONGS"
         title="Every track."
         description="Every ATTIKID song, alphabetized across albums and standalone releases."
         links={[
-          { to: '/music/a-z', label: 'A–Z', active: true },
           { to: '/music/albums', label: 'Albums' },
+          { to: '/music/songs', label: 'Songs', active: true },
         ]}
       />
 
       <section className="portfolio-section page-section-tight">
-        <div className="music-search">
-          <label htmlFor="music-title-search">FIND A SONG</label>
-          <input
-            id="music-title-search"
-            className="search-input"
-            type="search"
-            list="music-title-suggestions"
-            placeholder="Search by song title"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <datalist id="music-title-suggestions">
-            {sorted.map((song) => <option key={song.id} value={song.title} />)}
-          </datalist>
-          <p className="music-search__status" aria-live="polite">
-            {query.trim()
-              ? `${filteredSongs.length} matching ${filteredSongs.length === 1 ? 'track' : 'tracks'}`
-              : `${sorted.length} tracks`}
-          </p>
-        </div>
+        <MusicSearch mode="songs" songs={sorted} albums={albums.data} query={query} onQueryChange={setQuery} />
+        <p className="music-search__status" aria-live="polite">
+          {query.trim() ? `${filteredSongs.length} matching ${filteredSongs.length === 1 ? 'track' : 'tracks'}` : `${sorted.length} tracks`}
+        </p>
 
         {songs.loading ? (
           <div className="loading-state">Loading tracks…</div>
