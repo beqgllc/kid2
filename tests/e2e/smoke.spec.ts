@@ -11,6 +11,8 @@ const publicRoutes = [
   '/visuals/lyric-videos',
   '/lyrics',
   '/fan-mail',
+  '/privacy',
+  '/terms',
   '/store',
   '/studio',
   '/studio/tools/rhyme-finder',

@@ -15,6 +15,8 @@ import { LyricVideos } from '../pages/LyricVideos/Page';
 import { FanMail } from '../pages/FanMail/Page';
 import { Store } from '../pages/Store/Page';
 import { NotFound } from '../pages/NotFound/Page';
+import { PrivacyPolicy } from '../pages/Legal/Privacy';
+import { TermsOfUse } from '../pages/Legal/Terms';
 import { AdminShell } from '../pages/Admin/AdminShell';
 import { RequireAdmin } from '../pages/Admin/RequireAdmin';
 import { Dashboard } from '../pages/Admin/Dashboard';
@@ -67,6 +69,8 @@ export function App() {
             <Route path="/visuals" element={<Navigate to="/videos" replace />} />
             <Route path="/visuals/lyric-videos" element={<Navigate to="/videos" replace />} />
             <Route path="/fan-mail" element={<FanMail />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfUse />} />
             <Route path="/store" element={<Store />} />
             <Route path="/studio" element={<StudioHome />} />
             <Route path="/studio/tools/:toolSlug" element={<StudioToolRoute />} />

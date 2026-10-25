@@ -26,6 +26,8 @@ const staticPaths = [
   '/about',
   '/videos',
   '/fan-mail',
+  '/privacy',
+  '/terms',
   '/store',
   '/studio',
 ];

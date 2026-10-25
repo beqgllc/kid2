@@ -20,6 +20,10 @@ export function Footer() {
             rel="noopener noreferrer"
           >Share on Facebook</a>
         </small>
+        <small className="corner-footer__legal-links">
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms of Use</Link>
+        </small>
       </div>
       <Link className="corner-footer__contact" to="/fan-mail">Contact</Link>
     </footer>
