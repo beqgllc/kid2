@@ -11,6 +11,8 @@ const publicRoutes = [
   '/visuals/lyric-videos',
   '/lyrics',
   '/fan-mail',
+  '/privacy',
+  '/terms',
   '/store',
   '/studio',
   '/studio/tools/rhyme-finder',
@@ -30,9 +32,9 @@ async function skipWhenSupabaseIsNotConfigured(page: import('@playwright/test').
   }
 }
 
-test('ATTIKID boots', async ({ page }) => {
+test('ATTIKID boots with its descriptive SEO title', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle('ATTIKID — Music, Lyrics & Story');
+  await expect(page).toHaveTitle('ATTIKID Official Site | Music, Lyrics & Artist Story');
   await expect(page.locator('body')).toBeVisible();
   await expect(page.locator('body')).not.toBeEmpty();
 });
@@ -43,10 +45,10 @@ test('public routes resolve through the client router', async ({ page }) => {
 
   for (const route of publicRoutes) {
     const response = await page.goto(route);
-    expect(response?.status(), `HTTP response for ${route}`).toBeLessThan(400);
-    await expect(page.locator('body'), `body for ${route}`).toBeVisible();
-    await expect(page.locator('body'), `non-empty page for ${route}`).not.toBeEmpty();
-    await expect(page).toHaveTitle('ATTIKID — Music, Lyrics & Story');
+    expect(response?.status(), 'HTTP response for ' + route).toBeLessThan(400);
+    await expect(page.locator('body'), 'body for ' + route).toBeVisible();
+    await expect(page.locator('body'), 'non-empty page for ' + route).not.toBeEmpty();
+    await expect(page).toHaveTitle(/ATTIKID/i);
   }
 });
 

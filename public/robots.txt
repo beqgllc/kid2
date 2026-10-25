@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Disallow: /admin/
-Disallow: /admin/login
+# Administrative pages are private application routes, not search landing pages.
+Disallow: /admin
 
-Sitemap: https://attikid.vercel.app/sitemap.xml
+Sitemap: https://attikid.com/sitemap.xml
