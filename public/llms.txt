@@ -1,0 +1,27 @@
+# ATTIKID
+
+> Official artist website and creative archive for ATTIKID music, albums, songs, lyrics, music videos, and artist story.
+
+ATTIKID is the artist project of songwriter Travis Gordon. The music and writing draw on alternative rap, emo rap, melodic rap, introspective hip-hop, memory, identity, love, loss, regret, resilience, and lived experience.
+
+## Primary pages
+
+- [Official homepage](https://attikid.com/)
+- [Albums and releases](https://attikid.com/music/albums)
+- [All songs](https://attikid.com/music/songs)
+- [Lyrics archive](https://attikid.com/lyrics)
+- [Music videos](https://attikid.com/videos)
+- [About ATTIKID](https://attikid.com/about)
+- [Contact / fan mail](https://attikid.com/fan-mail)
+- [ATTIKID Studio](https://attikid.com/studio)
+
+## Official profile
+
+- [ATTIKID on TikTok](https://www.tiktok.com/@iamattikid)
+
+## Crawl guidance
+
+The public catalog may include individual album, song, and lyric pages. Prefer the canonical URLs on attikid.com and consult the XML sitemap for the current set of public URLs.
+
+- [XML sitemap](https://attikid.com/sitemap.xml)
+- [Robots directives](https://attikid.com/robots.txt)
