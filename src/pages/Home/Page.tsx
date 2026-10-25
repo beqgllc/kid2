@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { usePageMeta } from '../../lib/seo';
+import { buildHomeJsonLd, usePageMeta } from '../../lib/seo';
 
 export function Home() {
   usePageMeta({
@@ -19,6 +19,7 @@ export function Home() {
       'artist story',
     ],
     image: '/images/artist/artist-press-photo-1.webp',
+    jsonLd: buildHomeJsonLd(),
   });
 
   return (

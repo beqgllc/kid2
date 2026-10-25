@@ -131,6 +131,8 @@ export function usePageMeta(meta: SeoMeta) {
 
     canonicalTag.href = canonical;
 
+    // The inline index document and route component use the same ID so client routing
+    // replaces (rather than duplicates) structured data when navigating between pages.
     const jsonLdScript = document.querySelector(
       '#attikid-seo-json-ld',
     ) as HTMLScriptElement | null;
@@ -145,6 +147,28 @@ export function usePageMeta(meta: SeoMeta) {
       document.head.appendChild(script);
     }
   }, [meta]);
+}
+
+export function buildHomeJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      buildWebSiteJsonLd(),
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        '@id': siteUrl + '/#artist',
+        name: 'ATTIKID',
+        alternateName: 'Attikid',
+        url: siteUrl + '/about',
+        image: siteUrl + '/images/artist/artist-press-photo-1.webp',
+        jobTitle: 'Musician and songwriter',
+        description:
+          'ATTIKID is a music and songwriting project exploring alternative rap, emo rap, melodic rap, introspective hip-hop, and stories shaped by lived experience.',
+        sameAs: ['https://www.tiktok.com/@iamattikid'],
+      },
+    ],
+  };
 }
 
 export function buildWebSiteJsonLd() {

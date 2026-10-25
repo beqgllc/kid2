@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildAlbumJsonLd,
+  buildHomeJsonLd,
   buildSongJsonLd,
   buildWebSiteJsonLd,
   getCanonicalUrl,
@@ -14,6 +15,14 @@ describe('SEO metadata and JSON-LD builders', () => {
       'https://attikid.com/music/albums',
     );
     expect(getCanonicalUrl('/')).toBe('https://attikid.com/');
+  });
+
+  it('builds homepage Website and Person schema in a single graph', () => {
+    const jsonLd = buildHomeJsonLd();
+    expect(jsonLd['@graph']).toHaveLength(2);
+    expect(jsonLd['@graph'][0]['@type']).toBe('WebSite');
+    expect(jsonLd['@graph'][1]['@type']).toBe('Person');
+    expect(jsonLd['@graph'][1]['sameAs']).toContain('https://www.tiktok.com/@iamattikid');
   });
 
   it('builds a website JSON-LD object with a stable identity', () => {
